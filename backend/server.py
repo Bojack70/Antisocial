@@ -102,6 +102,12 @@ class ContentGenerationRequest(BaseModel):
 # Initialize AI Chat
 emergent_key = os.environ.get('EMERGENT_LLM_KEY', '')
 
+def serialize_mongodb_doc(doc):
+    """Convert MongoDB document to JSON-serializable dict"""
+    if '_id' in doc:
+        doc.pop('_id')
+    return doc
+
 async def generate_content_with_ai(content_type: str, count: int = 1) -> List[dict]:
     """Generate content using AI based on type"""
     chat = LlmChat(
