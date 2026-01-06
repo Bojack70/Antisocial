@@ -290,15 +290,20 @@ async def generate_content(request: ContentGenerationRequest):
         if not items:
             raise HTTPException(status_code=500, detail="Failed to generate content")
         
-        # Store in MongoDB
+        # Store in MongoDB and clean results
         collection_name = f"{request.content_type}_content"
+        clean_items = []
+        
         for item in items:
             item['id'] = str(uuid.uuid4())
             item['type'] = request.content_type
             item['created_at'] = datetime.utcnow()
-            await db[collection_name].insert_one(item)
+            result = await db[collection_name].insert_one(item.copy())
+            # Remove _id for response
+            item.pop('_id', None)
+            clean_items.append(item)
         
-        return {"success": True, "count": len(items), "items": items}
+        return {"success": True, "count": len(clean_items), "items": clean_items}
     except Exception as e:
         logging.error(f"Content generation error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
