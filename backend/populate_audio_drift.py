@@ -15,91 +15,74 @@ load_dotenv()
 LISTEN_NOTES_API_KEY = os.environ.get('LISTEN_NOTES_API_KEY')
 client = podcast_api.Client(api_key=LISTEN_NOTES_API_KEY)
 
-# Target podcasts for Audio Drift
-AUDIO_DRIFT_PODCASTS = {
-    "weird_surprising_facts": {
-        "id": "NV_rC-179wI",
-        "name": "Weird and Surprising Facts",
-        "description": "Daily stories about surprising facts from science, history, and culture",
-        "target_duration": 300  # ~5 minutes
+# Search terms for diverse audio sources
+SEARCH_QUERIES = [
+    {
+        "query": "Stephen Carter weird facts",
+        "description": "Surprising facts and stories",
+        "max_duration": 600
     },
-    "micro_stories": {
-        "search_term": "one minute story micro fiction",
-        "description": "Micro stories - tiny tales in about 1 minute",
-        "target_duration": 60  # ~1 minute
+    {
+        "query": "one minute story micro fiction",
+        "description": "Micro stories - tiny tales",
+        "max_duration": 180
+    },
+    {
+        "query": "quick science facts daily",
+        "description": "Daily science curiosities",
+        "max_duration": 420
+    },
+    {
+        "query": "daily curiosity surprising",
+        "description": "Daily surprising facts",
+        "max_duration": 480
+    },
+    {
+        "query": "micro podcast short stories",
+        "description": "Short story podcasts",
+        "max_duration": 300
     }
-}
+]
 
-async def fetch_podcast_episodes(podcast_id, max_episodes=10):
-    """Fetch episodes from a specific podcast"""
-    try:
-        response = client.fetch_podcast_by_id(
-            id=podcast_id,
-            next_episode_pub_date=None,
-            sort='recent_first'
-        )
-        
-        episodes = []
-        podcast_data = response.json()
-        
-        for episode in podcast_data.get('episodes', [])[:max_episodes]:
-            # Only include short episodes suitable for Audio Drift
-            duration = episode.get('audio_length_sec', 0)
-            if 30 <= duration <= 600:  # Between 30 seconds and 10 minutes
-                episodes.append({
-                    "listen_notes_id": episode['id'],
-                    "title": episode['title'],
-                    "description": episode.get('description', '')[:200] if episode.get('description') else episode.get('title', ''),
-                    "audio_url": episode['audio'],
-                    "audio_length_sec": duration,
-                    "podcast_title": podcast_data['title'],
-                    "podcast_id": podcast_id,
-                    "image_url": episode.get('image') or podcast_data.get('image'),
-                    "publish_date": datetime.fromtimestamp(episode['pub_date_ms'] / 1000) if episode.get('pub_date_ms') else datetime.utcnow()
-                })
-        
-        return episodes
-    except Exception as e:
-        print(f"Error fetching podcast {podcast_id}: {e}")
-        import traceback
-        traceback.print_exc()
-        return []
-
-async def search_micro_stories(max_results=10):
-    """Search for micro/short story podcasts"""
+async def search_podcast_episodes(query, max_results=8, max_duration=600):
+    """Search for podcast episodes matching query"""
     try:
         response = client.search(
-            q='one minute story micro',
+            q=query,
             type='episode',
             sort_by_date=1,
             len_min=30,  # Minimum 30 seconds
-            len_max=180,  # Maximum 3 minutes
-            language='English'
+            len_max=max_duration,  # Maximum duration from config
+            language='English',
+            only_in='title,description'
         )
         
         episodes = []
         for episode in response.json().get('results', [])[:max_results]:
             duration = episode.get('audio_length_sec', 0)
-            if 30 <= duration <= 180:
+            if 30 <= duration <= max_duration:
                 episodes.append({
                     "listen_notes_id": episode['id'],
-                    "title": episode['title'],
-                    "description": episode['description'][:200] if episode.get('description') else '',
+                    "title": episode['title_original'] or episode['title'],
+                    "description": (episode.get('description_original') or episode.get('description', ''))[:250],
                     "audio_url": episode['audio'],
                     "audio_length_sec": duration,
-                    "podcast_title": episode['podcast']['title'],
+                    "podcast_title": episode['podcast']['title_original'] or episode['podcast']['title'],
                     "podcast_id": episode['podcast']['id'],
                     "image_url": episode.get('image') or episode['podcast'].get('image'),
-                    "publish_date": datetime.fromtimestamp(episode['pub_date_ms'] / 1000)
+                    "publish_date": datetime.fromtimestamp(episode['pub_date_ms'] / 1000) if episode.get('pub_date_ms') else datetime.utcnow(),
+                    "search_query": query
                 })
         
         return episodes
     except Exception as e:
-        print(f"Error searching micro stories: {e}")
+        print(f"Error searching '{query}': {e}")
+        import traceback
+        traceback.print_exc()
         return []
 
 async def populate_audio_drift():
-    """Populate MongoDB with real podcast episodes"""
+    """Populate MongoDB with real podcast episodes from multiple sources"""
     try:
         # Connect to MongoDB
         mongo_url = os.environ['MONGO_URL']
@@ -108,27 +91,36 @@ async def populate_audio_drift():
         
         # Clear existing audio drift content
         await db.audio_drift_content.delete_many({})
-        print("Cleared existing audio drift content")
+        print("Cleared existing audio drift content\n")
         
         all_episodes = []
         
-        # Fetch from "Weird and Surprising Facts" podcast
-        print("\nFetching from 'Weird and Surprising Facts' podcast...")
-        weird_facts_episodes = await fetch_podcast_episodes(
-            AUDIO_DRIFT_PODCASTS["weird_surprising_facts"]["id"],
-            max_episodes=15
-        )
-        print(f"✓ Found {len(weird_facts_episodes)} episodes from Weird and Surprising Facts")
-        all_episodes.extend(weird_facts_episodes)
+        # Search across multiple queries for diverse content
+        for search_config in SEARCH_QUERIES:
+            print(f"Searching: {search_config['description']}")
+            print(f"  Query: '{search_config['query']}'")
+            
+            episodes = await search_podcast_episodes(
+                search_config['query'],
+                max_results=8,
+                max_duration=search_config['max_duration']
+            )
+            
+            print(f"  ✓ Found {len(episodes)} episodes\n")
+            all_episodes.extend(episodes)
         
-        # Search for micro/short stories
-        print("\nSearching for micro stories...")
-        micro_episodes = await search_micro_stories(max_results=10)
-        print(f"✓ Found {len(micro_episodes)} micro story episodes")
-        all_episodes.extend(micro_episodes)
+        # Remove duplicates based on audio URL
+        seen_urls = set()
+        unique_episodes = []
+        for ep in all_episodes:
+            if ep['audio_url'] not in seen_urls:
+                seen_urls.add(ep['audio_url'])
+                unique_episodes.append(ep)
+        
+        print(f"Total unique episodes: {len(unique_episodes)}\n")
         
         # Insert into MongoDB
-        for episode_data in all_episodes:
+        for episode_data in unique_episodes:
             audio_drift_doc = {
                 "id": str(uuid.uuid4()),
                 "type": "audio_drift",
@@ -141,6 +133,7 @@ async def populate_audio_drift():
                 "listen_notes_id": episode_data["listen_notes_id"],
                 "image_url": episode_data.get("image_url"),
                 "publish_date": episode_data["publish_date"],
+                "search_source": episode_data["search_query"],
                 "rarity": "common",
                 "tags": ["podcast", "audio", "story"],
                 "created_at": datetime.utcnow()
@@ -149,9 +142,19 @@ async def populate_audio_drift():
             await db.audio_drift_content.insert_one(audio_drift_doc)
             duration_min = episode_data["audio_length_sec"] // 60
             duration_sec = episode_data["audio_length_sec"] % 60
-            print(f"✓ Added: {episode_data['title'][:50]}... ({duration_min}:{duration_sec:02d})")
+            print(f"✓ Added: {episode_data['title'][:60]}... ({duration_min}:{duration_sec:02d})")
         
-        print(f"\n✅ Successfully added {len(all_episodes)} audio drift episodes!")
+        print(f"\n✅ Successfully added {len(unique_episodes)} audio drift episodes from multiple sources!")
+        
+        # Show breakdown by source
+        print("\n📊 Content Breakdown:")
+        source_counts = {}
+        for ep in unique_episodes:
+            source = ep['search_query']
+            source_counts[source] = source_counts.get(source, 0) + 1
+        
+        for source, count in source_counts.items():
+            print(f"  {source}: {count} episodes")
         
         # Close connection
         mongo_client.close()
