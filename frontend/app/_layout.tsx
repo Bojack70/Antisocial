@@ -7,6 +7,7 @@ export default function RootLayout() {
         headerShown: false,
         contentStyle: { backgroundColor: '#0a0a0a' },
       }}
+      initialRouteName="onboarding/index"
     >
       <Stack.Screen name="onboarding/index" />
       <Stack.Screen name="index" />
