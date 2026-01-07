@@ -7,13 +7,13 @@ import os
 from dotenv import load_dotenv
 import uuid
 from datetime import datetime
-from podcast_api import Client
+from listennotes import podcast_api
 
 load_dotenv()
 
 # Initialize Listen Notes client
 LISTEN_NOTES_API_KEY = os.environ.get('LISTEN_NOTES_API_KEY')
-client = Client(api_key=LISTEN_NOTES_API_KEY)
+client = podcast_api.Client(api_key=LISTEN_NOTES_API_KEY)
 
 # Target podcasts for Audio Drift
 AUDIO_DRIFT_PODCASTS = {
