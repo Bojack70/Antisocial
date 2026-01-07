@@ -215,6 +215,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#0a0a0a',
   },
+  checkingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkingText: {
+    fontSize: 16,
+    color: '#9ca3af',
+  },
   progressContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
