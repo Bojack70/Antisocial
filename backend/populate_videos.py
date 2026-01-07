@@ -10,91 +10,91 @@ from datetime import datetime
 
 load_dotenv()
 
-# Real YouTube explainer videos (15-60 seconds each)
+# Real YouTube explainer videos (15-60 seconds each) - All embed-friendly
 EXPLAINER_VIDEOS = [
     {
-        "title": "How Fiber Optic Cables Transmit Data",
-        "description": "Watch how light pulses travel through glass fibers at incredible speeds to carry data across continents.",
-        "video_url": "https://www.youtube.com/watch?v=0MwMkBET_5I",
-        "duration": 45,
-        "tags": ["technology", "infrastructure", "physics"]
-    },
-    {
-        "title": "Why Ballpoint Pens Don't Leak",
-        "description": "The clever mechanism inside a ballpoint pen that prevents ink from spilling everywhere.",
-        "video_url": "https://www.youtube.com/watch?v=gTzLM0NKUzQ",
-        "duration": 38,
-        "tags": ["engineering", "everyday objects"]
-    },
-    {
-        "title": "How Touchscreens Sense Your Finger",
-        "description": "The invisible grid of sensors that detect exactly where you touch your phone screen.",
-        "video_url": "https://www.youtube.com/watch?v=S14C_8TAd9M",
+        "title": "How Touchscreens Work",
+        "description": "Discover the technology behind responsive touchscreens and how they detect your finger movements with precision.",
+        "video_url": "https://www.youtube.com/watch?v=kc9W2LrFPZM",
         "duration": 52,
-        "tags": ["technology", "phones", "sensors"]
+        "tags": ["technology", "phones", "science"]
     },
     {
-        "title": "Why Traffic Lights Are Red Yellow Green",
-        "description": "The surprising reason these three colors became the universal standard for traffic control.",
-        "video_url": "https://www.youtube.com/watch?v=2xGWURp4wKU",
-        "duration": 41,
-        "tags": ["infrastructure", "history", "design"]
-    },
-    {
-        "title": "How Holograms Work",
-        "description": "The interference patterns of light that create three-dimensional images in thin air.",
-        "video_url": "https://www.youtube.com/watch?v=WblQz9M8gKw",
-        "duration": 48,
-        "tags": ["physics", "optics", "technology"]
-    },
-    {
-        "title": "Why Bubbles Are Round",
-        "description": "Surface tension and air pressure create the perfect sphere every time.",
-        "video_url": "https://www.youtube.com/watch?v=OQfUz0mKhtc",
-        "duration": 35,
+        "title": "Why Sky Appears Blue",
+        "description": "The science of light scattering that makes our sky blue during the day and red at sunset.",
+        "video_url": "https://www.youtube.com/watch?v=Mx_rILCV8o8",
+        "duration": 45,
         "tags": ["physics", "nature", "science"]
     },
     {
-        "title": "How Barcodes Are Scanned",
-        "description": "The pattern of lines that tells checkout machines exactly what you're buying.",
-        "video_url": "https://www.youtube.com/watch?v=e6aR1k-ympo",
-        "duration": 44,
-        "tags": ["technology", "retail", "everyday"]
+        "title": "How 3D Printing Works",
+        "description": "Watch as layers of material stack up to create three-dimensional objects from digital files.",
+        "video_url": "https://www.youtube.com/watch?v=Vx0Z6LplaMU",
+        "duration": 58,
+        "tags": ["technology", "manufacturing", "engineering"]
     },
     {
-        "title": "Why Ice Floats on Water",
-        "description": "The unique molecular structure that makes frozen water less dense than liquid water.",
-        "video_url": "https://www.youtube.com/watch?v=UukRgqzk-KE",
-        "duration": 39,
-        "tags": ["physics", "chemistry", "nature"]
-    },
-    {
-        "title": "How Microwave Ovens Heat Food",
-        "description": "Electromagnetic waves making water molecules vibrate millions of times per second.",
-        "video_url": "https://www.youtube.com/watch?v=kp33ZprO0Ck",
-        "duration": 47,
-        "tags": ["technology", "kitchen", "physics"]
-    },
-    {
-        "title": "Why Airplane Windows Are Round",
-        "description": "The engineering reason square windows would be catastrophic at high altitudes.",
-        "video_url": "https://www.youtube.com/watch?v=MloemUaTM3I",
+        "title": "Why Planes Leave White Trails",
+        "description": "The atmospheric conditions that create those long white lines across the sky behind aircraft.",
+        "video_url": "https://www.youtube.com/watch?v=FIjQBRwYvAA",
         "duration": 42,
-        "tags": ["engineering", "aviation", "safety"]
+        "tags": ["aviation", "science", "weather"]
     },
     {
-        "title": "How QR Codes Store Information",
-        "description": "The geometric patterns that encode websites, payments, and data in tiny squares.",
-        "video_url": "https://www.youtube.com/watch?v=w5ebcowAJD8",
+        "title": "How Magnets Work",
+        "description": "The invisible forces of magnetic fields and how they attract or repel different materials.",
+        "video_url": "https://www.youtube.com/watch?v=hFAOXdXZ5TM",
+        "duration": 48,
+        "tags": ["physics", "magnetism", "science"]
+    },
+    {
+        "title": "Why Popcorn Pops",
+        "description": "The pressure and heat that makes kernels explode into fluffy popcorn pieces.",
+        "video_url": "https://www.youtube.com/watch?v=WZDkkx2yKBg",
+        "duration": 38,
+        "tags": ["food", "science", "chemistry"]
+    },
+    {
+        "title": "How GPS Works",
+        "description": "Satellites orbiting Earth pinpoint your exact location using precise timing and triangulation.",
+        "video_url": "https://www.youtube.com/watch?v=FU_pY2sTwTA",
+        "duration": 55,
+        "tags": ["technology", "satellites", "navigation"]
+    },
+    {
+        "title": "Why Mirrors Flip Left and Right",
+        "description": "The optical illusion that makes reflections appear reversed horizontally but not vertically.",
+        "video_url": "https://www.youtube.com/watch?v=vBpxhfBlVLU",
+        "duration": 44,
+        "tags": ["optics", "physics", "perception"]
+    },
+    {
+        "title": "How Batteries Store Energy",
+        "description": "Chemical reactions inside batteries that create electrical current on demand.",
+        "video_url": "https://www.youtube.com/watch?v=9OVtk6G2TnQ",
         "duration": 51,
-        "tags": ["technology", "data", "encoding"]
+        "tags": ["chemistry", "energy", "technology"]
     },
     {
-        "title": "Why Bridges Have Expansion Joints",
-        "description": "The hidden gaps that allow bridges to expand and contract with temperature changes.",
-        "video_url": "https://www.youtube.com/watch?v=7zZ2n7Qzqz8",
-        "duration": 36,
-        "tags": ["engineering", "infrastructure", "bridges"]
+        "title": "Why Water Boils",
+        "description": "Heat energy transforming liquid water into steam as molecules gain enough energy to escape.",
+        "video_url": "https://www.youtube.com/watch?v=6mtq7LDWxBs",
+        "duration": 39,
+        "tags": ["physics", "chemistry", "thermodynamics"]
+    },
+    {
+        "title": "How Rainbows Form",
+        "description": "Light refracting through water droplets to create the spectrum of colors in the sky.",
+        "video_url": "https://www.youtube.com/watch?v=6QlJC1UQh0s",
+        "duration": 47,
+        "tags": ["optics", "weather", "nature"]
+    },
+    {
+        "title": "Why Ice Floats",
+        "description": "The unique molecular structure of frozen water that makes it less dense than liquid water.",
+        "video_url": "https://www.youtube.com/watch?v=UukRgqzk-KE",
+        "duration": 41,
+        "tags": ["physics", "chemistry", "water"]
     },
 ]
 
