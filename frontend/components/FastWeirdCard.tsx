@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import ReactionButtons from './ReactionButtons';
 
 interface FastWeirdCardProps {
   content: {
@@ -42,6 +43,8 @@ export default function FastWeirdCard({ content }: FastWeirdCardProps) {
           </View>
         ))}
       </View>
+      
+      <ReactionButtons reactions={['Unexpected', 'Didn\u2019t know this', 'Makes Sense']} />
       
       {content.tags && content.tags.length > 0 && (
         <View style={styles.tagsContainer}>
