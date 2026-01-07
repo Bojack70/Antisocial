@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Audio } from 'expo-av';
 import ReactionButtons from './ReactionButtons';
 
 interface AudioDriftCardProps {
   content: {
     title: string;
-    narration_script: string;
+    narration_script?: string;
     audio_url?: string;
+    embed_url?: string;
     duration?: number;
     rarity?: string;
     tags?: string[];
@@ -16,49 +16,47 @@ interface AudioDriftCardProps {
 }
 
 export default function AudioDriftCard({ content }: AudioDriftCardProps) {
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [audioEnded, setAudioEnded] = useState(false);
+  const [showReactions, setShowReactions] = useState(false);
 
-  useEffect(() => {
-    return () => {
-      if (sound) {
-        sound.unloadAsync();
-      }
-    };
-  }, [sound]);
+  // Render iframe for Listen Notes embeds
+  const renderEmbed = () => {
+    const embedUrl = content.embed_url || content.audio_url;
+    
+    if (!embedUrl) return null;
 
-  const playPauseAudio = async () => {
-    try {
-      if (sound) {
-        if (isPlaying) {
-          await sound.pauseAsync();
-          setIsPlaying(false);
-        } else {
-          await sound.playAsync();
-          setIsPlaying(true);
-        }
-      } else if (content.audio_url) {
-        await Audio.setAudioModeAsync({
-          playsInSilentModeIOS: true,
-          staysActiveInBackground: false,
-        });
-
-        const { sound: newSound } = await Audio.Sound.createAsync(
-          { uri: content.audio_url },
-          { shouldPlay: true },
-          (status) => {
-            if (status.isLoaded && status.didJustFinish) {
-              setIsPlaying(false);
-              setAudioEnded(true);
-            }
-          }
-        );
-        setSound(newSound);
-        setIsPlaying(true);
-      }
-    } catch (error) {
-      console.error('Audio playback error:', error);
+    if (Platform.OS === 'web') {
+      // Use iframe for web
+      return (
+        <View style={styles.embedContainer}>
+          <iframe
+            src={embedUrl}
+            style={{
+              width: '100%',
+              height: '200px',
+              border: 'none',
+              borderRadius: '12px',
+            }}
+            frameBorder="0"
+            scrolling="no"
+            loading="lazy"
+            allow="autoplay"
+          />
+        </View>
+      );
+    } else {
+      // For mobile, we'll use WebView
+      const { WebView } = require('react-native-webview');
+      return (
+        <View style={styles.embedContainer}>
+          <WebView
+            source={{ uri: embedUrl }}
+            style={styles.webview}
+            scrollEnabled={false}
+            javaScriptEnabled={true}
+            domStorageEnabled={true}
+          />
+        </View>
+      );
     }
   };
 
@@ -71,23 +69,17 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
       
       <Text style={styles.title}>{content.title}</Text>
       
-      {content.audio_url ? (
-        <TouchableOpacity
-          style={styles.playButton}
-          onPress={playPauseAudio}
-          activeOpacity={0.7}
-        >
-          <View style={styles.playIcon}>
-            <Ionicons
-              name={isPlaying ? 'pause' : 'play'}
-              size={32}
-              color="#ffffff"
-            />
-          </View>
-          <Text style={styles.playButtonText}>
-            {isPlaying ? 'Pause' : 'Play'}
-          </Text>
-        </TouchableOpacity>
+      {content.embed_url || content.audio_url ? (
+        <>
+          {renderEmbed()}
+          {!showReactions && (
+            <View style={styles.instructionContainer}>
+              <Text style={styles.instructionText}>
+                Listen to the audio above, then share your reaction
+              </Text>
+            </View>
+          )}
+        </>
       ) : (
         <View style={styles.noAudioContainer}>
           <Ionicons name="musical-notes-outline" size={40} color="#4b5563" />
@@ -98,9 +90,7 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
         </View>
       )}
       
-      {audioEnded && (
-        <ReactionButtons reactions={['Stayed With Me', 'Drifted Off', 'Unsettling', 'Let It Pass']} />
-      )}
+      <ReactionButtons reactions={['Stayed With Me', 'Drifted Off', 'Unsettling', 'Let It Pass']} />
     </View>
   );
 }
@@ -129,31 +119,32 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: '700',
     color: '#f9fafb',
-    marginBottom: 24,
+    marginBottom: 20,
     lineHeight: 32,
   },
-  playButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 20,
-    backgroundColor: '#06b6d4',
+  embedContainer: {
+    width: '100%',
+    height: 200,
     borderRadius: 12,
+    overflow: 'hidden',
+    backgroundColor: '#1a1a1a',
     marginBottom: 16,
   },
-  playIcon: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#0891b2',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 16,
+  webview: {
+    flex: 1,
   },
-  playButtonText: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#ffffff',
+  instructionContainer: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    backgroundColor: '#1a1a1a',
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+  instructionText: {
+    fontSize: 12,
+    color: '#6b7280',
+    textAlign: 'center',
+    fontStyle: 'italic',
   },
   noAudioContainer: {
     alignItems: 'center',
