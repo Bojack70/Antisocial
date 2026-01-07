@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
+import ReactionButtons from './ReactionButtons';
 
 interface AudioDriftCardProps {
   content: {
@@ -18,6 +19,7 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [showScript, setShowScript] = useState(false);
+  const [audioEnded, setAudioEnded] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -49,6 +51,7 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
           (status) => {
             if (status.isLoaded && status.didJustFinish) {
               setIsPlaying(false);
+              setAudioEnded(true);
             }
           }
         );
@@ -103,6 +106,10 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
           <Ionicons name="alert-circle-outline" size={20} color="#9ca3af" />
           <Text style={styles.noAudioText}>Audio coming soon</Text>
         </View>
+      )}
+      
+      {audioEnded && (
+        <ReactionButtons reactions={['Stayed With Me', 'Drifted Off', 'Unsettling', 'Let It Pass']} />
       )}
       
       <TouchableOpacity

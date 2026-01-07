@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import ReactionButtons from './ReactionButtons';
 
 interface IncidentCardProps {
   content: {
@@ -28,6 +29,8 @@ export default function IncidentCard({ content }: IncidentCardProps) {
           </Text>
         ))}
       </View>
+      
+      <ReactionButtons reactions={['I’d Forgotten This Happens', 'Unexpected', 'Makes Sense']} />
       
       {content.tags && content.tags.length > 0 && (
         <View style={styles.tagsContainer}>
@@ -71,6 +74,7 @@ const styles = StyleSheet.create({
   },
   storyContainer: {
     gap: 12,
+    marginBottom: 12,
   },
   storyLine: {
     fontSize: 15,

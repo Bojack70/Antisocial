@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import ReactionButtons from './ReactionButtons';
 
 interface PonderCardProps {
   content: {
@@ -63,6 +64,8 @@ export default function PonderCard({ content }: PonderCardProps) {
           <Text style={styles.responseText}>No right answer. Just you thinking.</Text>
         </View>
       )}
+      
+      <ReactionButtons reactions={['I’m Unsure', 'Lingering', 'Let It Sit']} />
     </View>
   );
 }
@@ -103,6 +106,7 @@ const styles = StyleSheet.create({
   },
   optionsContainer: {
     gap: 10,
+    marginBottom: 12,
   },
   optionCard: {
     flexDirection: 'row',
@@ -135,6 +139,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderLeftWidth: 3,
     borderLeftColor: '#8b5cf6',
+    marginBottom: 8,
   },
   responseText: {
     fontSize: 13,

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
+import ReactionButtons from './ReactionButtons';
 
 interface ExplainerCardProps {
   content: {
@@ -52,11 +53,10 @@ export default function ExplainerCard({ content }: ExplainerCardProps) {
         ))}
       </View>
       
-      {content.interaction && (
-        <View style={styles.interactionContainer}>
-          <Text style={styles.interactionText}>{content.interaction}</Text>
-        </View>
-      )}
+      <ReactionButtons 
+        reactions={['Makes Sense', 'Tell Me More', 'Unexpected']}
+        microPrompt="Which part surprised you?"
+      />
       
       {content.video_url && (
         <TouchableOpacity
@@ -116,6 +116,7 @@ const styles = StyleSheet.create({
   },
   stepsContainer: {
     gap: 12,
+    marginBottom: 16,
   },
   stepCard: {
     flexDirection: 'row',
@@ -149,19 +150,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#d1d5db',
     lineHeight: 20,
-  },
-  interactionContainer: {
-    marginTop: 16,
-    padding: 12,
-    backgroundColor: '#1a1a1a',
-    borderRadius: 8,
-    borderLeftWidth: 3,
-    borderLeftColor: '#10b981',
-  },
-  interactionText: {
-    fontSize: 13,
-    color: '#9ca3af',
-    fontStyle: 'italic',
   },
   videoButton: {
     flexDirection: 'row',

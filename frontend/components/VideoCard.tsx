@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
+import ReactionButtons from './ReactionButtons';
 
 const { width } = Dimensions.get('window');
 
@@ -96,6 +97,8 @@ export default function VideoCard({ content }: VideoCardProps) {
           </Text>
         </View>
       )}
+      
+      <ReactionButtons reactions={['Makes Sense', 'Tell Me More', 'Unexpected']} />
       
       {content.tags && content.tags.length > 0 && (
         <View style={styles.tagsContainer}>
@@ -197,6 +200,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#262626',
     borderStyle: 'dashed',
+    marginBottom: 12,
   },
   placeholderText: {
     marginTop: 12,
