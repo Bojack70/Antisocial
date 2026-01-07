@@ -21,6 +21,7 @@ import PonderCard from '../components/PonderCard';
 import IncidentCard from '../components/IncidentCard';
 import MiniGameCard from '../components/MiniGameCard';
 import AudioDriftCard from '../components/AudioDriftCard';
+import VideoCard from '../components/VideoCard';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 const { width } = Dimensions.get('window');
