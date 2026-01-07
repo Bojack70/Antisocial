@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
 import ReactionButtons from './ReactionButtons';
@@ -61,6 +61,45 @@ export default function VideoCard({ content }: VideoCardProps) {
   const formatDuration = (seconds?: number) => {
     if (!seconds) return '';
     return `${seconds}s`;
+  };
+
+  // Render iframe for web, WebView for native
+  const renderVideo = () => {
+    if (!embedUrl) return null;
+
+    if (Platform.OS === 'web') {
+      // Use iframe for web
+      return (
+        <View style={styles.videoContainer}>
+          <iframe
+            src={embedUrl}
+            style={{
+              width: '100%',
+              height: '100%',
+              border: 'none',
+              borderRadius: 12,
+            }}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        </View>
+      );
+    } else {
+      // Use WebView for native
+      return (
+        <View style={styles.videoContainer}>
+          <WebView
+            source={{ uri: embedUrl }}
+            style={styles.webview}
+            allowsFullscreenVideo={true}
+            javaScriptEnabled={true}
+            domStorageEnabled={true}
+            mediaPlaybackRequiresUserAction={false}
+            allowsInlineMediaPlayback={true}
+          />
+        </View>
+      );
+    }
   };
 
   return (
