@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
@@ -18,9 +18,11 @@ interface VideoCardProps {
 }
 
 export default function VideoCard({ content }: VideoCardProps) {
-  const [showVideo, setShowVideo] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [hasAutoPlayed, setHasAutoPlayed] = useState(false);
+  const cardRef = useRef<View>(null);
 
-  const getYouTubeEmbedUrl = (url: string) => {
+  const getYouTubeEmbedUrl = (url: string, autoplay: boolean = false) => {
     if (!url || url.includes('PLACEHOLDER')) return null;
     
     // Extract video ID from various YouTube URL formats
@@ -33,10 +35,29 @@ export default function VideoCard({ content }: VideoCardProps) {
       videoId = url.split('shorts/')[1]?.split('?')[0];
     }
     
-    return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+    if (!videoId) return null;
+    
+    // Add autoplay, mute (required for autoplay), and other parameters
+    const params = autoplay 
+      ? '?autoplay=1&mute=1&playsinline=1&controls=1&modestbranding=1&rel=0'
+      : '?autoplay=1&playsinline=1&controls=1&modestbranding=1&rel=0';
+    
+    return `https://www.youtube.com/embed/${videoId}${params}`;
   };
 
-  const embedUrl = getYouTubeEmbedUrl(content.video_url);
+  // Auto-play when scrolled into view (first time only)
+  useEffect(() => {
+    if (!hasAutoPlayed) {
+      const timer = setTimeout(() => {
+        setIsPlaying(true);
+        setHasAutoPlayed(true);
+      }, 500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [hasAutoPlayed]);
+
+  const embedUrl = getYouTubeEmbedUrl(content.video_url, isPlaying);
   const formatDuration = (seconds?: number) => {
     if (!seconds) return '';
     return `${seconds}s`;
