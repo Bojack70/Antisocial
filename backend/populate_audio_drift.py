@@ -53,23 +53,25 @@ async def search_podcast_episodes(query, max_results=8, max_duration=600):
             sort_by_date=1,
             len_min=30,  # Minimum 30 seconds
             len_max=max_duration,  # Maximum duration from config
-            language='English',
-            only_in='title,description'
+            language='English'
         )
         
         episodes = []
         for episode in response.json().get('results', [])[:max_results]:
             duration = episode.get('audio_length_sec', 0)
             if 30 <= duration <= max_duration:
+                # Extract podcast info from the nested structure
+                podcast_info = episode.get('podcast', {})
+                
                 episodes.append({
                     "listen_notes_id": episode['id'],
-                    "title": episode['title_original'] or episode['title'],
-                    "description": (episode.get('description_original') or episode.get('description', ''))[:250],
+                    "title": episode.get('title_original') or episode.get('title_highlighted', '').replace('<span class="ln-search-highlight">', '').replace('</span>', ''),
+                    "description": (episode.get('description_original') or episode.get('description_highlighted', ''))[:250],
                     "audio_url": episode['audio'],
                     "audio_length_sec": duration,
-                    "podcast_title": episode['podcast']['title_original'] or episode['podcast']['title'],
-                    "podcast_id": episode['podcast']['id'],
-                    "image_url": episode.get('image') or episode['podcast'].get('image'),
+                    "podcast_title": podcast_info.get('title_original') or podcast_info.get('title_highlighted', '').replace('<span class="ln-search-highlight">', '').replace('</span>', ''),
+                    "podcast_id": podcast_info.get('id', 'unknown'),
+                    "image_url": episode.get('image') or episode.get('thumbnail'),
                     "publish_date": datetime.fromtimestamp(episode['pub_date_ms'] / 1000) if episode.get('pub_date_ms') else datetime.utcnow(),
                     "search_query": query
                 })
