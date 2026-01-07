@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import ReactionButtons from './ReactionButtons';
 
@@ -16,45 +16,119 @@ interface AudioDriftCardProps {
 }
 
 export default function AudioDriftCard({ content }: AudioDriftCardProps) {
-  const [showReactions, setShowReactions] = useState(false);
+  const audioUrl = content.audio_url || content.embed_url;
 
-  // Render iframe for Listen Notes embeds
-  const renderEmbed = () => {
-    const embedUrl = content.embed_url || content.audio_url;
-    
-    if (!embedUrl) return null;
+  // Render HTML5 audio player
+  const renderAudioPlayer = () => {
+    if (!audioUrl) return null;
 
     if (Platform.OS === 'web') {
-      // Use iframe for web
+      // Use HTML5 audio for web
       return (
-        <View style={styles.embedContainer}>
-          <iframe
-            src={embedUrl}
+        <View style={styles.audioPlayerContainer}>
+          <audio
+            controls
             style={{
               width: '100%',
-              height: '200px',
-              border: 'none',
+              height: '54px',
               borderRadius: '12px',
+              backgroundColor: '#1a1a1a',
             }}
-            frameBorder="0"
-            scrolling="no"
-            loading="lazy"
-            allow="autoplay"
-          />
+            preload="metadata"
+          >
+            <source src={audioUrl} type="audio/mpeg" />
+            Your browser does not support the audio element.
+          </audio>
         </View>
       );
     } else {
-      // For mobile, we'll use WebView
-      const { WebView } = require('react-native-webview');
+      // For mobile, use expo-av Audio
+      const { Audio } = require('expo-av');
+      const [sound, setSound] = useState<any>(null);
+      const [isPlaying, setIsPlaying] = useState(false);
+      const [position, setPosition] = useState(0);
+      const [duration, setDuration] = useState(0);
+
+      useEffect(() => {
+        return () => {
+          if (sound) {
+            sound.unloadAsync();
+          }
+        };
+      }, [sound]);
+
+      const playPauseAudio = async () => {
+        try {
+          if (sound) {
+            if (isPlaying) {
+              await sound.pauseAsync();
+              setIsPlaying(false);
+            } else {
+              await sound.playAsync();
+              setIsPlaying(true);
+            }
+          } else {
+            await Audio.setAudioModeAsync({
+              playsInSilentModeIOS: true,
+              staysActiveInBackground: false,
+            });
+
+            const { sound: newSound } = await Audio.Sound.createAsync(
+              { uri: audioUrl },
+              { shouldPlay: true },
+              (status: any) => {
+                if (status.isLoaded) {
+                  setPosition(status.positionMillis);
+                  setDuration(status.durationMillis || 0);
+                  if (status.didJustFinish) {
+                    setIsPlaying(false);
+                  }
+                }
+              }
+            );
+            setSound(newSound);
+            setIsPlaying(true);
+          }
+        } catch (error) {
+          console.error('Audio playback error:', error);
+        }
+      };
+
+      const formatTime = (millis: number) => {
+        const totalSeconds = Math.floor(millis / 1000);
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+      };
+
       return (
-        <View style={styles.embedContainer}>
-          <WebView
-            source={{ uri: embedUrl }}
-            style={styles.webview}
-            scrollEnabled={false}
-            javaScriptEnabled={true}
-            domStorageEnabled={true}
-          />
+        <View style={styles.mobilePlayerContainer}>
+          <TouchableOpacity
+            style={styles.playButton}
+            onPress={playPauseAudio}
+            activeOpacity={0.7}
+          >
+            <Ionicons
+              name={isPlaying ? 'pause' : 'play'}
+              size={28}
+              color="#ffffff"
+            />
+          </TouchableOpacity>
+          
+          <View style={styles.progressContainer}>
+            <View style={styles.progressBar}>
+              <View
+                style={[
+                  styles.progressFill,
+                  { width: duration > 0 ? `${(position / duration) * 100}%` : '0%' },
+                ]}
+              />
+            </View>
+            <View style={styles.timeContainer}>
+              <Text style={styles.timeText}>{formatTime(position)}</Text>
+              <Text style={styles.timeText}>{formatTime(duration)}</Text>
+            </View>
+          </View>
         </View>
       );
     }
@@ -69,16 +143,14 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
       
       <Text style={styles.title}>{content.title}</Text>
       
-      {content.embed_url || content.audio_url ? (
+      {audioUrl ? (
         <>
-          {renderEmbed()}
-          {!showReactions && (
-            <View style={styles.instructionContainer}>
-              <Text style={styles.instructionText}>
-                Listen to the audio above, then share your reaction
-              </Text>
-            </View>
-          )}
+          {renderAudioPlayer()}
+          <View style={styles.instructionContainer}>
+            <Text style={styles.instructionText}>
+              Listen to the audio above, then share your reaction
+            </Text>
+          </View>
         </>
       ) : (
         <View style={styles.noAudioContainer}>
@@ -122,16 +194,48 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     lineHeight: 32,
   },
-  embedContainer: {
+  audioPlayerContainer: {
     width: '100%',
-    height: 200,
-    borderRadius: 12,
-    overflow: 'hidden',
-    backgroundColor: '#1a1a1a',
     marginBottom: 16,
   },
-  webview: {
+  mobilePlayerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#1a1a1a',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+  },
+  playButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#06b6d4',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 16,
+  },
+  progressContainer: {
     flex: 1,
+  },
+  progressBar: {
+    height: 4,
+    backgroundColor: '#262626',
+    borderRadius: 2,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: '#06b6d4',
+  },
+  timeContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 8,
+  },
+  timeText: {
+    fontSize: 11,
+    color: '#6b7280',
   },
   instructionContainer: {
     paddingVertical: 8,
