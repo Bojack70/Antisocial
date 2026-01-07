@@ -18,7 +18,6 @@ interface AudioDriftCardProps {
 export default function AudioDriftCard({ content }: AudioDriftCardProps) {
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [showScript, setShowScript] = useState(false);
   const [audioEnded, setAudioEnded] = useState(false);
 
   useEffect(() => {
@@ -63,23 +62,11 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
     }
   };
 
-  const formatDuration = (seconds?: number) => {
-    if (!seconds) return '~1 min';
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-
   return (
     <View style={styles.card}>
       <View style={styles.header}>
         <Ionicons name="headset-outline" size={20} color="#06b6d4" />
         <Text style={styles.cardType}>Audio Drift</Text>
-        {content.duration && (
-          <View style={styles.durationBadge}>
-            <Text style={styles.durationText}>{formatDuration(content.duration)}</Text>
-          </View>
-        )}
       </View>
       
       <Text style={styles.title}>{content.title}</Text>
@@ -93,54 +80,26 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
           <View style={styles.playIcon}>
             <Ionicons
               name={isPlaying ? 'pause' : 'play'}
-              size={24}
+              size={32}
               color="#ffffff"
             />
           </View>
           <Text style={styles.playButtonText}>
-            {isPlaying ? 'Pause' : 'Listen'}
+            {isPlaying ? 'Pause' : 'Play'}
           </Text>
         </TouchableOpacity>
       ) : (
         <View style={styles.noAudioContainer}>
-          <Ionicons name="alert-circle-outline" size={20} color="#9ca3af" />
+          <Ionicons name="musical-notes-outline" size={40} color="#4b5563" />
           <Text style={styles.noAudioText}>Audio coming soon</Text>
+          <Text style={styles.noAudioSubtext}>
+            Pre-recorded narrations will be added
+          </Text>
         </View>
       )}
       
       {audioEnded && (
         <ReactionButtons reactions={['Stayed With Me', 'Drifted Off', 'Unsettling', 'Let It Pass']} />
-      )}
-      
-      <TouchableOpacity
-        style={styles.scriptToggle}
-        onPress={() => setShowScript(!showScript)}
-        activeOpacity={0.7}
-      >
-        <Text style={styles.scriptToggleText}>
-          {showScript ? 'Hide Script' : 'Read Script'}
-        </Text>
-        <Ionicons
-          name={showScript ? 'chevron-up' : 'chevron-down'}
-          size={16}
-          color="#9ca3af"
-        />
-      </TouchableOpacity>
-      
-      {showScript && (
-        <View style={styles.scriptContainer}>
-          <Text style={styles.scriptText}>{content.narration_script}</Text>
-        </View>
-      )}
-      
-      {content.tags && content.tags.length > 0 && (
-        <View style={styles.tagsContainer}>
-          {content.tags.map((tag, index) => (
-            <View key={index} style={styles.tag}>
-              <Text style={styles.tagText}>{tag}</Text>
-            </View>
-          ))}
-        </View>
       )}
     </View>
   );
@@ -165,101 +124,59 @@ const styles = StyleSheet.create({
     color: '#9ca3af',
     marginLeft: 8,
     fontWeight: '600',
-    flex: 1,
-  },
-  durationBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    backgroundColor: '#1f1f1f',
-    borderRadius: 6,
-  },
-  durationText: {
-    fontSize: 11,
-    color: '#9ca3af',
-    fontWeight: '600',
   },
   title: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '700',
     color: '#f9fafb',
-    marginBottom: 16,
-    lineHeight: 28,
+    marginBottom: 24,
+    lineHeight: 32,
   },
   playButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 16,
+    paddingVertical: 20,
     backgroundColor: '#06b6d4',
     borderRadius: 12,
-    marginBottom: 12,
+    marginBottom: 16,
   },
   playIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     backgroundColor: '#0891b2',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginRight: 16,
   },
   playButtonText: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '700',
     color: '#ffffff',
   },
   noAudioContainer: {
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 16,
+    paddingVertical: 48,
     backgroundColor: '#1a1a1a',
     borderRadius: 12,
-    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#262626',
+    borderStyle: 'dashed',
+    marginBottom: 16,
   },
   noAudioText: {
-    marginLeft: 8,
-    fontSize: 14,
-    color: '#9ca3af',
-  },
-  scriptToggle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 8,
-  },
-  scriptToggleText: {
-    fontSize: 13,
-    color: '#9ca3af',
-    marginRight: 4,
-  },
-  scriptContainer: {
     marginTop: 12,
-    padding: 14,
-    backgroundColor: '#1a1a1a',
-    borderRadius: 10,
-    borderLeftWidth: 3,
-    borderLeftColor: '#06b6d4',
-  },
-  scriptText: {
-    fontSize: 14,
-    color: '#d1d5db',
-    lineHeight: 22,
-  },
-  tagsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: 16,
-    gap: 8,
-  },
-  tag: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    backgroundColor: '#1f1f1f',
-    borderRadius: 6,
-  },
-  tagText: {
-    fontSize: 11,
+    fontSize: 15,
     color: '#9ca3af',
+    fontWeight: '600',
+  },
+  noAudioSubtext: {
+    marginTop: 6,
+    fontSize: 13,
+    color: '#6b7280',
+    textAlign: 'center',
+    paddingHorizontal: 20,
   },
 });
