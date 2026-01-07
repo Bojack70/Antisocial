@@ -266,7 +266,35 @@ Themes:
 - Quiet behaviors
 - Things that persist without attention
 
-Calm, neutral voice. Ends with open thought or quiet question."""
+Calm, neutral voice. Ends with open thought or quiet question.""",
+        
+        "video": f"""Generate {count} VIDEO content items. Short explainer videos (15-60 seconds).
+
+Format as JSON array:
+{{
+  "items": [
+    {{
+      "title": "Short catchy title",
+      "description": "Brief description of what the video shows (1-2 sentences)",
+      "video_url": "https://www.youtube.com/watch?v=PLACEHOLDER",
+      "duration": 45,
+      "thumbnail_url": null,
+      "rarity": "common",
+      "tags": ["tag1", "tag2"]
+    }}
+  ]
+}}
+
+Topics:
+- How everyday objects work
+- Manufacturing processes
+- Natural phenomena explained
+- Optical illusions and perception
+- Time-lapse processes
+- Satisfying mechanical movements
+
+Keep descriptions under 50 words. Focus on visual explanations.
+Use PLACEHOLDER for video_url - these will be replaced with real URLs later."""
     }
     
     prompt = prompts.get(content_type, "")
