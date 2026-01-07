@@ -35,29 +35,34 @@ async def fetch_podcast_episodes(podcast_id, max_episodes=10):
     try:
         response = client.fetch_podcast_by_id(
             id=podcast_id,
+            next_episode_pub_date=None,
             sort='recent_first'
         )
         
         episodes = []
-        for episode in response.json().get('episodes', [])[:max_episodes]:
+        podcast_data = response.json()
+        
+        for episode in podcast_data.get('episodes', [])[:max_episodes]:
             # Only include short episodes suitable for Audio Drift
             duration = episode.get('audio_length_sec', 0)
             if 30 <= duration <= 600:  # Between 30 seconds and 10 minutes
                 episodes.append({
                     "listen_notes_id": episode['id'],
                     "title": episode['title'],
-                    "description": episode['description'][:200] if episode.get('description') else '',
+                    "description": episode.get('description', '')[:200] if episode.get('description') else episode.get('title', ''),
                     "audio_url": episode['audio'],
                     "audio_length_sec": duration,
-                    "podcast_title": episode['podcast']['title'],
+                    "podcast_title": podcast_data['title'],
                     "podcast_id": podcast_id,
-                    "image_url": episode.get('image') or episode['podcast'].get('image'),
-                    "publish_date": datetime.fromtimestamp(episode['pub_date_ms'] / 1000)
+                    "image_url": episode.get('image') or podcast_data.get('image'),
+                    "publish_date": datetime.fromtimestamp(episode['pub_date_ms'] / 1000) if episode.get('pub_date_ms') else datetime.utcnow()
                 })
         
         return episodes
     except Exception as e:
         print(f"Error fetching podcast {podcast_id}: {e}")
+        import traceback
+        traceback.print_exc()
         return []
 
 async def search_micro_stories(max_results=10):
