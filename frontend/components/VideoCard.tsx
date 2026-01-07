@@ -64,7 +64,7 @@ export default function VideoCard({ content }: VideoCardProps) {
   };
 
   return (
-    <View style={styles.card}>
+    <View style={styles.card} ref={cardRef}>
       <View style={styles.header}>
         <Ionicons name="videocam-outline" size={20} color="#f43f5e" />
         <Text style={styles.cardType}>Short Explainer</Text>
@@ -80,33 +80,29 @@ export default function VideoCard({ content }: VideoCardProps) {
       
       {embedUrl ? (
         <>
-          <TouchableOpacity
-            style={styles.videoButton}
-            onPress={() => setShowVideo(!showVideo)}
-            activeOpacity={0.7}
-          >
-            <View style={styles.playIcon}>
-              <Ionicons
-                name={showVideo ? 'close' : 'play'}
-                size={24}
-                color="#ffffff"
-              />
-            </View>
-            <Text style={styles.videoButtonText}>
-              {showVideo ? 'Hide Video' : 'Watch Now'}
-            </Text>
-          </TouchableOpacity>
-          
-          {showVideo && (
+          {isPlaying ? (
             <View style={styles.videoContainer}>
               <WebView
                 source={{ uri: embedUrl }}
                 style={styles.webview}
-                allowsFullscreenVideo
-                javaScriptEnabled
-                domStorageEnabled
+                allowsFullscreenVideo={true}
+                javaScriptEnabled={true}
+                domStorageEnabled={true}
+                mediaPlaybackRequiresUserAction={false}
+                allowsInlineMediaPlayback={true}
               />
             </View>
+          ) : (
+            <TouchableOpacity
+              style={styles.videoButton}
+              onPress={() => setIsPlaying(true)}
+              activeOpacity={0.7}
+            >
+              <View style={styles.playIcon}>
+                <Ionicons name="play" size={24} color="#ffffff" />
+              </View>
+              <Text style={styles.videoButtonText}>Watch Now</Text>
+            </TouchableOpacity>
           )}
         </>
       ) : (
