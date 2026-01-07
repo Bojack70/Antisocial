@@ -89,6 +89,18 @@ class AudioDriftContent(BaseModel):
     tags: List[str] = []
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
+class VideoContent(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    type: Literal["video"] = "video"
+    title: str
+    description: str
+    video_url: str
+    duration: int  # in seconds (15-60s)
+    thumbnail_url: Optional[str] = None
+    rarity: Literal["common", "uncommon", "rare"] = "common"
+    tags: List[str] = []
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
 class UserPreference(BaseModel):
     user_id: str
     preference_type: str
