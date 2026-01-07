@@ -105,17 +105,6 @@ export default function Onboarding() {
 
   const screen = SCREENS[currentScreen];
 
-  if (isChecking) {
-    return (
-      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-        <StatusBar style="light" />
-        <View style={styles.checkingContainer}>
-          <Text style={styles.checkingText}>Loading...</Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <StatusBar style="light" />
