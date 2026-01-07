@@ -83,30 +83,6 @@ export default function Onboarding() {
   const router = useRouter();
   const [currentScreen, setCurrentScreen] = useState(0);
   const [shortDriftEnabled, setShortDriftEnabled] = useState(false);
-  const [isChecking, setIsChecking] = useState(true);
-
-  // Check if onboarding is already complete
-  useEffect(() => {
-    checkOnboardingStatus();
-  }, []);
-
-  const checkOnboardingStatus = async () => {
-    try {
-      const onboardingComplete = await AsyncStorage.getItem('onboarding_complete');
-      console.log('Onboarding status check:', onboardingComplete);
-      
-      if (onboardingComplete === 'true') {
-        console.log('Onboarding already complete, redirecting to feed...');
-        router.replace('/');
-      } else {
-        console.log('Showing onboarding screens...');
-        setIsChecking(false);
-      }
-    } catch (error) {
-      console.error('Error checking onboarding:', error);
-      setIsChecking(false);
-    }
-  };
 
   const handleNext = async () => {
     if (currentScreen < SCREENS.length - 1) {
