@@ -81,6 +81,8 @@ export default function Index() {
         return <MiniGameCard key={item.id} content={item} />;
       case 'audio_drift':
         return <AudioDriftCard key={item.id} content={item} />;
+      case 'video':
+        return <VideoCard key={item.id} content={item} />;
       default:
         return null;
     }
