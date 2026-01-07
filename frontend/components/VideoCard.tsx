@@ -120,17 +120,7 @@ export default function VideoCard({ content }: VideoCardProps) {
       {embedUrl ? (
         <>
           {isPlaying ? (
-            <View style={styles.videoContainer}>
-              <WebView
-                source={{ uri: embedUrl }}
-                style={styles.webview}
-                allowsFullscreenVideo={true}
-                javaScriptEnabled={true}
-                domStorageEnabled={true}
-                mediaPlaybackRequiresUserAction={false}
-                allowsInlineMediaPlayback={true}
-              />
-            </View>
+            renderVideo()
           ) : (
             <TouchableOpacity
               style={styles.videoButton}
