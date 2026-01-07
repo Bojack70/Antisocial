@@ -13,6 +13,8 @@ import {
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter } from 'expo-router';
 
 // Import components
 import FastWeirdCard from '../components/FastWeirdCard';
@@ -33,12 +35,76 @@ interface ContentItem {
 }
 
 export default function Index() {
+  const router = useRouter();
   const [feed, setFeed] = useState<ContentItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
+  const [checkingOnboarding, setCheckingOnboarding] = useState(true);
 
-  const fetchFeed = async () => {
+  // Check onboarding and daily usage on mount
+  useEffect(() => {
+    checkOnboardingAndUsage();
+  }, []);
+
+  const checkOnboardingAndUsage = async () => {
+    try {
+      // Check onboarding status
+      const onboardingComplete = await AsyncStorage.getItem('onboarding_complete');
+      
+      if (!onboardingComplete) {
+        router.replace('/onboarding');
+        return;
+      }
+
+      // Check daily usage limit (3 hours = 180 minutes)
+      const usageStart = await AsyncStorage.getItem('daily_usage_start');
+      const usageMinutes = await AsyncStorage.getItem('daily_usage_minutes');
+      
+      if (usageStart && usageMinutes) {
+        const startDate = new Date(usageStart);
+        const now = new Date();
+        
+        // Reset if it's a new day
+        if (startDate.toDateString() !== now.toDateString()) {
+          await AsyncStorage.setItem('daily_usage_start', now.toISOString());
+          await AsyncStorage.setItem('daily_usage_minutes', '0');
+        } else {
+          // Check if over 3 hours
+          const minutes = parseInt(usageMinutes);
+          if (minutes >= 180) {
+            // Log out - show time boundary message
+            setError('Daily time boundary reached. See you tomorrow.');
+            setLoading(false);
+            setCheckingOnboarding(false);
+            return;
+          }
+        }
+      }
+
+      setCheckingOnboarding(false);
+      fetchFeed();
+      
+      // Track usage time
+      const interval = setInterval(async () => {
+        const currentMinutes = await AsyncStorage.getItem('daily_usage_minutes');
+        const newMinutes = (parseInt(currentMinutes || '0') + 1).toString();
+        await AsyncStorage.setItem('daily_usage_minutes', newMinutes);
+        
+        // Check if limit reached
+        if (parseInt(newMinutes) >= 180) {
+          setError('Daily time boundary reached. See you tomorrow.');
+          setFeed([]);
+        }
+      }, 60000); // Every minute
+
+      return () => clearInterval(interval);
+    } catch (err) {
+      console.error('Onboarding check error:', err);
+      setCheckingOnboarding(false);
+      fetchFeed();
+    }
+  };
     try {
       const response = await fetch(`${BACKEND_URL}/api/feed?limit=35`);
       const data = await response.json();
