@@ -105,6 +105,8 @@ export default function Index() {
       fetchFeed();
     }
   };
+
+  const fetchFeed = async () => {
     try {
       const response = await fetch(`${BACKEND_URL}/api/feed?limit=35`);
       const data = await response.json();
@@ -123,10 +125,6 @@ export default function Index() {
       setRefreshing(false);
     }
   };
-
-  useEffect(() => {
-    fetchFeed();
-  }, []);
 
   const onRefresh = () => {
     setRefreshing(true);
