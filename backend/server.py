@@ -108,7 +108,7 @@ class UserPreference(BaseModel):
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
 class ContentGenerationRequest(BaseModel):
-    content_type: Literal["fast_weird", "explainer", "ponder", "incident", "mini_game", "audio_drift"]
+    content_type: Literal["fast_weird", "explainer", "ponder", "incident", "mini_game", "audio_drift", "video"]
     count: int = 1
 
 # Initialize AI Chat
