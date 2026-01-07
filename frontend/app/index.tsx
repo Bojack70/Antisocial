@@ -152,11 +152,13 @@ export default function Index() {
     }
   };
 
-  if (loading) {
+  if (checkingOnboarding || loading) {
     return (
       <View style={styles.centerContainer}>
         <ActivityIndicator size="large" color="#6366f1" />
-        <Text style={styles.loadingText}>Loading curiosities...</Text>
+        <Text style={styles.loadingText}>
+          {checkingOnboarding ? 'Loading...' : 'Loading curiosities...'}
+        </Text>
       </View>
     );
   }
