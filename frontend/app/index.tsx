@@ -40,7 +40,7 @@ export default function Index() {
 
   const fetchFeed = async () => {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/feed?limit=30`);
+      const response = await fetch(`${BACKEND_URL}/api/feed?limit=35`);
       const data = await response.json();
       
       if (data.success) {
