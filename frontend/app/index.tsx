@@ -40,78 +40,26 @@ export default function Index() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
-  const [checkingOnboarding, setCheckingOnboarding] = useState(true);
 
-  // Check onboarding and daily usage on mount
+  // Fetch feed on mount
   useEffect(() => {
-    checkOnboardingAndUsage();
+    fetchFeed();
+    
+    // Track usage time every minute
+    const interval = setInterval(async () => {
+      const currentMinutes = await AsyncStorage.getItem('daily_usage_minutes');
+      const newMinutes = (parseInt(currentMinutes || '0') + 1).toString();
+      await AsyncStorage.setItem('daily_usage_minutes', newMinutes);
+      
+      // Check if limit reached (3 hours = 180 minutes)
+      if (parseInt(newMinutes) >= 180) {
+        setError('Daily time boundary reached. See you tomorrow.');
+        setFeed([]);
+      }
+    }, 60000);
+
+    return () => clearInterval(interval);
   }, []);
-
-  const checkOnboardingAndUsage = async () => {
-    try {
-      // Check onboarding status
-      const onboardingComplete = await AsyncStorage.getItem('onboarding_complete');
-      
-      console.log('Onboarding check:', onboardingComplete);
-      
-      if (!onboardingComplete || onboardingComplete !== 'true') {
-        console.log('Redirecting to onboarding...');
-        setCheckingOnboarding(false);
-        setLoading(false);
-        router.replace('/onboarding');
-        return;
-      }
-
-      console.log('Onboarding complete, loading feed...');
-      
-      // Check daily usage limit (3 hours = 180 minutes)
-      const usageStart = await AsyncStorage.getItem('daily_usage_start');
-      const usageMinutes = await AsyncStorage.getItem('daily_usage_minutes');
-      
-      if (usageStart && usageMinutes) {
-        const startDate = new Date(usageStart);
-        const now = new Date();
-        
-        // Reset if it's a new day
-        if (startDate.toDateString() !== now.toDateString()) {
-          await AsyncStorage.setItem('daily_usage_start', now.toISOString());
-          await AsyncStorage.setItem('daily_usage_minutes', '0');
-        } else {
-          // Check if over 3 hours
-          const minutes = parseInt(usageMinutes);
-          if (minutes >= 180) {
-            // Log out - show time boundary message
-            setError('Daily time boundary reached. See you tomorrow.');
-            setLoading(false);
-            setCheckingOnboarding(false);
-            return;
-          }
-        }
-      }
-
-      setCheckingOnboarding(false);
-      fetchFeed();
-      
-      // Track usage time
-      const interval = setInterval(async () => {
-        const currentMinutes = await AsyncStorage.getItem('daily_usage_minutes');
-        const newMinutes = (parseInt(currentMinutes || '0') + 1).toString();
-        await AsyncStorage.setItem('daily_usage_minutes', newMinutes);
-        
-        // Check if limit reached
-        if (parseInt(newMinutes) >= 180) {
-          setError('Daily time boundary reached. See you tomorrow.');
-          setFeed([]);
-        }
-      }, 60000); // Every minute
-
-      return () => clearInterval(interval);
-    } catch (err) {
-      console.error('Onboarding check error:', err);
-      setCheckingOnboarding(false);
-      fetchFeed();
-    }
-  };
 
   const fetchFeed = async () => {
     try {
