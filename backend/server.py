@@ -349,19 +349,20 @@ async def generate_content(request: ContentGenerationRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.get("/feed")
-async def get_feed(limit: int = 30):
-    """Get mixed feed with algorithmic ratio (10:7:6:3:2:2)"""
+async def get_feed(limit: int = 35):
+    """Get mixed feed with algorithmic ratio (10:7:6:3:3:3:3)"""
     try:
         feed = []
         
-        # Define ratios for 30 items
+        # Define ratios for 35 items (added 3 videos, 1 more mini game)
         ratios = {
             "fast_weird": 10,
             "explainer": 7,
             "ponder": 6,
             "incident": 3,
-            "mini_game": 2,
-            "audio_drift": 2
+            "mini_game": 3,
+            "audio_drift": 3,
+            "video": 3
         }
         
         # Fetch content from each type
