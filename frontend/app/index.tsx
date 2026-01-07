@@ -52,11 +52,18 @@ export default function Index() {
       // Check onboarding status
       const onboardingComplete = await AsyncStorage.getItem('onboarding_complete');
       
-      if (!onboardingComplete) {
+      console.log('Onboarding check:', onboardingComplete);
+      
+      if (!onboardingComplete || onboardingComplete !== 'true') {
+        console.log('Redirecting to onboarding...');
+        setCheckingOnboarding(false);
+        setLoading(false);
         router.replace('/onboarding');
         return;
       }
 
+      console.log('Onboarding complete, loading feed...');
+      
       // Check daily usage limit (3 hours = 180 minutes)
       const usageStart = await AsyncStorage.getItem('daily_usage_start');
       const usageMinutes = await AsyncStorage.getItem('daily_usage_minutes');
