@@ -20,7 +20,7 @@ export default function AlmostNothingCard({ content }: AlmostNothingCardProps) {
   const rest = restLines.join('\n').trim();
 
   return (
-    <View style={cards.tinted}>
+    <View style={cards.mint}>
       <CardHeader icon="sunny-outline" color="#3F9A6C" label="Gentle Reminder" />
       <Text style={styles.text}>{firstLine}</Text>
       {rest.length > 0 && <Text style={styles.subText}>{rest}</Text>}

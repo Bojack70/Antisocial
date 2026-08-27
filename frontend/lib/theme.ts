@@ -16,6 +16,10 @@ export const colors = {
   surface: '#FFFFFF',
   surfaceTinted: '#FAFAFA',
   surfaceDark: '#18181B',
+  // The wellbeing card keeps its own mint surface — it is the one card
+  // that interrupts rather than informs, and the colour is the signal.
+  surfaceMint: '#E9F6EE',
+  mintLine: '#D8EEDF',
 
   // On the dark surface the roles shift: body copy lightens to what is
   // "muted" on white, and panels sit just above the card.
@@ -98,5 +102,11 @@ export const cards = StyleSheet.create({
   dark: {
     ...cardBase,
     backgroundColor: colors.surfaceDark,
+  },
+  mint: {
+    ...cardBase,
+    backgroundColor: colors.surfaceMint,
+    borderWidth: 1,
+    borderColor: colors.mintLine,
   },
 });

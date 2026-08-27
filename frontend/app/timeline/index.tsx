@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { TIMELINE_EVENTS, TimelineEvent, formatYear } from '../../data/timelineEvents';
+import { colors, type } from '../../lib/theme';
 
 // Year gap between anchor and challenger shrinks as the streak grows.
 const minGapForStreak = (streak: number) => {
@@ -138,14 +139,14 @@ export default function TimelineGame() {
 
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Ionicons name="chevron-back" size={22} color="#3A3B3E" />
+          <Ionicons name="chevron-back" size={20} color={colors.body} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>The Timeline</Text>
           <Text style={styles.headerSubtitle}>Which came first?</Text>
         </View>
         <View style={styles.streakPill}>
-          <Ionicons name="flame-outline" size={14} color="#6B6D76" />
+          <Ionicons name="flame-outline" size={13} color={colors.muted} />
           <Text style={styles.streakText}>{streak}</Text>
         </View>
       </View>
@@ -199,7 +200,7 @@ export default function TimelineGame() {
               onPress={() => handleAnswer('before')}
               activeOpacity={0.7}
             >
-              <Ionicons name="arrow-back" size={16} color="#3A3B3E" />
+              <Ionicons name="arrow-back" size={14} color={colors.body} />
               <Text style={styles.answerText}>Before</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -208,7 +209,7 @@ export default function TimelineGame() {
               activeOpacity={0.7}
             >
               <Text style={styles.answerText}>After</Text>
-              <Ionicons name="arrow-forward" size={16} color="#3A3B3E" />
+              <Ionicons name="arrow-forward" size={14} color={colors.body} />
             </TouchableOpacity>
           </View>
         )}
@@ -216,7 +217,7 @@ export default function TimelineGame() {
         {phase === 'correct' && (
           <TouchableOpacity style={styles.nextButton} onPress={nextRound} activeOpacity={0.8}>
             <Text style={styles.nextButtonText}>Next</Text>
-            <Ionicons name="arrow-forward" size={16} color="#FFFFFF" />
+            <Ionicons name="arrow-forward" size={14} color="#FFFFFF" />
           </TouchableOpacity>
         )}
 
@@ -236,7 +237,7 @@ export default function TimelineGame() {
               <Text style={styles.nextButtonText}>Run it back</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.ghostButton} onPress={shareRun} activeOpacity={0.7}>
-              <Ionicons name="share-outline" size={15} color="#6B6D76" />
+              <Ionicons name="share-outline" size={13} color={colors.body} />
               <Text style={styles.ghostButtonText}>Challenge a friend</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.ghostButton} onPress={() => router.back()} activeOpacity={0.7}>
@@ -252,23 +253,24 @@ export default function TimelineGame() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F7F7F5',
+    backgroundColor: colors.page,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 14,
+    backgroundColor: colors.surfaceTinted,
     borderBottomWidth: 1,
-    borderBottomColor: '#ECECE9',
+    borderBottomColor: colors.line,
   },
   backButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#FFFFFF',
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: '#ECECE9',
+    borderColor: colors.line,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -277,32 +279,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerTitle: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: '#16171A',
+    fontSize: 18,
+    fontWeight: '500',
+    color: colors.ink,
+    letterSpacing: -0.45,
   },
   headerSubtitle: {
-    fontSize: 12,
-    color: '#8C8E92',
-    marginTop: 1,
+    ...type.micro,
+    marginTop: 5,
   },
   streakPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 5,
     paddingHorizontal: 10,
     paddingVertical: 6,
-    borderRadius: 999,
-    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: '#ECECE9',
-    minWidth: 48,
+    borderColor: colors.hairline,
+    minWidth: 46,
     justifyContent: 'center',
   },
   streakText: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#16171A',
+    fontSize: 12,
+    fontWeight: '500',
+    color: colors.ink,
   },
   playArea: {
     flex: 1,
@@ -312,31 +314,25 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   anchorCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 24,
+    backgroundColor: colors.surface,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#ECECE9',
-    padding: 22,
+    borderColor: colors.line,
+    padding: 24,
     alignItems: 'center',
   },
   cardLabel: {
-    fontSize: 11,
-    letterSpacing: 2,
-    color: '#8C8E92',
-    fontWeight: '700',
-    marginBottom: 10,
+    ...type.label,
+    marginBottom: 12,
   },
   anchorName: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#16171A',
+    ...type.title,
     textAlign: 'center',
-    lineHeight: 25,
   },
   anchorYear: {
     fontSize: 26,
-    fontWeight: '700',
-    color: '#16171A',
+    fontWeight: '500',
+    color: colors.ink,
     marginTop: 10,
     letterSpacing: -0.5,
   },
@@ -349,47 +345,42 @@ const styles = StyleSheet.create({
   versusLine: {
     flex: 1,
     height: 1,
-    backgroundColor: '#ECECE9',
+    backgroundColor: colors.line,
   },
   versusText: {
-    fontSize: 12,
-    color: '#8C8E92',
-    fontStyle: 'italic',
+    ...type.micro,
   },
   challengerCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 24,
-    borderWidth: 1.5,
-    borderColor: '#DDDDDA',
-    padding: 22,
+    backgroundColor: colors.surfaceTinted,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: colors.line,
+    padding: 24,
     alignItems: 'center',
     minHeight: 150,
     justifyContent: 'center',
   },
   challengerCorrect: {
     borderColor: '#10b981',
-    backgroundColor: '#10b98110',
+    backgroundColor: '#10b9810D',
   },
   challengerWrong: {
     borderColor: '#ef4444',
-    backgroundColor: '#ef444410',
+    backgroundColor: '#ef44440D',
   },
   challengerName: {
-    fontSize: 19,
-    fontWeight: '600',
-    color: '#16171A',
+    ...type.title,
     textAlign: 'center',
-    lineHeight: 26,
   },
   hiddenYear: {
-    fontSize: 24,
-    color: '#DDDDDA',
+    fontSize: 22,
+    color: colors.hairline,
     marginTop: 12,
     letterSpacing: 4,
   },
   challengerYear: {
-    fontSize: 22,
-    fontWeight: '700',
+    fontSize: 20,
+    fontWeight: '500',
     marginTop: 12,
     letterSpacing: -0.3,
   },
@@ -400,16 +391,14 @@ const styles = StyleSheet.create({
     color: '#ef4444',
   },
   detailText: {
-    fontSize: 14,
-    color: '#5B5D63',
+    ...type.body,
     textAlign: 'center',
-    marginTop: 10,
-    lineHeight: 20,
+    marginTop: 12,
   },
   answerRow: {
     flexDirection: 'row',
-    gap: 12,
-    marginTop: 18,
+    gap: 10,
+    marginTop: 16,
   },
   answerButton: {
     flex: 1,
@@ -417,61 +406,59 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    paddingVertical: 15,
-    borderRadius: 999,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1.5,
-    borderColor: '#DDDDDA',
+    paddingVertical: 13,
+    borderRadius: 10,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.hairline,
   },
   answerText: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#3A3B3E',
+    fontSize: 12,
+    fontWeight: '500',
+    color: colors.body,
   },
   nextButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    marginTop: 18,
-    paddingVertical: 15,
-    borderRadius: 999,
-    backgroundColor: '#16171A',
+    marginTop: 16,
+    paddingVertical: 13,
+    borderRadius: 10,
+    backgroundColor: colors.ink,
   },
   nextButtonText: {
     color: '#FFFFFF',
-    fontSize: 15,
-    fontWeight: '600',
+    fontSize: 12,
+    fontWeight: '500',
   },
   gameoverPanel: {
-    marginTop: 18,
+    marginTop: 16,
     alignItems: 'stretch',
   },
   gameoverTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#16171A',
+    ...type.title,
     textAlign: 'center',
   },
   gameoverStats: {
-    fontSize: 14,
-    color: '#6B6D76',
+    ...type.micro,
     textAlign: 'center',
-    marginTop: 6,
+    marginTop: 8,
   },
   ghostButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    marginTop: 12,
-    paddingVertical: 13,
-    borderRadius: 999,
+    marginTop: 10,
+    paddingVertical: 12,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#DDDDDA',
+    borderColor: colors.hairline,
   },
   ghostButtonText: {
-    color: '#6B6D76',
-    fontSize: 14,
+    color: colors.body,
+    fontSize: 11,
+    fontWeight: '400',
   },
 });

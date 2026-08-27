@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
+import { colors, type } from '../../lib/theme';
 
 const BOARD_SIZE = 36;
 const COLS = 6;
@@ -151,14 +152,14 @@ export default function BoardGame() {
 
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Ionicons name="chevron-back" size={22} color="#3A3B3E" />
+          <Ionicons name="chevron-back" size={20} color={colors.body} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>Shortcuts & Rabbit Holes</Text>
           <Text style={styles.headerSubtitle}>You vs Time</Text>
         </View>
         <View style={styles.winsPill}>
-          <Ionicons name="trophy-outline" size={13} color="#6B6D76" />
+          <Ionicons name="trophy-outline" size={13} color={colors.muted} />
           <Text style={styles.winsText}>{wins}</Text>
         </View>
       </View>
@@ -202,7 +203,7 @@ export default function BoardGame() {
             disabled={turn !== 'player'}
             activeOpacity={0.8}
           >
-            <Ionicons name="dice-outline" size={18} color="#FFFFFF" />
+            <Ionicons name="dice-outline" size={15} color="#FFFFFF" />
             <Text style={styles.rollButtonText}>
               {turn === 'player'
                 ? dice === null
@@ -236,23 +237,24 @@ export default function BoardGame() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F7F7F5',
+    backgroundColor: colors.page,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 14,
+    backgroundColor: colors.surfaceTinted,
     borderBottomWidth: 1,
-    borderBottomColor: '#ECECE9',
+    borderBottomColor: colors.line,
   },
   backButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#FFFFFF',
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: '#ECECE9',
+    borderColor: colors.line,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -261,32 +263,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#16171A',
+    fontSize: 17,
+    fontWeight: '500',
+    color: colors.ink,
+    letterSpacing: -0.45,
   },
   headerSubtitle: {
-    fontSize: 12,
-    color: '#8C8E92',
-    marginTop: 1,
+    ...type.micro,
+    marginTop: 5,
   },
   winsPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 5,
     paddingHorizontal: 10,
     paddingVertical: 6,
-    borderRadius: 999,
-    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: '#ECECE9',
+    borderColor: colors.hairline,
     minWidth: 46,
     justifyContent: 'center',
   },
   winsText: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#16171A',
+    fontSize: 12,
+    fontWeight: '500',
+    color: colors.ink,
   },
   playArea: {
     flex: 1,
@@ -296,10 +298,10 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   board: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
+    backgroundColor: colors.surface,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#ECECE9',
+    borderColor: colors.line,
     padding: 8,
     gap: 6,
   },
@@ -311,28 +313,29 @@ const styles = StyleSheet.create({
     flex: 1,
     aspectRatio: 1,
     borderRadius: 10,
-    backgroundColor: '#F5F5F3',
+    backgroundColor: colors.surfaceTinted,
+    borderWidth: 1,
+    borderColor: colors.line,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 1,
   },
   tileShortcut: {
-    backgroundColor: '#10b98112',
-    borderWidth: 1,
-    borderColor: '#10b98140',
+    backgroundColor: '#10b9810D',
+    borderColor: '#10b98133',
   },
   tileHole: {
-    backgroundColor: '#ef444410',
-    borderWidth: 1,
-    borderColor: '#ef444435',
+    backgroundColor: '#ef44440D',
+    borderColor: '#ef444430',
   },
   tileFinish: {
-    backgroundColor: '#16171A',
+    backgroundColor: colors.ink,
+    borderColor: colors.ink,
   },
   tileNumber: {
     fontSize: 10,
-    color: '#8C8E92',
-    fontWeight: '600',
+    fontWeight: '400',
+    color: colors.muted,
   },
   tokenRow: {
     flexDirection: 'row',
@@ -341,22 +344,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   playerToken: {
-    width: 10,
-    height: 10,
+    width: 9,
+    height: 9,
     borderRadius: 5,
-    backgroundColor: '#6366f1',
+    backgroundColor: colors.ink,
   },
   rivalToken: {
-    width: 10,
-    height: 10,
+    width: 9,
+    height: 9,
     borderRadius: 5,
-    backgroundColor: '#8C8E92',
+    backgroundColor: colors.muted,
   },
   legendRow: {
     flexDirection: 'row',
     justifyContent: 'center',
     gap: 16,
-    marginTop: 12,
+    marginTop: 14,
   },
   legendItem: {
     flexDirection: 'row',
@@ -364,23 +367,22 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   legendText: {
-    fontSize: 12,
-    color: '#6B6D76',
+    fontSize: 11,
+    fontWeight: '400',
+    color: colors.body,
   },
   messagePanel: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surfaceTinted,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#ECECE9',
-    padding: 14,
-    marginTop: 12,
+    borderColor: colors.line,
+    padding: 16,
+    marginTop: 14,
     minHeight: 64,
     justifyContent: 'center',
   },
   messageText: {
-    fontSize: 14,
-    color: '#3A3B3E',
-    lineHeight: 20,
+    ...type.body,
     textAlign: 'center',
   },
   rollButton: {
@@ -389,38 +391,37 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
     marginTop: 14,
-    paddingVertical: 15,
-    borderRadius: 999,
-    backgroundColor: '#16171A',
+    paddingVertical: 13,
+    borderRadius: 10,
+    backgroundColor: colors.ink,
   },
   rollButtonDisabled: {
-    backgroundColor: '#8C8E92',
+    backgroundColor: colors.muted,
   },
   rollButtonText: {
     color: '#FFFFFF',
-    fontSize: 15,
-    fontWeight: '600',
+    fontSize: 12,
+    fontWeight: '500',
   },
   gameoverPanel: {
     marginTop: 14,
   },
   gameoverTitle: {
-    fontSize: 19,
-    fontWeight: '700',
-    color: '#16171A',
+    ...type.title,
     textAlign: 'center',
     marginBottom: 4,
   },
   ghostButton: {
     alignItems: 'center',
-    marginTop: 12,
-    paddingVertical: 13,
-    borderRadius: 999,
+    marginTop: 10,
+    paddingVertical: 12,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#DDDDDA',
+    borderColor: colors.hairline,
   },
   ghostButtonText: {
-    color: '#6B6D76',
-    fontSize: 14,
+    color: colors.body,
+    fontSize: 11,
+    fontWeight: '400',
   },
 });
