@@ -3,6 +3,10 @@ Populate the AI-generated text content types with a hand-written seed set,
 so the feed works fully without an OpenAI key. Mirrors populate_videos.py:
 static curated data inserted directly into MongoDB. The AI generator in
 server.py still tops these up automatically once a real key is configured.
+
+Content bar (2026-08-27): every item should be specific — real names, dates,
+numbers — and pass the "retell test": would someone repeat this to a friend
+at dinner? Generic top-100 trivia (honey never spoils, octopus hearts) is out.
 """
 import asyncio
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -15,147 +19,177 @@ load_dotenv()
 
 FAST_WEIRD = [
     {
-        "headline": "Wombats produce cube-shaped droppings",
+        "headline": "The inventor of the Pringles can is buried in one",
         "facts": [
-            "Their intestines have varying elasticity that molds waste into cubes.",
-            "The shape keeps it from rolling away once stacked as a scent marker.",
+            "Fredric Baur designed the iconic tube for Procter & Gamble in 1966.",
+            "When he died in 2008, his children honored his request: part of his ashes rests in an Original-flavor can.",
+            "They bought it at a Walgreens on the way to the funeral home.",
         ],
-        "tags": ["animals", "biology"],
+        "tags": ["design", "history"],
     },
     {
-        "headline": "A bolt of lightning is hotter than the sun's surface",
+        "headline": "Woolly mammoths were still alive when the Great Pyramid was built",
         "facts": [
-            "Lightning can reach roughly 30,000 kelvin.",
-            "The sun's surface is about 5,800 kelvin by comparison.",
+            "The pyramid went up around 2560 BC.",
+            "A population of mammoths survived on Wrangel Island in the Arctic until roughly 4,000 years ago.",
+            "Pharaohs and mammoths shared the planet.",
         ],
-        "tags": ["physics", "weather"],
+        "tags": ["history", "animals"],
     },
     {
-        "headline": "Honey never spoils",
+        "headline": "There are more trees on Earth than stars in the Milky Way",
         "facts": [
-            "Archaeologists have found 3,000-year-old honey in Egyptian tombs, still edible.",
-            "Its low moisture and natural acidity keep bacteria from surviving in it.",
+            "A 2015 Nature study counted about 3 trillion trees.",
+            "The Milky Way holds an estimated 100 to 400 billion stars.",
+            "Trees win by roughly ten to one.",
         ],
-        "tags": ["food", "chemistry"],
+        "tags": ["nature", "space"],
     },
     {
-        "headline": "Bananas are naturally slightly radioactive",
+        "headline": "The world's shortest scheduled flight lasts about 90 seconds",
         "facts": [
-            "They contain potassium-40, a radioactive isotope of potassium.",
-            "The dose is far too small to pose any health risk.",
+            "It connects Westray and Papa Westray, two Scottish islands 1.7 miles apart.",
+            "With a good tailwind it's been done in 53 seconds.",
+            "The safety briefing takes longer than the flight.",
         ],
-        "tags": ["food", "physics"],
+        "tags": ["travel", "aviation"],
     },
     {
-        "headline": "Octopuses have three hearts",
+        "headline": "Cleopatra lived closer to the Moon landing than to the Great Pyramid",
         "facts": [
-            "Two pump blood to the gills, one pumps it to the rest of the body.",
-            "The main heart actually stops beating while the octopus swims.",
+            "The pyramid was already about 2,500 years old when she was born.",
+            "Only about 2,000 years separate her from 1969.",
+            "Ancient Egypt was ancient to the ancient Egyptians.",
         ],
-        "tags": ["animals", "biology"],
+        "tags": ["history", "time"],
     },
     {
-        "headline": "The Eiffel Tower grows taller in summer",
+        "headline": "Oxford University is older than the Aztec Empire",
         "facts": [
-            "Heat expands the iron structure, adding up to 15 cm of height.",
-            "It also leans slightly away from the sun as the metal expands unevenly.",
+            "Teaching at Oxford existed by 1096.",
+            "Tenochtitlan, the Aztec capital, was founded in 1325.",
+            "Students had been complaining about exams for two centuries by then.",
         ],
-        "tags": ["engineering", "physics"],
+        "tags": ["history", "time"],
     },
     {
-        "headline": "There are more possible chess games than atoms in the universe",
+        "headline": "Nintendo was founded in 1889",
         "facts": [
-            "The number of unique game sequences is estimated far beyond 10^120.",
-            "Estimates of atoms in the observable universe sit around 10^80.",
+            "It started as a handmade playing-card company in Kyoto.",
+            "The Eiffel Tower was brand new that year.",
+            "The company sold cards for nearly a century before touching video games.",
         ],
-        "tags": ["math", "games"],
+        "tags": ["history", "games"],
     },
     {
-        "headline": "Sea otters hold hands while sleeping",
+        "headline": "France was still executing people by guillotine when Star Wars premiered",
         "facts": [
-            "It keeps them from drifting apart on the open water.",
-            "Some also wrap themselves in kelp for the same reason.",
+            "Star Wars opened in May 1977.",
+            "France's last guillotine execution took place that September.",
+            "The guillotine outlived the debut of the lightsaber.",
         ],
-        "tags": ["animals", "nature"],
+        "tags": ["history", "time"],
     },
     {
-        "headline": "A group of flamingos is called a flamboyance",
+        "headline": "Scotland's national animal is the unicorn",
         "facts": [
-            "Collective animal names like this are called 'terms of venery'.",
-            "Other examples: a parliament of owls, a murder of crows.",
+            "It has been a Scottish heraldic symbol since the 1300s.",
+            "In medieval lore the unicorn was fiercely independent and impossible to tame.",
+            "It appears on the UK royal coat of arms, chained.",
         ],
-        "tags": ["language", "animals"],
+        "tags": ["history", "culture"],
     },
     {
-        "headline": "Hot water can freeze faster than cold water",
+        "headline": "One whale sings at a frequency no other whale uses",
         "facts": [
-            "This is called the Mpemba effect, observed for centuries.",
-            "Scientists still debate the exact combination of causes.",
+            "The '52-hertz whale' has been tracked since the late 1980s.",
+            "Its call is far above the range of blue and fin whales.",
+            "No one knows if any other whale has ever answered.",
         ],
-        "tags": ["physics", "science"],
+        "tags": ["animals", "ocean"],
     },
     {
-        "headline": "Venus spins backwards compared to most planets",
+        "headline": "Venus spins backwards, and its day is longer than its year",
         "facts": [
-            "A day on Venus is longer than its year around the sun.",
+            "It takes Venus longer to rotate once than to orbit the sun.",
             "One theory blames an ancient, massive collision.",
         ],
         "tags": ["space", "science"],
     },
     {
-        "headline": "Some clouds can weigh over a million pounds",
-        "facts": [
-            "The water droplets are so small they stay suspended in rising air.",
-            "A typical cumulus cloud can weigh around 1.1 million pounds.",
-        ],
-        "tags": ["weather", "physics"],
-    },
-    {
-        "headline": "Sharks existed before trees",
+        "headline": "Sharks are older than trees",
         "facts": [
             "Sharks appeared roughly 400 million years ago.",
-            "The earliest tree-like plants show up about 350 million years ago.",
+            "The earliest tree-like plants show up about 350 million years later in the fossil record's terms — 50 million years after sharks.",
+            "Sharks are also older than Saturn's rings, by some estimates.",
         ],
-        "tags": ["biology", "history"],
+        "tags": ["biology", "time"],
     },
     {
-        "headline": "Your stomach gets an entirely new lining every few days",
-        "facts": [
-            "Stomach acid would otherwise digest the stomach itself.",
-            "The mucus lining regenerates roughly every 3-4 days.",
-        ],
-        "tags": ["biology", "human body"],
-    },
-    {
-        "headline": "The shortest war in recorded history lasted under 40 minutes",
+        "headline": "The shortest war in history lasted under 40 minutes",
         "facts": [
             "The Anglo-Zanzibar War of 1896 ended in about 38 minutes.",
-            "It remains the shortest war by most historical accounts.",
+            "The sultan's palace was shelled at 9:02 am; it was over by 9:40.",
         ],
         "tags": ["history"],
+    },
+    {
+        "headline": "There are more possible chess games than atoms in the universe",
+        "facts": [
+            "Unique game sequences are estimated far beyond 10^120.",
+            "Atoms in the observable universe sit around 10^80.",
+            "Every game you play has probably never been played before.",
+        ],
+        "tags": ["math", "games"],
     },
 ]
 
 EXPLAINER = [
     {
-        "question": "How do noise-cancelling headphones work?",
+        "question": "How do they get ships into bottles?",
         "steps": [
-            "A microphone picks up the incoming ambient sound wave.",
-            "The circuit generates an inverted copy of that wave.",
-            "The two waves cancel each other out before reaching your ear.",
+            "The ship is built outside the bottle with hinged masts that fold flat.",
+            "The hull is pushed through the bottle neck carefully.",
+            "Threads attached to the masts run out through the cork.",
+            "Once inside, you pull the threads to raise the masts into position.",
+            "The threads are cut and the bottle is sealed.",
         ],
-        "interaction": "Which step surprised you?",
-        "tags": ["technology", "audio"],
+        "interaction": "Did you always assume the bottle was built around it?",
+        "tags": ["craft", "everyday mysteries"],
     },
     {
-        "question": "How does a zipper actually work?",
+        "question": "Why do we get brain freeze?",
         "steps": [
-            "Each tooth has a small hook shaped to interlock with its neighbor.",
-            "The slider forces two rows of teeth together at an angle.",
-            "That angle locks the teeth in place until pulled apart the same way.",
+            "Cold food touches the roof of your mouth, cooling blood vessels.",
+            "Your body rapidly constricts then dilates these vessels to warm them up.",
+            "This sudden change triggers pain receptors in your soft palate.",
+            "Your brain interprets the signal as coming from your forehead (referred pain).",
+            "Pressing your tongue to the roof of your mouth warms it and stops the pain.",
         ],
-        "interaction": "Did you expect it to be this mechanical?",
-        "tags": ["design", "everyday objects"],
+        "interaction": "Did the tongue trick ever work for you?",
+        "tags": ["human body", "everyday mysteries"],
+    },
+    {
+        "question": "Why does your voice sound different in recordings?",
+        "steps": [
+            "When you speak, sound reaches your ears two ways: through the air and through your skull.",
+            "Bone conduction adds deep, low frequencies only you can hear.",
+            "A recording captures just the air version — the voice everyone else hears.",
+            "That thinner, higher voice on tape is your actual public voice.",
+        ],
+        "interaction": "So which one is your real voice?",
+        "tags": ["human body", "sound"],
+    },
+    {
+        "question": "How do cats always land on their feet?",
+        "steps": [
+            "Falling cats have a built-in 'righting reflex' that kicks in within a fraction of a second.",
+            "They bend at the waist and rotate the front and back halves of their body separately.",
+            "Tucking and extending their legs in sequence lets them twist mid-air without pushing off anything.",
+            "A flexible spine and no functional collarbone make the maneuver possible.",
+        ],
+        "interaction": "Physicists studied this for decades. Worth it?",
+        "tags": ["animals", "physics"],
     },
     {
         "question": "How do submarine cables cross entire oceans?",
@@ -164,18 +198,8 @@ EXPLAINER = [
             "Repeaters every 40-60 miles boost the light signal along the way.",
             "Landing stations on each coast convert the signal back into internet traffic.",
         ],
-        "interaction": "Which step felt least likely?",
+        "interaction": "This page probably crossed an ocean floor to reach you.",
         "tags": ["infrastructure", "internet"],
-    },
-    {
-        "question": "How does a thermos keep drinks hot or cold?",
-        "steps": [
-            "Two walls with a vacuum between them block heat conduction.",
-            "A reflective inner surface reflects radiant heat back inward or outward.",
-            "A tight seal stops warm or cool air from escaping.",
-        ],
-        "interaction": "Which layer matters most, in your view?",
-        "tags": ["everyday objects", "physics"],
     },
     {
         "question": "How do elevators avoid free-falling if a cable snaps?",
@@ -188,16 +212,6 @@ EXPLAINER = [
         "tags": ["engineering", "safety"],
     },
     {
-        "question": "How does autocomplete guess your next word?",
-        "steps": [
-            "It looks at the words you've already typed as context.",
-            "A language model ranks likely next words by probability.",
-            "The highest-ranked options get shown or typed for you.",
-        ],
-        "interaction": "How often is it actually right for you?",
-        "tags": ["technology", "software"],
-    },
-    {
         "question": "How does a lock and key actually work?",
         "steps": [
             "Pins of different heights sit inside the lock cylinder.",
@@ -206,16 +220,6 @@ EXPLAINER = [
         ],
         "interaction": "Which step felt most surprising?",
         "tags": ["everyday objects", "mechanics"],
-    },
-    {
-        "question": "How do ATMs restock cash without ever running out?",
-        "steps": [
-            "Armored couriers refill cash cassettes on a set schedule.",
-            "The machine tracks withdrawal patterns to predict demand.",
-            "Low-cash alerts trigger an early refill before it empties.",
-        ],
-        "interaction": "Have you ever hit an empty ATM?",
-        "tags": ["infrastructure", "finance"],
     },
     {
         "question": "How does a microwave heat food but not the plate?",
@@ -228,97 +232,296 @@ EXPLAINER = [
         "tags": ["physics", "everyday objects"],
     },
     {
-        "question": "How does traffic-light timing get decided?",
+        "question": "How does a thermos keep drinks hot or cold?",
         "steps": [
-            "Sensors or cameras measure vehicle flow at the intersection.",
-            "Timing plans are modeled to minimize total waiting time.",
-            "Signals adjust by time of day as traffic patterns shift.",
+            "Two walls with a vacuum between them block heat conduction.",
+            "A reflective inner surface reflects radiant heat back inward or outward.",
+            "A tight seal stops warm or cool air from escaping.",
         ],
-        "interaction": "Does your commute ever feel oddly timed?",
-        "tags": ["infrastructure", "cities"],
+        "interaction": "It doesn't know hot from cold — it just blocks change.",
+        "tags": ["everyday objects", "physics"],
+    },
+    {
+        "question": "How do noise-cancelling headphones work?",
+        "steps": [
+            "A microphone picks up the incoming ambient sound wave.",
+            "The circuit generates an inverted copy of that wave.",
+            "The two waves cancel each other out before reaching your ear.",
+        ],
+        "interaction": "You're hearing silence that was manufactured.",
+        "tags": ["technology", "audio"],
     },
 ]
 
 INCIDENT = [
     {
-        "hook": "FedEx once gambled its last $5,000 in Las Vegas to survive.",
+        "hook": "The man who sold the Eiffel Tower. Twice.",
         "story": [
-            "In the early 1970s, FedEx was days from running out of fuel money.",
-            "Founder Fred Smith flew to Las Vegas with the company's last funds.",
-            "He won just enough at blackjack to cover a critical fuel bill.",
-            "The company stabilized soon after and grew into a global carrier.",
+            "In 1925, con artist Victor Lustig posed as a government official and told scrap metal dealers that Paris was secretly dismantling the Eiffel Tower.",
+            "He 'sold' it to a dealer for the equivalent of about $70,000, then disappeared.",
+            "The dealer was too embarrassed to report it to the police.",
+            "A month later, Lustig came back and sold the tower again — to someone else.",
         ],
-        "tags": ["business", "history"],
+        "tags": ["history", "crime"],
     },
     {
-        "hook": "The airline industry standardized seats to fit statistical averages.",
+        "hook": "A world-class violinist played the subway for 43 minutes. Seven people stopped.",
         "story": [
-            "Early cockpit and seat designs were built around a single 'average' body.",
-            "Almost no real pilot matched that average across every measurement.",
-            "Engineers moved to adjustable seats and controls instead.",
-            "That shift became a founding case study in ergonomic design.",
+            "Joshua Bell's concerts sell out at $100+ per seat.",
+            "In 2007, he played incognito in a D.C. subway station during rush hour, performing Bach on a $3.5 million Stradivarius.",
+            "Of 1,097 people who passed by, seven stopped to listen. One recognized him.",
+            "He made $32 in tips.",
+            "The Washington Post organized it as an experiment about perception, context, and value.",
         ],
-        "tags": ["design", "aviation"],
+        "tags": ["music", "psychology"],
     },
     {
-        "hook": "A postal error once delivered an entire prefabricated house.",
+        "hook": "A programmer automated his entire job — then forgot to turn it off.",
         "story": [
-            "In the early 1900s, US parcel post had no size limit for a brief window.",
-            "Some buyers shipped bricks, and even whole kit houses, by mail.",
-            "Postal workers effectively became furniture and building movers.",
-            "Regulators soon added weight limits to stop the practice.",
+            "A software engineer scripted all his tasks: compiling code, sending emails, even replying to his boss.",
+            "He left the company in 2012 and forgot to shut the scripts down.",
+            "In 2014, his former employer discovered they were still running, completing daily tasks.",
+            "The company had been paying for two years of 'work' done by robots.",
+            "He kept the money. Legally, they couldn't prove he knew.",
         ],
-        "tags": ["history", "logistics"],
+        "tags": ["technology", "work"],
     },
     {
-        "hook": "Australia once deployed the military against emus, and lost.",
+        "hook": "For a few weeks in 2013, there were two living popes.",
         "story": [
-            "In 1932, emus were destroying wheat crops in Western Australia.",
-            "Soldiers were sent with machine guns to cull the population.",
-            "The emus scattered too quickly for the guns to be effective.",
-            "The operation was called off, remembered as the Great Emu War.",
+            "Pope Benedict XVI resigned — the first pope to do so in 600 years.",
+            "For a while, two popes lived in Vatican City simultaneously.",
+            "Benedict wore white. Francis wore white. Both were addressed as 'Your Holiness.'",
+            "Vatican protocol had no rules for this; staff improvised etiquette daily.",
+            "Benedict moved to a monastery inside the Vatican walls. They occasionally had tea.",
         ],
-        "tags": ["history", "animals"],
+        "tags": ["history", "religion"],
     },
     {
-        "hook": "A vending machine on a moon mission delayed astronauts, sort of.",
+        "hook": "A story told on the Kerala coast: the lighthouse keeper who refused to leave.",
         "story": [
-            "During early spaceflight planning, engineers debated snack logistics for hours.",
-            "Simple food storage decisions became surprisingly complex under weightlessness.",
-            "Even crumbs posed a real risk to sensitive onboard equipment.",
-            "NASA eventually developed specialized sealed food packaging as a result.",
+            "As the story goes, a keeper named Vikram tended a lighthouse on a rocky island for 23 years, supplies arriving by boat every two weeks.",
+            "When automation arrived in 1998, they offered him early retirement. He refused, staying on as a 'consultant' to check the machines.",
+            "When the lighthouse was decommissioned entirely in 2015, he was 71. He moved to the mainland — but hired a fisherman to take him back to the island every month.",
+            "He died in 2019, they say, and his family scattered his ashes near the tower.",
+            "The light no longer turns, but locals still navigate by its silhouette.",
         ],
-        "tags": ["space", "history"],
+        "tags": ["people", "sea", "legend"],
     },
     {
-        "hook": "A single typo once took down a major stock exchange system.",
+        "hook": "A single typo cost a trading firm hundreds of millions in minutes.",
         "story": [
             "In 2005, a Mizuho Securities trader meant to sell 1 share for 610,000 yen.",
-            "The order was entered as 610,000 shares for 1 yen instead.",
+            "The order went in as 610,000 shares for 1 yen instead.",
             "The mistake cost the firm hundreds of millions of dollars.",
             "It prompted major reforms in trade-error safeguards across Japan.",
         ],
         "tags": ["finance", "history"],
     },
     {
-        "hook": "Coca-Cola's formula change caused a public backlash so strong it reversed course in 79 days.",
+        "hook": "Australia once deployed the military against emus. The emus won.",
         "story": [
-            "In 1985, the company replaced its original recipe with 'New Coke'.",
-            "Consumer complaints flooded in at a scale the company hadn't planned for.",
-            "Within under three months, the original formula was brought back.",
-            "It remains one of the most cited product-reversal cases in business.",
+            "In 1932, emus were destroying wheat crops in Western Australia.",
+            "Soldiers were sent with machine guns to cull the population.",
+            "The emus scattered too quickly for the guns to be effective.",
+            "The operation was called off. It's remembered as the Great Emu War.",
+        ],
+        "tags": ["history", "animals"],
+    },
+    {
+        "hook": "People used to mail entire houses through the US Post.",
+        "story": [
+            "In the early 1900s, US parcel post briefly had no meaningful size limit.",
+            "Some buyers shipped bricks — and even whole kit houses — by mail.",
+            "Postal workers effectively became building movers.",
+            "Regulators soon added weight limits to stop the practice.",
+        ],
+        "tags": ["history", "logistics"],
+    },
+    {
+        "hook": "FedEx was saved by a blackjack table.",
+        "story": [
+            "In the early 1970s, FedEx was days from running out of fuel money.",
+            "Founder Fred Smith flew to Las Vegas with the company's last $5,000.",
+            "He won just enough at blackjack to cover a critical fuel bill.",
+            "The company stabilized soon after and grew into a global carrier.",
         ],
         "tags": ["business", "history"],
     },
     {
-        "hook": "A lighthouse keeper's letter once accidentally started a legal doctrine.",
+        "hook": "The Air Force designed a cockpit for the average pilot. He didn't exist.",
         "story": [
-            "Maritime law historically leaned on lighthouse keepers' logged observations.",
-            "One keeper's detailed notes on a shipwreck became key courtroom evidence.",
-            "The case helped shape how eyewitness maritime records are treated in law.",
-            "Lighthouse logs are still referenced in some admiralty cases today.",
+            "Early cockpits were built around a single 'average' body, measured across thousands of pilots.",
+            "When researchers checked, almost no real pilot matched the average on every dimension.",
+            "Engineers switched to adjustable seats and controls instead.",
+            "It became a founding case study in ergonomic design.",
         ],
-        "tags": ["history", "law"],
+        "tags": ["design", "aviation"],
+    },
+]
+
+# Read-along drifts: atmospheric true stories rendered as narration when no
+# audio file exists (AudioDriftCard falls back to showing the script text).
+AUDIO_DRIFT = [
+    {
+        "title": "The Great Molasses Flood of 1919",
+        "narration_script": (
+            "On January 15, 1919, a 50-foot wave of molasses burst from a storage "
+            "tank in Boston's North End. 2.3 million gallons of sticky syrup flooded "
+            "the streets at 35 mph, crushing buildings and killing 21 people. The "
+            "cleanup took weeks — workers used saltwater to dissolve the molasses. "
+            "On hot days, locals say you can still smell it."
+        ),
+        "tags": ["history", "disaster"],
+    },
+    {
+        "title": "The Island That Appears and Disappears",
+        "narration_script": (
+            "Sailors tell of Sarah Ann Island, a speck in the Pacific that vanishes "
+            "and reappears every few years. It's made, the story goes, of pumice "
+            "from underwater volcanoes — light enough to float. Ships avoid the "
+            "waters where it's said to surface overnight. And no one, the legend "
+            "insists, has ever set foot on it before it dissolves back into the "
+            "ocean. Like all good sea stories, it lives somewhere between the "
+            "charts and the telling."
+        ),
+        "tags": ["ocean", "legend"],
+    },
+    {
+        "title": "The Town Buried Under Sand",
+        "narration_script": (
+            "Kolmanskop in Namibia was once a thriving diamond mining town. When "
+            "diamonds ran out in the 1950s, residents left everything behind. The "
+            "desert moved in — sand now fills the hospital, school, and homes up to "
+            "the ceiling. Photographers travel there to capture rooms half-buried, "
+            "as if time stopped mid-conversation."
+        ),
+        "tags": ["history", "places"],
+    },
+    {
+        "title": "The Night of the Radium Girls",
+        "narration_script": (
+            "In the 1920s, factory workers painted watch dials with radium paint. "
+            "Supervisors told them to lick their brushes for precision. The women "
+            "began glowing in the dark — their bones, their breath. When they sued, "
+            "the companies denied everything. Their fight created modern workplace "
+            "safety laws. Some of their graves still emit radiation."
+        ),
+        "tags": ["history", "science"],
+    },
+]
+
+# Rendered as "Gentle Reminder" cards in the UI.
+ALMOST_NOTHING = [
+    {"text": "When did you last laugh?\nNot a polite chuckle. A real, unguarded laugh. Your body misses it."},
+    {"text": "Check your posture.\nRoll your shoulders back. Uncross your legs. Let your spine remember what it's like to be aligned."},
+    {"text": "Unclench your jaw.\nDrop your shoulders. You were holding them again."},
+    {"text": "Look at something far away.\nYour eyes have been focused up close for hours. Give them a horizon."},
+    {"text": "Drink some water.\nNot later. Now is fine."},
+    {"text": "Take one slow breath.\nIn through the nose. Out longer than in. That's the whole exercise."},
+    {"text": "There is nothing to solve here."},
+    {"text": "A pause, on purpose."},
+]
+
+QUIET_CONTRADICTION = [
+    {
+        "statement1": "Every choice you make is shaped by genetics, environment, and physics. Free will might be an illusion.",
+        "statement2": "You are reading this sentence, and you can choose to stop. That choice feels undeniably real.",
+        "tags": ["philosophy", "mind"],
+    },
+    {
+        "statement1": "You can change your habits, rewire your brain, reshape your life. Neuroplasticity proves we have agency.",
+        "statement2": "You cannot choose what you want to want. The desire to change is itself something that happens to you.",
+        "tags": ["philosophy", "mind"],
+    },
+    {
+        "statement1": "You are never alone. Your body contains trillions of bacteria, your mind echoes voices you've heard, your atoms were forged in ancient stars.",
+        "statement2": "No one will ever know what it's like to be you. Your consciousness is the only experience that is truly, irreducibly yours.",
+        "tags": ["philosophy", "identity"],
+    },
+    {
+        "statement1": "The past doesn't exist. It's only a chemical pattern in your neurons, rewritten every time you recall it.",
+        "statement2": "Yet the past is the only thing that made you who you are. Everything you are is what already happened.",
+        "tags": ["philosophy", "memory"],
+    },
+    {
+        "statement1": "Nothing you do will matter in a trillion years. The universe will expand into cold darkness, and no trace of humanity will remain.",
+        "statement2": "The fact that you cared about anything today at all is the only meaning that ever existed.",
+        "tags": ["philosophy"],
+    },
+    {
+        "statement1": "Almost everyone you meet is the main character of their own life, just like you.",
+        "statement2": "Almost no one you meet will remember you a year from now.",
+        "tags": ["philosophy", "people"],
+    },
+    {
+        "statement1": "You are a different collection of cells than you were seven years ago.",
+        "statement2": "You still feel like exactly the same person who started reading this.",
+        "tags": ["biology", "identity"],
+    },
+    {
+        "statement1": "Most conversations are forgotten within days by everyone involved.",
+        "statement2": "A single sentence from a stranger can be remembered for decades.",
+        "tags": ["memory", "people"],
+    },
+    {
+        "statement1": "You can only ever directly experience the present moment.",
+        "statement2": "Almost all of your attention is spent on the past or the future.",
+        "tags": ["philosophy", "mind"],
+    },
+]
+
+# Real, freely usable placeholder photography (Lorem Picsum, backed by Unsplash
+# photographers) - seeded so each item gets a stable image across reloads.
+PONDER = [
+    {
+        "image_url": "https://picsum.photos/seed/ponder-memory/800/600",
+        "question": "If you could erase one memory, would you?",
+        "options": [
+            "Yes — there's something I want gone",
+            "No — even pain shaped who I am",
+            "Maybe — depends on which memory",
+            "I'd rather add good memories than delete bad ones",
+        ],
+        "tags": ["memory", "philosophy"],
+    },
+    {
+        "image_url": "https://picsum.photos/seed/ponder-deathdate/800/600",
+        "question": "Would you press a button that shows you the exact date of your death?",
+        "options": [
+            "Yes — I'd plan everything around it",
+            "No — the countdown would ruin today",
+            "I'd press it, then instantly regret it",
+        ],
+        "tags": ["time", "philosophy"],
+    },
+    {
+        "image_url": "https://picsum.photos/seed/ponder-honest/800/600",
+        "question": "If you could hear what people honestly think of you, would you listen?",
+        "options": [
+            "Yes — truth over comfort",
+            "No — some doors stay closed",
+            "Only from the people I love",
+        ],
+        "tags": ["people", "philosophy"],
+    },
+    {
+        "image_url": "https://picsum.photos/seed/ponder-clock/800/600",
+        "question": "Do we keep time, or does time keep us?",
+        "options": ["We keep it", "It keeps us", "Neither"],
+        "tags": ["philosophy", "time"],
+    },
+    {
+        "image_url": "https://picsum.photos/seed/ponder-crowd/800/600",
+        "question": "Is a crowd one thing, or many things at once?",
+        "options": ["One thing", "Many things", "It depends on the moment"],
+        "tags": ["society", "philosophy"],
+    },
+    {
+        "image_url": "https://picsum.photos/seed/ponder-escalator/800/600",
+        "question": "Is this designed for humans, or for schedules?",
+        "options": ["For humans", "For schedules", "Neither, really"],
+        "tags": ["design", "systems"],
     },
 ]
 
@@ -408,128 +611,6 @@ MINI_GAME = [
     },
 ]
 
-ALMOST_NOTHING = [
-    {"text": "Silence."},
-    {"text": "Just whitespace."},
-    {"text": "A quiet space."},
-    {"text": "Nothing happened here."},
-    {"text": "This page is intentionally still."},
-    {"text": "A pause, on purpose."},
-    {"text": "Breathe. That's it."},
-    {"text": "There is nothing to solve here."},
-    {"text": "An empty room, kept clean."},
-    {"text": "You can just look."},
-    {"text": "This is the whole thing."},
-    {"text": "Rest here for a moment."},
-]
-
-QUIET_CONTRADICTION = [
-    {
-        "statement1": "Nothing you do will matter in a trillion years, when the universe fades into cold darkness.",
-        "statement2": "The fact that you cared about anything today is the only meaning that ever existed.",
-        "tags": ["philosophy"],
-    },
-    {
-        "statement1": "Almost everyone you meet is the main character of their own life, just like you.",
-        "statement2": "Almost no one you meet will remember you a year from now.",
-        "tags": ["philosophy", "people"],
-    },
-    {
-        "statement1": "Most of what you own will be thrown away or forgotten within a generation.",
-        "statement2": "The objects you keep are still where most of your memories quietly live.",
-        "tags": ["philosophy"],
-    },
-    {
-        "statement1": "You are a different collection of cells than you were seven years ago.",
-        "statement2": "You still feel like exactly the same person who started reading this.",
-        "tags": ["biology", "identity"],
-    },
-    {
-        "statement1": "Every choice you make closes off every other version of your life.",
-        "statement2": "You rarely notice any of those other versions were ever possible.",
-        "tags": ["philosophy"],
-    },
-    {
-        "statement1": "Most conversations are forgotten within days by everyone involved.",
-        "statement2": "A single sentence from a stranger can be remembered for decades.",
-        "tags": ["memory", "people"],
-    },
-    {
-        "statement1": "The universe is unimaginably vast, and you occupy almost none of it.",
-        "statement2": "As far as anyone can prove, you are the only place experience actually happens.",
-        "tags": ["philosophy", "space"],
-    },
-    {
-        "statement1": "Progress has made most physical labor easier than it was a century ago.",
-        "statement2": "Most people report feeling busier now than that century ago.",
-        "tags": ["society"],
-    },
-    {
-        "statement1": "You can only ever directly experience the present moment.",
-        "statement2": "Almost all of your attention is spent on the past or the future.",
-        "tags": ["philosophy", "mind"],
-    },
-]
-
-# Real, freely usable placeholder photography (Lorem Picsum, backed by Unsplash
-# photographers) - seeded so each item gets a stable image across reloads.
-PONDER = [
-    {
-        "image_url": "https://picsum.photos/seed/ponder-escalator/800/600",
-        "question": "Is this designed for humans, or for schedules?",
-        "options": ["For humans", "For schedules", "Neither, really"],
-        "tags": ["design", "systems"],
-    },
-    {
-        "image_url": "https://picsum.photos/seed/ponder-factory/800/600",
-        "question": "Does this count as labor, if no one is watching?",
-        "options": ["Yes", "No", "Depends who benefits"],
-        "tags": ["labor", "philosophy"],
-    },
-    {
-        "image_url": "https://picsum.photos/seed/ponder-highway/800/600",
-        "question": "Is this progress, or just maintenance dressed up as progress?",
-        "options": ["Progress", "Maintenance", "Impossible to tell"],
-        "tags": ["infrastructure", "philosophy"],
-    },
-    {
-        "image_url": "https://picsum.photos/seed/ponder-office/800/600",
-        "question": "Who is this room actually built to serve?",
-        "options": ["The people in it", "The organization", "No one in particular"],
-        "tags": ["design", "society"],
-    },
-    {
-        "image_url": "https://picsum.photos/seed/ponder-bridge/800/600",
-        "question": "Does connecting two places change what happens in between?",
-        "options": ["Always", "Sometimes", "Rarely"],
-        "tags": ["infrastructure", "philosophy"],
-    },
-    {
-        "image_url": "https://picsum.photos/seed/ponder-server/800/600",
-        "question": "Is this closer to a machine, or to a memory?",
-        "options": ["A machine", "A memory", "Both, somehow"],
-        "tags": ["technology", "philosophy"],
-    },
-    {
-        "image_url": "https://picsum.photos/seed/ponder-crowd/800/600",
-        "question": "Is a crowd one thing, or many things at once?",
-        "options": ["One thing", "Many things", "It depends on the moment"],
-        "tags": ["society", "philosophy"],
-    },
-    {
-        "image_url": "https://picsum.photos/seed/ponder-warehouse/800/600",
-        "question": "Does a space like this feel empty, or simply waiting?",
-        "options": ["Empty", "Waiting", "Both"],
-        "tags": ["design", "philosophy"],
-    },
-    {
-        "image_url": "https://picsum.photos/seed/ponder-clock/800/600",
-        "question": "Do we keep time, or does time keep us?",
-        "options": ["We keep it", "It keeps us", "Neither"],
-        "tags": ["philosophy", "time"],
-    },
-]
-
 CONTENT_MAP = {
     "fast_weird": (FAST_WEIRD, "common"),
     "explainer": (EXPLAINER, "common"),
@@ -564,6 +645,22 @@ async def populate_text_content():
                 await db[collection_name].insert_one(doc)
 
             print(f"Added {len(items)} items to {collection_name}")
+
+        # Audio drift: insert read-along story drifts WITHOUT clearing the
+        # collection — it also holds real podcast episodes seeded separately.
+        drift_titles = [d["title"] for d in AUDIO_DRIFT]
+        await db["audio_drift_content"].delete_many({"title": {"$in": drift_titles}})
+        for data in AUDIO_DRIFT:
+            doc = {
+                **data,
+                "id": str(uuid.uuid4()),
+                "type": "audio_drift",
+                "rarity": data.get("rarity", "uncommon"),
+                "tags": data.get("tags", []),
+                "created_at": datetime.utcnow(),
+            }
+            await db["audio_drift_content"].insert_one(doc)
+        print(f"Added {len(AUDIO_DRIFT)} read-along drifts to audio_drift_content (podcasts kept)")
 
         print("\nDone seeding text content types.")
     finally:

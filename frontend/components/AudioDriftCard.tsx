@@ -158,6 +158,10 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
             </View>
           )}
         </>
+      ) : content.narration_script ? (
+        <View style={styles.scriptContainer}>
+          <Text style={styles.scriptText}>{content.narration_script}</Text>
+        </View>
       ) : (
         <View style={styles.noAudioContainer}>
           <Ionicons name="musical-notes-outline" size={40} color="#8C8E92" />

@@ -154,6 +154,23 @@ GENERAL TONE RULES:
 - No moralizing, outrage, or politics
 - Everything must feel timeless and quietly surprising
 
+CONTENT QUALITY BAR (every item must pass ALL of these):
+- THE RETELL TEST: would a reader repeat this to a friend at dinner tonight?
+  If not, don't generate it.
+- SPECIFIC over generic: real names, real dates, real numbers. "In 1925,
+  Victor Lustig sold the Eiffel Tower for $70,000" beats "a con artist once
+  sold a famous landmark."
+- BANNED: top-100 trivia everyone has seen (honey never spoils, octopuses
+  have three hearts, goldfish memory, we use 10% of our brains, bananas are
+  radioactive, a group of crows is a murder). If it appears in every listicle,
+  skip it.
+- TRUE ONLY: every factual item must be a real, documented event or fact.
+  Never invent people, dates, or numbers. If unsure, choose something you
+  are sure of.
+- END WITH AN AFTERTASTE: the last line should land — an irony, a haunting
+  detail, or a quiet twist ("The dealer was too embarrassed to report it.
+  So Lustig sold the tower again.").
+
 Respond ONLY with valid JSON. No markdown, no explanation."""
     
     prompts = {
@@ -171,12 +188,16 @@ Format as JSON array:
   ]
 }}
 
-Examples of good headlines:
-- "A man makes money selling recorded silence"
-- "People rent chickens instead of buying eggs"
-- "Some creators sell jars of air online"
+The best fast_weird items collide two things the reader keeps in separate
+mental boxes — usually time or scale:
+- "Woolly mammoths were still alive when the Great Pyramid was built"
+- "The inventor of the Pringles can is buried in one"
+- "Oxford University is older than the Aztec Empire"
+- "There are more trees on Earth than stars in the Milky Way"
 
-Keep facts ≤6 lines total. Must be real or internet phenomena.""",
+Each item: a punchy headline, then 2-3 facts with real dates/numbers, ending
+on the most striking detail. Keep facts ≤6 lines total. Must be real and
+verifiable — never invented.""",
         
         "explainer": f"""Generate {count} EXPLAINER content items. These explain how things work in 3 steps.
 
@@ -194,12 +215,14 @@ Format as JSON array:
   ]
 }}
 
-Examples:
-- How telecom poles are installed in mountains
-- How undersea cables are repaired
-- How ATMs are serviced in high-crime areas
+Pick questions people have quietly wondered about since childhood, where the
+real mechanism is more clever than they'd guess:
+- "How do they get ships into bottles?" (hinged masts, threads through the cork)
+- "Why do we get brain freeze?" (referred pain from the soft palate)
+- "Why does your voice sound different in recordings?" (bone conduction)
 
-≤120 words total.""",
+3-5 steps, each one concrete. The last step or the interaction line should
+carry a small payoff ("So which one is your real voice?"). ≤120 words total.""",
         
         "ponder": f"""Generate {count} PONDER content items. Evocative images with reflective questions.
 
@@ -216,12 +239,14 @@ Format as JSON array:
   ]
 }}
 
-Examples:
-- "Is this designed for humans or schedules?"
-- "Does this count as labor?"
-- "Is this progress or maintenance?"
+The best ponders are personal hypotheticals the reader answers about their
+own life — not abstract philosophy:
+- "If you could erase one memory, would you?"
+- "Would you press a button that shows you the exact date of your death?"
+- "If you could hear what people honestly think of you, would you listen?"
 
-No correct answer. Questions should provoke thought.""",
+Options should be real positions someone might hold, each with a distinct
+emotional flavor ("No — even pain shaped who I am"). No correct answer.""",
         
         "incident": f"""Generate {count} INCIDENT content items. Quietly fascinating real-world moments.
 
@@ -237,12 +262,17 @@ Format as JSON array:
   ]
 }}
 
-Examples:
-- FedEx founder gambling to save the company
-- Airline monopoly through standardization
-- Biological quirks explained plainly
+These are true stories about specific people, told with names, dates and
+numbers:
+- Victor Lustig selling the Eiffel Tower to scrap dealers in 1925 — twice,
+  because the first victim was too embarrassed to report it
+- Joshua Bell playing a $3.5M Stradivarius in a D.C. subway: 1,097 passed,
+  seven stopped, $32 in tips
+- The programmer who automated his whole job, left in 2012, and whose
+  scripts kept 'working' for two years
 
-3-5 short factual lines. No mythologizing.""",
+3-6 short factual lines. The final line must land — an irony or a haunting
+detail, not a summary. No mythologizing, no invented people or numbers.""",
         
         "mini_game": f"""Generate {count} MINI_GAME content items. 10-20 second games.
 
@@ -280,13 +310,14 @@ Format as JSON array:
   ]
 }}
 
-Themes:
-- Systems humans forget exist
-- Background infrastructure
-- Quiet behaviors
-- Things that persist without attention
+Themes — atmospheric true stories about real places and events:
+- The Great Molasses Flood of 1919 (a 50-foot wave of syrup at 35 mph;
+  on hot days locals say you can still smell it)
+- Kolmanskop, the Namibian diamond town the desert swallowed room by room
+- The Radium Girls, who glowed in the dark and whose graves still tick
 
-Calm, neutral voice. Ends with open thought or quiet question.""",
+Calm, neutral voice, real dates and numbers, sensory detail. Ends with the
+image that lingers, not a moral.""",
         
         "video": f"""Generate {count} VIDEO content items. Short explainer videos (15-60 seconds).
 
@@ -329,10 +360,16 @@ Format as JSON array:
   ]
 }}
 
+These render as "Gentle Reminder" cards: a small, kind nudge back into the
+body or the present moment.
+
 Rules:
-- The text should be exactly one line, or sometimes just whitespace.
-- Examples: "Silence.", "Just whitespace.", "A quiet space."
-- Must be brief and calm.""",
+- 1-3 short lines. First line is the nudge, the rest make it land.
+- Examples: "When did you last laugh?\\nNot a polite chuckle. A real,
+  unguarded laugh. Your body misses it." / "Unclench your jaw.\\nDrop your
+  shoulders. You were holding them again."
+- Occasionally, pure stillness is fine: "There is nothing to solve here."
+- Never preachy, never wellness-jargon. Brief and calm.""",
 
         "quiet_contradiction": f"""Generate {count} QUIET_CONTRADICTION content items. These are two true ideas that don't resolve.
 
@@ -350,6 +387,8 @@ Format as JSON array:
 
 Examples:
 - "Nothing you do will matter in a trillion years. The universe will expand into cold darkness, and no trace of humanity will remain." vs "The fact that you cared about anything today—at all—is the only meaning that ever existed."
+- "Every choice you make is shaped by genetics, environment, and physics. Free will might be an illusion." vs "You are reading this sentence, and you can choose to stop. That choice feels undeniably real."
+- The second statement should ideally implicate the reader in the act of reading it, or use their own body/mind as the counter-evidence.
 - No conclusion offered."""
     }
     
