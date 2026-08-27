@@ -4,6 +4,7 @@ import Text from './AppText';
 import { Ionicons } from '@expo/vector-icons';
 import ReactionButtons from './ReactionButtons';
 import CardHeader from './CardHeader';
+import { cards, colors, type } from '../lib/theme';
 
 interface PonderCardProps {
   content: {
@@ -19,7 +20,7 @@ export default function PonderCard({ content }: PonderCardProps) {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
 
   return (
-    <View style={styles.card}>
+    <View style={cards.white}>
       <CardHeader icon="infinite-outline" color="#8b5cf6" label="Ponder & Play" />
 
       {content.image_url && (
@@ -52,7 +53,7 @@ export default function PonderCard({ content }: PonderCardProps) {
               {option}
             </Text>
             {selectedOption === index && (
-              <Ionicons name="checkmark-circle" size={20} color="#8b5cf6" />
+              <Ionicons name="checkmark" size={14} color={colors.ink} />
             )}
           </TouchableOpacity>
         ))}
@@ -73,70 +74,52 @@ export default function PonderCard({ content }: PonderCardProps) {
 }
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 20,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#ECECE9',
-  },
   image: {
     width: '100%',
     height: 200,
     borderRadius: 12,
-    marginBottom: 14,
-    backgroundColor: '#F5F5F3',
+    marginBottom: 16,
+    backgroundColor: colors.surfaceTinted,
   },
   question: {
-    fontSize: 18,
-    fontWeight: '500',
-    letterSpacing: -0.2,
-    color: '#16171A',
-    marginBottom: 14,
-    lineHeight: 25,
+    ...type.title,
+    marginBottom: 16,
   },
   optionsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
+    gap: 8,
     marginBottom: 12,
   },
   optionCard: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    paddingVertical: 9,
-    paddingHorizontal: 16,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 999,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#DDDDDA',
+    borderColor: colors.hairline,
   },
   optionCardSelected: {
-    borderColor: '#8b5cf6',
+    borderColor: colors.ink,
   },
   optionText: {
-    fontSize: 14,
-    color: '#3A3B3E',
-    fontWeight: '500',
+    fontSize: 11,
+    fontWeight: '400',
+    lineHeight: 16.5,
+    color: colors.body,
   },
   optionTextSelected: {
-    color: '#16171A',
-    fontWeight: '600',
+    color: colors.ink,
   },
   responseContainer: {
-    marginTop: 6,
-    padding: 12,
-    backgroundColor: '#F5F5F3',
-    borderRadius: 8,
-    borderLeftWidth: 3,
-    borderLeftColor: '#8b5cf6',
-    marginBottom: 8,
+    marginTop: 4,
+    marginBottom: 4,
   },
   responseText: {
-    fontSize: 13,
-    color: '#6B6D76',
+    ...type.body,
+    color: colors.muted,
     fontStyle: 'italic',
   },
 });

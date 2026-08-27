@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
 import ReactionButtons from './ReactionButtons';
 import CardHeader from './CardHeader';
+import { cards, colors, type } from '../lib/theme';
 
 interface ExplainerCardProps {
   content: {
@@ -29,7 +30,7 @@ export default function ExplainerCard({ content }: ExplainerCardProps) {
   };
 
   return (
-    <View style={styles.card}>
+    <View style={cards.white}>
       <CardHeader icon="bulb-outline" color="#10b981" label="How Does This Work?" />
 
       <Text style={styles.question}>{content.question}</Text>
@@ -42,8 +43,8 @@ export default function ExplainerCard({ content }: ExplainerCardProps) {
         <Text style={styles.seeHowText}>{showSteps ? 'Hide steps' : 'See how'}</Text>
         <Ionicons
           name={showSteps ? 'chevron-up' : 'chevron-down'}
-          size={16}
-          color="#5B5D63"
+          size={15}
+          color={colors.muted}
         />
       </TouchableOpacity>
 
@@ -89,8 +90,8 @@ export default function ExplainerCard({ content }: ExplainerCardProps) {
         >
           <Ionicons
             name={showVideo ? 'close-circle-outline' : 'play-circle-outline'}
-            size={20}
-            color="#6366f1"
+            size={18}
+            color={colors.body}
           />
           <Text style={styles.videoButtonText}>
             {showVideo ? 'Hide Video' : 'Watch Explanation'}
@@ -112,21 +113,9 @@ export default function ExplainerCard({ content }: ExplainerCardProps) {
 }
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 20,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#ECECE9',
-  },
   question: {
-    fontSize: 18,
-    fontWeight: '500',
-    letterSpacing: -0.2,
-    color: '#16171A',
-    marginBottom: 12,
-    lineHeight: 25,
+    ...type.title,
+    marginBottom: 14,
   },
   seeHowRow: {
     flexDirection: 'row',
@@ -134,73 +123,71 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   seeHowText: {
-    fontSize: 15,
-    color: '#5B5D63',
+    ...type.body,
   },
   divider: {
     height: 1,
-    backgroundColor: '#ECECE9',
+    backgroundColor: colors.line,
     marginVertical: 16,
   },
   interaction: {
-    fontSize: 15,
-    color: '#8C8E92',
+    ...type.body,
+    color: colors.muted,
     fontStyle: 'italic',
   },
   stepsContainer: {
-    gap: 12,
+    gap: 10,
     marginTop: 16,
   },
   stepCard: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    padding: 12,
-    backgroundColor: '#F5F5F3',
+    padding: 14,
+    backgroundColor: colors.surfaceTinted,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#ECECE9',
+    borderColor: colors.line,
   },
   stepCardSelected: {
-    borderColor: '#10b981',
-    backgroundColor: '#10b98114',
+    borderColor: colors.hairline,
+    backgroundColor: '#F4F4F5',
   },
   stepNumber: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: '#10b981',
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: colors.hairline,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
+    marginTop: 1,
   },
   stepNumberText: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#ffffff',
+    fontSize: 10,
+    fontWeight: '500',
+    color: colors.body,
   },
   stepText: {
+    ...type.body,
     flex: 1,
-    fontSize: 14,
-    color: '#3A3B3E',
-    lineHeight: 20,
   },
   videoButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 16,
-    paddingVertical: 12,
+    paddingVertical: 11,
     paddingHorizontal: 20,
-    backgroundColor: '#F5F5F3',
+    backgroundColor: colors.surfaceTinted,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#6366f1',
+    borderColor: colors.hairline,
   },
   videoButtonText: {
     marginLeft: 8,
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#6366f1',
+    fontSize: 11,
+    fontWeight: '400',
+    color: colors.body,
   },
   videoContainer: {
     marginTop: 16,

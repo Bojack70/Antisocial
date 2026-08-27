@@ -27,6 +27,7 @@ import QuietContradictionCard from '../components/QuietContradictionCard';
 import ShareableCard from '../components/ShareableCard';
 import GameCard from '../components/GameCard';
 import { GAMES } from '../data/games';
+import { cards, colors, type } from '../lib/theme';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
@@ -228,7 +229,7 @@ export default function Index() {
   if (loading) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#6366f1" />
+        <ActivityIndicator size="small" color={colors.muted} />
         <Text style={styles.loadingText}>Loading curiosities...</Text>
       </View>
     );
@@ -237,7 +238,7 @@ export default function Index() {
   if (error) {
     return (
       <View style={styles.centerContainer}>
-        <Ionicons name="alert-circle-outline" size={64} color="#ef4444" />
+        <Ionicons name="alert-circle-outline" size={40} color={colors.muted} />
         <Text style={styles.errorText}>{error}</Text>
         <TouchableOpacity style={styles.retryButton} onPress={fetchFeed}>
           <Text style={styles.retryButtonText}>Retry</Text>
@@ -267,8 +268,8 @@ export default function Index() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor="#6366f1"
-            colors={['#6366f1']}
+            tintColor={colors.muted}
+            colors={[colors.muted]}
           />
         }
         onScroll={handleEndScroll}
@@ -276,7 +277,7 @@ export default function Index() {
       >
         {feed.length === 0 ? (
           <View style={styles.emptyState}>
-            <Ionicons name="telescope-outline" size={64} color="#8C8E92" />
+            <Ionicons name="telescope-outline" size={40} color={colors.muted} />
             <Text style={styles.emptyText}>No content yet</Text>
             <Text style={styles.emptySubtext}>Pull down to refresh</Text>
           </View>
@@ -315,20 +316,21 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F7F7F5',
+    backgroundColor: colors.page,
   },
   centerContainer: {
     flex: 1,
-    backgroundColor: '#F7F7F5',
+    backgroundColor: colors.page,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,
   },
   header: {
     paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingVertical: 14,
+    backgroundColor: colors.surfaceTinted,
     borderBottomWidth: 1,
-    borderBottomColor: '#ECECE9',
+    borderBottomColor: colors.line,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -337,16 +339,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#16171A',
-    letterSpacing: -0.3,
+    fontSize: 18,
+    fontWeight: '500',
+    color: colors.ink,
+    letterSpacing: -0.45,
   },
   headerSubtitle: {
-    fontSize: 13,
-    color: '#8C8E92',
-    marginTop: 4,
-    fontStyle: 'italic',
+    ...type.micro,
+    marginTop: 5,
   },
   scrollView: {
     flex: 1,
@@ -356,27 +356,25 @@ const styles = StyleSheet.create({
     paddingTop: 16,
   },
   loadingText: {
+    ...type.micro,
     marginTop: 16,
-    fontSize: 16,
-    color: '#8C8E92',
   },
   errorText: {
+    ...type.body,
     marginTop: 16,
-    fontSize: 16,
-    color: '#ef4444',
     textAlign: 'center',
   },
   retryButton: {
     marginTop: 24,
-    paddingHorizontal: 32,
-    paddingVertical: 12,
-    backgroundColor: '#6366f1',
-    borderRadius: 8,
+    paddingHorizontal: 24,
+    paddingVertical: 11,
+    backgroundColor: colors.ink,
+    borderRadius: 10,
   },
   retryButtonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#FFFFFF',
   },
   emptyState: {
     alignItems: 'center',
@@ -384,72 +382,65 @@ const styles = StyleSheet.create({
     paddingVertical: 64,
   },
   emptyText: {
+    ...type.title,
     marginTop: 16,
-    fontSize: 18,
-    color: '#6B6D76',
-    fontWeight: '600',
   },
   emptySubtext: {
+    ...type.micro,
     marginTop: 8,
-    fontSize: 14,
-    color: '#8C8E92',
   },
   interruptionContainer: {
-    paddingVertical: 48,
+    paddingVertical: 44,
     alignItems: 'center',
     justifyContent: 'center',
   },
   interruptionText: {
-    fontSize: 20,
-    color: '#8C8E92',
+    fontSize: 16,
+    color: colors.muted,
     fontStyle: 'italic',
     textAlign: 'center',
     paddingHorizontal: 24,
+    lineHeight: 24,
   },
   endSessionCard: {
-    alignSelf: 'stretch',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#ECECE9',
+    ...cards.white,
     padding: 32,
     marginTop: 16,
     marginBottom: 48,
     alignItems: 'center',
   },
   endSessionText: {
-    fontSize: 22,
-    color: '#16171A',
+    ...type.title,
     textAlign: 'center',
-    marginBottom: 40,
-    lineHeight: 32,
+    marginBottom: 32,
   },
   leaveButton: {
-    backgroundColor: '#16171A',
-    paddingVertical: 14,
+    backgroundColor: colors.ink,
+    paddingVertical: 13,
     paddingHorizontal: 32,
-    borderRadius: 999,
+    borderRadius: 10,
     width: '100%',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 12,
   },
   leaveButtonText: {
+    fontSize: 12,
+    fontWeight: '500',
     color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
   },
   driftButton: {
-    paddingVertical: 14,
+    paddingVertical: 13,
     paddingHorizontal: 32,
-    borderRadius: 999,
+    borderRadius: 10,
     width: '100%',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#DDDDDA',
+    borderColor: colors.hairline,
   },
   driftButtonText: {
-    color: '#6B6D76',
-    fontSize: 14,
+    fontSize: 12,
+    fontWeight: '400',
+    color: colors.body,
   },
   footerSpacing: {
     height: 80,

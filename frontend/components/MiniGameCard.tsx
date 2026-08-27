@@ -4,6 +4,7 @@ import Text from './AppText';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import CardHeader from './CardHeader';
+import { cards, colors, type } from '../lib/theme';
 
 interface MiniGameCardProps {
   content: {
@@ -36,7 +37,7 @@ export default function MiniGameCard({ content }: MiniGameCardProps) {
   }[content.game_type] || 'Mini Game';
 
   return (
-    <View style={styles.card}>
+    <View style={cards.white}>
       <CardHeader icon="game-controller-outline" color="#ec4899" label={gameTypeLabel} />
 
       <Text style={styles.prompt}>{content.prompt}</Text>
@@ -69,10 +70,10 @@ export default function MiniGameCard({ content }: MiniGameCardProps) {
                 {option}
               </Text>
               {isCorrectOption && (
-                <Ionicons name="checkmark-circle" size={20} color="#10b981" />
+                <Ionicons name="checkmark" size={14} color={colors.ink} />
               )}
               {isWrongSelection && (
-                <Ionicons name="close-circle" size={20} color="#ef4444" />
+                <Ionicons name="close" size={14} color={colors.muted} />
               )}
             </TouchableOpacity>
           );
@@ -88,8 +89,8 @@ export default function MiniGameCard({ content }: MiniGameCardProps) {
         >
           <Ionicons
             name={isCorrect ? 'happy-outline' : 'bulb-outline'}
-            size={20}
-            color={isCorrect ? '#10b981' : '#f59e0b'}
+            size={15}
+            color={colors.muted}
           />
           <Text style={styles.resultText}>
             {isCorrect ? 'You got it!' : 'Interesting choice'}
@@ -103,9 +104,9 @@ export default function MiniGameCard({ content }: MiniGameCardProps) {
           onPress={() => router.push('/play')}
           activeOpacity={0.7}
         >
-          <Ionicons name="game-controller-outline" size={15} color="#6B6D76" />
+          <Ionicons name="game-controller-outline" size={13} color={colors.body} />
           <Text style={styles.timelineLinkText}>Want a real run? Visit the Game Room</Text>
-          <Ionicons name="arrow-forward" size={14} color="#6B6D76" />
+          <Ionicons name="arrow-forward" size={13} color={colors.body} />
         </TouchableOpacity>
       )}
     </View>
@@ -113,92 +114,66 @@ export default function MiniGameCard({ content }: MiniGameCardProps) {
 }
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 20,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#ECECE9',
-  },
   prompt: {
-    fontSize: 18,
-    fontWeight: '500',
-    letterSpacing: -0.2,
-    color: '#16171A',
+    ...type.title,
     marginBottom: 16,
-    lineHeight: 25,
   },
   optionsContainer: {
-    gap: 10,
+    gap: 8,
   },
   optionCard: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 14,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 14,
-    borderWidth: 1.5,
-    borderColor: '#DDDDDA',
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: colors.hairline,
   },
   optionCardSelected: {
-    borderColor: '#ec4899',
+    borderColor: colors.ink,
   },
   optionCardCorrect: {
-    borderColor: '#10b981',
-    backgroundColor: '#10b98114',
+    borderColor: colors.ink,
+    backgroundColor: colors.surfaceTinted,
   },
   optionCardWrong: {
-    borderColor: '#ef4444',
-    backgroundColor: '#ef444414',
+    borderColor: colors.line,
+    backgroundColor: colors.surfaceTinted,
   },
   optionText: {
+    ...type.body,
     flex: 1,
-    fontSize: 14,
-    color: '#3A3B3E',
-    lineHeight: 20,
   },
   optionTextBold: {
-    fontWeight: '700',
-    color: '#16171A',
+    color: colors.ink,
   },
   resultContainer: {
     marginTop: 16,
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 12,
-    borderRadius: 8,
-    borderLeftWidth: 3,
+    gap: 8,
   },
-  resultCorrect: {
-    backgroundColor: '#10b98114',
-    borderLeftColor: '#10b981',
-  },
-  resultWrong: {
-    backgroundColor: '#f59e0b14',
-    borderLeftColor: '#f59e0b',
-  },
+  resultCorrect: {},
+  resultWrong: {},
   resultText: {
-    marginLeft: 8,
-    fontSize: 14,
-    color: '#3A3B3E',
-    fontWeight: '600',
+    ...type.micro,
   },
   timelineLink: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    marginTop: 14,
+    marginTop: 16,
     paddingVertical: 11,
-    borderRadius: 999,
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#DDDDDA',
+    borderColor: colors.hairline,
   },
   timelineLinkText: {
-    fontSize: 13,
-    color: '#6B6D76',
-    fontWeight: '500',
+    fontSize: 11,
+    fontWeight: '400',
+    color: colors.body,
   },
 });

@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
 import ReactionButtons from './ReactionButtons';
 import CardHeader from './CardHeader';
+import { cards, colors, type } from '../lib/theme';
 
 const { width } = Dimensions.get('window');
 
@@ -105,16 +106,14 @@ export default function VideoCard({ content }: VideoCardProps) {
   };
 
   return (
-    <View style={styles.card} ref={cardRef}>
+    <View style={cards.white} ref={cardRef}>
       <CardHeader
         icon="videocam-outline"
         color="#f43f5e"
         label="Short Explainer"
         badge={
           content.duration ? (
-            <View style={styles.durationBadge}>
-              <Text style={styles.durationText}>{formatDuration(content.duration)}</Text>
-            </View>
+            <Text style={styles.durationText}>{formatDuration(content.duration)}</Text>
           ) : undefined
         }
       />
@@ -133,7 +132,7 @@ export default function VideoCard({ content }: VideoCardProps) {
               activeOpacity={0.7}
             >
               <View style={styles.playIcon}>
-                <Ionicons name="play" size={24} color="#ffffff" />
+                <Ionicons name="play" size={13} color="#FFFFFF" />
               </View>
               <Text style={styles.videoButtonText}>Watch Now</Text>
             </TouchableOpacity>
@@ -141,7 +140,7 @@ export default function VideoCard({ content }: VideoCardProps) {
         </>
       ) : (
         <View style={styles.placeholderContainer}>
-          <Ionicons name="film-outline" size={32} color="#6b7280" />
+          <Ionicons name="film-outline" size={28} color={colors.muted} />
           <Text style={styles.placeholderText}>Video coming soon</Text>
           <Text style={styles.placeholderSubtext}>
             Real video URLs will be added in production
@@ -158,61 +157,39 @@ export default function VideoCard({ content }: VideoCardProps) {
 }
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 20,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#ECECE9',
-  },
-  durationBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    backgroundColor: '#F5F5F3',
-    borderRadius: 6,
-  },
   durationText: {
-    fontSize: 11,
-    color: '#6B6D76',
-    fontWeight: '600',
+    ...type.micro,
   },
   title: {
-    fontSize: 18,
-    fontWeight: '500',
-    letterSpacing: -0.2,
-    color: '#16171A',
+    ...type.title,
     marginBottom: 10,
-    lineHeight: 25,
   },
   description: {
-    fontSize: 15,
-    color: '#5B5D63',
-    lineHeight: 22,
+    ...type.body,
     marginBottom: 16,
   },
   videoButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 16,
-    backgroundColor: '#f43f5e',
+    gap: 8,
+    paddingVertical: 12,
+    backgroundColor: colors.ink,
     borderRadius: 12,
     marginBottom: 12,
   },
   playIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#dc2626',
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
   },
   videoButtonText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#FFFFFF',
   },
   videoContainer: {
     height: 220,
@@ -228,24 +205,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 40,
-    backgroundColor: '#F5F5F3',
+    backgroundColor: colors.surfaceTinted,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#ECECE9',
-    borderStyle: 'dashed',
+    borderColor: colors.line,
     marginBottom: 12,
   },
   placeholderText: {
+    ...type.body,
     marginTop: 12,
-    fontSize: 14,
-    color: '#6B6D76',
-    fontWeight: '600',
   },
   placeholderSubtext: {
-    marginTop: 4,
-    fontSize: 12,
-    color: '#8C8E92',
+    ...type.micro,
+    marginTop: 6,
     textAlign: 'center',
-    paddingHorizontal: 20,
   },
 });

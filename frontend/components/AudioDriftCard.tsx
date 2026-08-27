@@ -4,6 +4,7 @@ import Text from './AppText';
 import { Ionicons } from '@expo/vector-icons';
 import ReactionButtons from './ReactionButtons';
 import CardHeader from './CardHeader';
+import { cards, colors, type } from '../lib/theme';
 
 interface AudioDriftCardProps {
   content: {
@@ -34,7 +35,7 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
               width: '100%',
               height: '54px',
               borderRadius: '12px',
-              backgroundColor: '#F5F5F3',
+              backgroundColor: 'rgba(39, 39, 42, 0.5)',
             }}
             preload="metadata"
           >
@@ -137,8 +138,8 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
   };
 
   return (
-    <View style={styles.card}>
-      <CardHeader icon="headset-outline" color="#06b6d4" label="Audio Drift" />
+    <View style={cards.dark}>
+      <CardHeader icon="headset-outline" color="#06b6d4" label="Audio Drift" tone="dark" />
 
       <Text style={styles.title}>{content.title}</Text>
       
@@ -163,7 +164,7 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
         </View>
       ) : (
         <View style={styles.noAudioContainer}>
-          <Ionicons name="musical-notes-outline" size={40} color="#8C8E92" />
+          <Ionicons name="musical-notes-outline" size={32} color={colors.darkLine} />
           <Text style={styles.noAudioText}>Audio coming soon</Text>
           <Text style={styles.noAudioSubtext}>
             Pre-recorded narrations will be added
@@ -174,27 +175,16 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
       <ReactionButtons
         reactions={['Stayed With Me', 'Lingering', 'Unsettling', 'Let It Pass']}
         tags={content.tags}
+        tone="dark"
       />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 20,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#ECECE9',
-  },
   title: {
-    fontSize: 18,
-    fontWeight: '500',
-    letterSpacing: -0.2,
-    color: '#16171A',
-    marginBottom: 14,
-    lineHeight: 25,
+    ...type.titleOnDark,
+    marginBottom: 16,
   },
   audioPlayerContainer: {
     width: '100%',
@@ -203,16 +193,18 @@ const styles = StyleSheet.create({
   mobilePlayerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F5F5F3',
+    backgroundColor: colors.darkPanel,
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
   },
   playButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#06b6d4',
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: colors.darkPill,
+    borderWidth: 1,
+    borderColor: colors.darkLine,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 16,
@@ -221,14 +213,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   progressBar: {
-    height: 4,
-    backgroundColor: '#ECECE9',
+    height: 3,
+    backgroundColor: colors.darkLine,
     borderRadius: 2,
     overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#06b6d4',
+    backgroundColor: colors.muted,
   },
   timeContainer: {
     flexDirection: 'row',
@@ -236,55 +228,42 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   timeText: {
-    fontSize: 11,
-    color: '#8C8E92',
+    ...type.micro,
   },
   scriptContainer: {
-    backgroundColor: '#F5F5F3',
+    backgroundColor: colors.darkPanel,
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
   },
   scriptText: {
-    fontSize: 14.5,
-    color: '#5B5D63',
-    lineHeight: 22,
+    ...type.bodyOnDark,
   },
   instructionContainer: {
     paddingVertical: 8,
-    paddingHorizontal: 12,
-    backgroundColor: '#F5F5F3',
-    borderRadius: 8,
     marginBottom: 16,
   },
   instructionText: {
-    fontSize: 12,
-    color: '#6B6D76',
+    ...type.body,
+    color: colors.darkLine,
     textAlign: 'center',
     fontStyle: 'italic',
   },
   noAudioContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 48,
-    backgroundColor: '#F5F5F3',
+    paddingVertical: 32,
+    backgroundColor: colors.darkPanel,
     borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#ECECE9',
-    borderStyle: 'dashed',
     marginBottom: 16,
   },
   noAudioText: {
+    ...type.bodyOnDark,
     marginTop: 12,
-    fontSize: 15,
-    color: '#6B6D76',
-    fontWeight: '600',
   },
   noAudioSubtext: {
+    ...type.micro,
     marginTop: 6,
-    fontSize: 13,
-    color: '#8C8E92',
     textAlign: 'center',
-    paddingHorizontal: 20,
   },
 });

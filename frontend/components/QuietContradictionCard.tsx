@@ -3,6 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import Text from './AppText';
 import ReactionButtons from './ReactionButtons';
 import CardHeader from './CardHeader';
+import { cards, colors, type } from '../lib/theme';
 
 interface QuietContradictionCardProps {
   content: {
@@ -16,7 +17,7 @@ export default function QuietContradictionCard({ content }: QuietContradictionCa
   const reactions = ['Unsettling', 'I’m Unsure', 'Noted', 'Stayed With Me'];
 
   return (
-    <View style={styles.container}>
+    <View style={cards.tinted}>
       <CardHeader icon="contrast-outline" color="#64748b" label="Quiet Contradiction" />
 
       <Text style={styles.statementText}>{content.statement1}</Text>
@@ -32,24 +33,15 @@ export default function QuietContradictionCard({ content }: QuietContradictionCa
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#ECECE9',
-    padding: 20,
-    marginBottom: 16,
-  },
   statementText: {
+    ...type.title,
     fontSize: 17,
-    color: '#16171A',
     lineHeight: 26,
-    fontWeight: '500',
   },
   separator: {
     height: 1,
     width: 28,
-    backgroundColor: '#DDDDDA',
+    backgroundColor: colors.hairline,
     marginVertical: 18,
   },
 });

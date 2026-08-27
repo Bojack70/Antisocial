@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { GAMES } from '../../data/games';
+import { colors, type } from '../../lib/theme';
 
 export default function PlayHub() {
   const router = useRouter();
@@ -16,7 +17,7 @@ export default function PlayHub() {
 
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Ionicons name="chevron-back" size={22} color="#3A3B3E" />
+          <Ionicons name="chevron-back" size={20} color={colors.body} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>The Game Room</Text>
@@ -33,14 +34,14 @@ export default function PlayHub() {
             onPress={() => router.push(game.route as any)}
             activeOpacity={0.8}
           >
-            <View style={[styles.iconBadge, { backgroundColor: game.tint }]}>
-              <Ionicons name={game.icon} size={22} color={game.color} />
+            <View style={styles.iconBadge}>
+              <Ionicons name={game.icon} size={16} color={colors.body} />
             </View>
             <View style={styles.gameInfo}>
               <Text style={styles.gameName}>{game.title}</Text>
               <Text style={styles.gameDesc}>{game.description}</Text>
             </View>
-            <Ionicons name="chevron-forward" size={20} color="#8C8E92" />
+            <Ionicons name="chevron-forward" size={16} color={colors.muted} />
           </TouchableOpacity>
         ))}
       </View>
@@ -51,23 +52,24 @@ export default function PlayHub() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F7F7F5',
+    backgroundColor: colors.page,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 14,
+    backgroundColor: colors.surfaceTinted,
     borderBottomWidth: 1,
-    borderBottomColor: '#ECECE9',
+    borderBottomColor: colors.line,
   },
   backButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#FFFFFF',
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: '#ECECE9',
+    borderColor: colors.line,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -76,17 +78,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerSpacer: {
-    width: 36,
+    width: 32,
   },
   headerTitle: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: '#16171A',
+    fontSize: 18,
+    fontWeight: '500',
+    color: colors.ink,
+    letterSpacing: -0.45,
   },
   headerSubtitle: {
-    fontSize: 12,
-    color: '#8C8E92',
-    marginTop: 1,
+    ...type.micro,
+    marginTop: 5,
   },
   list: {
     padding: 16,
@@ -99,16 +101,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 24,
+    backgroundColor: colors.surface,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#ECECE9',
-    padding: 18,
+    borderColor: colors.line,
+    padding: 20,
   },
   iconBadge: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: colors.surfaceTinted,
+    borderWidth: 1,
+    borderColor: colors.line,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -116,14 +121,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   gameName: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#16171A',
+    ...type.title,
+    fontSize: 17,
+    lineHeight: 24,
   },
   gameDesc: {
-    fontSize: 13,
-    color: '#5B5D63',
-    marginTop: 3,
-    lineHeight: 18,
+    ...type.body,
+    marginTop: 4,
   },
 });

@@ -46,7 +46,7 @@ export default function ShareableCard({ children, shareName }: ShareableCardProp
 
 const styles = StyleSheet.create({
   captureFrame: {
-    backgroundColor: '#F7F7F5',
+    backgroundColor: '#FAFAFA',
     padding: 14,
     paddingBottom: 0,
   },
@@ -55,8 +55,10 @@ const styles = StyleSheet.create({
     paddingBottom: 14,
   },
   brandText: {
-    fontSize: 11,
-    letterSpacing: 0.4,
-    color: '#8C8E92',
+    fontSize: 10,
+    fontWeight: '400',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+    color: '#A1A1AA',
   },
 });

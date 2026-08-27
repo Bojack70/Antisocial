@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import CardHeader from './CardHeader';
+import { cards, colors, type } from '../lib/theme';
 import { GameDefinition } from '../data/games';
 
 interface GameCardProps {
@@ -29,19 +30,19 @@ export default function GameCard({ game }: GameCardProps) {
   }, [game.statKey]);
 
   return (
-    <View style={styles.card}>
+    <View style={cards.tinted}>
       <CardHeader icon={game.icon} color={game.color} label={game.label} />
 
       <Text style={styles.title}>{game.title}</Text>
       <Text style={styles.description}>{game.description}</Text>
 
       <TouchableOpacity
-        style={[styles.cta, { backgroundColor: game.tint }]}
+        style={styles.cta}
         onPress={() => router.push(game.route as any)}
         activeOpacity={0.8}
       >
-        <Text style={[styles.ctaText, { color: game.color }]}>{game.cta}</Text>
-        <Ionicons name="arrow-forward" size={15} color={game.color} />
+        <Text style={styles.ctaText}>{game.cta}</Text>
+        <Ionicons name="arrow-forward" size={13} color="#FFFFFF" />
       </TouchableOpacity>
 
       {stat > 0 && <Text style={styles.stat}>{game.statLabel(stat)}</Text>}
@@ -50,26 +51,12 @@ export default function GameCard({ game }: GameCardProps) {
 }
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 20,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#ECECE9',
-  },
   title: {
-    fontSize: 18,
-    fontWeight: '500',
-    letterSpacing: -0.2,
-    color: '#16171A',
+    ...type.title,
     marginBottom: 8,
-    lineHeight: 25,
   },
   description: {
-    fontSize: 15,
-    color: '#5B5D63',
-    lineHeight: 22,
+    ...type.body,
   },
   cta: {
     flexDirection: 'row',
@@ -77,17 +64,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 7,
     marginTop: 16,
-    paddingVertical: 13,
-    borderRadius: 999,
+    paddingVertical: 12,
+    borderRadius: 10,
+    backgroundColor: colors.ink,
   },
   ctaText: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#FFFFFF',
   },
   stat: {
-    marginTop: 10,
-    fontSize: 12,
-    color: '#8C8E92',
+    ...type.micro,
+    marginTop: 12,
     textAlign: 'center',
   },
 });

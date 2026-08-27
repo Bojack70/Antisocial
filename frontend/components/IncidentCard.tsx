@@ -3,6 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import Text from './AppText';
 import ReactionButtons from './ReactionButtons';
 import CardHeader from './CardHeader';
+import { cards, type } from '../lib/theme';
 
 interface IncidentCardProps {
   content: {
@@ -13,16 +14,18 @@ interface IncidentCardProps {
   };
 }
 
+// A story card, so it takes the dark surface — the narrative types are
+// the ones that carry the feed's rhythm.
 export default function IncidentCard({ content }: IncidentCardProps) {
   return (
-    <View style={styles.card}>
-      <CardHeader icon="newspaper-outline" color="#f59e0b" label="Quietly Fascinating" />
+    <View style={cards.dark}>
+      <CardHeader icon="newspaper-outline" color="#f59e0b" label="Quietly Fascinating" tone="dark" />
 
       <Text style={styles.hook}>{content.hook}</Text>
 
       <View style={styles.storyContainer}>
         {content.story.map((line, index) => (
-          <Text key={index} style={styles.storyLine}>
+          <Text key={index} style={type.bodyOnDark}>
             {line}
           </Text>
         ))}
@@ -31,35 +34,18 @@ export default function IncidentCard({ content }: IncidentCardProps) {
       <ReactionButtons
         reactions={['Let It Pass', 'Unexpected', 'Makes Sense']}
         tags={content.tags}
+        tone="dark"
       />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 20,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#ECECE9',
-  },
   hook: {
-    fontSize: 18,
-    fontWeight: '500',
-    letterSpacing: -0.2,
-    color: '#16171A',
-    marginBottom: 12,
-    lineHeight: 25,
+    ...type.titleOnDark,
+    marginBottom: 14,
   },
   storyContainer: {
-    gap: 10,
-    marginBottom: 12,
-  },
-  storyLine: {
-    fontSize: 15,
-    color: '#5B5D63',
-    lineHeight: 22,
+    gap: 12,
   },
 });

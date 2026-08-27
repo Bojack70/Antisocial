@@ -1,15 +1,24 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import Text from './AppText';
+import { colors, type } from '../lib/theme';
 
 interface ReactionButtonsProps {
   reactions: string[];
   onReact?: (reaction: string) => void;
   microPrompt?: string;
   tags?: string[];
+  tone?: 'light' | 'dark';
 }
 
-export default function ReactionButtons({ reactions, onReact, microPrompt, tags }: ReactionButtonsProps) {
+export default function ReactionButtons({
+  reactions,
+  onReact,
+  microPrompt,
+  tags,
+  tone = 'light',
+}: ReactionButtonsProps) {
+  const dark = tone === 'dark';
   const [selectedReaction, setSelectedReaction] = useState<string | null>(null);
   const [showNoted, setShowNoted] = useState(false);
   const [showMicroPrompt, setShowMicroPrompt] = useState(false);
@@ -62,7 +71,9 @@ export default function ReactionButtons({ reactions, onReact, microPrompt, tags 
                 key={index}
                 style={[
                   styles.reactionButton,
-                  selectedReaction === reaction && styles.reactionButtonSelected,
+                  dark && styles.reactionButtonDark,
+                  selectedReaction === reaction &&
+                    (dark ? styles.reactionButtonSelectedDark : styles.reactionButtonSelected),
                 ]}
                 onPress={() => handleReaction(reaction)}
                 activeOpacity={0.7}
@@ -72,7 +83,9 @@ export default function ReactionButtons({ reactions, onReact, microPrompt, tags 
                   <Text
                     style={[
                       styles.reactionText,
-                      selectedReaction === reaction && styles.reactionTextSelected,
+                      dark && styles.reactionTextDark,
+                      selectedReaction === reaction &&
+                        (dark ? styles.reactionTextSelectedDark : styles.reactionTextSelected),
                     ]}
                   >
                     {reaction}
@@ -105,31 +118,44 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 6,
+    gap: 8,
     flexShrink: 1,
   },
   reactionButton: {
     paddingHorizontal: 12,
-    paddingVertical: 7,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 999,
+    paddingVertical: 6,
+    backgroundColor: 'transparent',
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#E3E3E0',
+    borderColor: colors.hairline,
+  },
+  reactionButtonDark: {
+    backgroundColor: colors.darkPill,
+    borderColor: colors.darkLine,
   },
   reactionButtonSelected: {
-    borderColor: '#16171A',
+    borderColor: colors.ink,
+  },
+  reactionButtonSelectedDark: {
+    borderColor: colors.muted,
   },
   reactionText: {
-    fontSize: 12.5,
-    color: '#6B6D76',
-    fontWeight: '500',
+    fontSize: 11,
+    fontWeight: '400',
+    lineHeight: 16.5,
+    color: colors.body,
+  },
+  reactionTextDark: {
+    color: colors.darkBody,
   },
   reactionTextSelected: {
-    color: '#16171A',
+    color: colors.ink,
+  },
+  reactionTextSelectedDark: {
+    color: '#FFFFFF',
   },
   tagsText: {
-    fontSize: 11,
-    color: '#A9ABAF',
+    ...type.micro,
     marginLeft: 8,
     flexShrink: 0,
   },

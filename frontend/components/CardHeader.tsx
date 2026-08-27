@@ -3,24 +3,26 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import Text from './AppText';
 import { Ionicons } from '@expo/vector-icons';
 import { ShareContext } from './ShareableCard';
+import { colors, type } from '../lib/theme';
 
 interface CardHeaderProps {
   icon: React.ComponentProps<typeof Ionicons>['name'];
   color: string;
   label: string;
+  tone?: 'light' | 'dark';
   badge?: React.ReactNode;
 }
 
-// The one header system for every feed card: small uppercase label,
-// tinted in the card type's accent color, with an optional right-side
-// badge and the share affordance when the card is shareable.
-export default function CardHeader({ icon, color, label, badge }: CardHeaderProps) {
+// The one header system for every feed card. The icon keeps the card
+// type's accent colour; the label beside it stays quiet grey so the top
+// of the card reads as a marker, not a headline.
+export default function CardHeader({ icon, color, label, tone = 'light', badge }: CardHeaderProps) {
   const onShare = useContext(ShareContext);
 
   return (
     <View style={styles.header}>
       <Ionicons name={icon} size={17} color={color} />
-      <Text style={[styles.label, { color }]}>{label}</Text>
+      <Text style={styles.label}>{label}</Text>
       {badge}
       {onShare && (
         <TouchableOpacity
@@ -29,7 +31,11 @@ export default function CardHeader({ icon, color, label, badge }: CardHeaderProp
           activeOpacity={0.6}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Ionicons name="share-outline" size={16} color="#B4B6BA" />
+          <Ionicons
+            name="share-outline"
+            size={15}
+            color={tone === 'dark' ? colors.darkLine : colors.hairline}
+          />
         </TouchableOpacity>
       )}
     </View>
@@ -40,14 +46,11 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 7,
     marginBottom: 14,
   },
   label: {
-    fontSize: 11,
-    letterSpacing: 1.8,
-    textTransform: 'uppercase',
-    fontWeight: '700',
+    ...type.label,
     flex: 1,
   },
   shareButton: {
