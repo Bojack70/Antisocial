@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { GAMES } from '../../data/games';
 
 export default function PlayHub() {
   const router = useRouter();
@@ -24,41 +25,23 @@ export default function PlayHub() {
       </View>
 
       <View style={styles.list}>
-        <TouchableOpacity
-          style={styles.gameCard}
-          onPress={() => router.push('/timeline')}
-          activeOpacity={0.8}
-        >
-          <View style={[styles.iconBadge, { backgroundColor: '#EEF0FE' }]}>
-            <Ionicons name="hourglass-outline" size={22} color="#6366f1" />
-          </View>
-          <View style={styles.gameInfo}>
-            <Text style={styles.gameName}>The Timeline</Text>
-            <Text style={styles.gameDesc}>
-              Which came first? Chain correct answers into a streak. The year gaps
-              shrink as you go.
-            </Text>
-          </View>
-          <Ionicons name="chevron-forward" size={20} color="#8C8E92" />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.gameCard}
-          onPress={() => router.push('/board')}
-          activeOpacity={0.8}
-        >
-          <View style={[styles.iconBadge, { backgroundColor: '#FDEFF6' }]}>
-            <Ionicons name="dice-outline" size={22} color="#ec4899" />
-          </View>
-          <View style={styles.gameInfo}>
-            <Text style={styles.gameName}>Shortcuts & Rabbit Holes</Text>
-            <Text style={styles.gameDesc}>
-              Race Time across the board. Shortcuts jump you ahead, rabbit holes
-              pull you under — every one hides a fact.
-            </Text>
-          </View>
-          <Ionicons name="chevron-forward" size={20} color="#8C8E92" />
-        </TouchableOpacity>
+        {GAMES.map((game) => (
+          <TouchableOpacity
+            key={game.id}
+            style={styles.gameCard}
+            onPress={() => router.push(game.route as any)}
+            activeOpacity={0.8}
+          >
+            <View style={[styles.iconBadge, { backgroundColor: game.tint }]}>
+              <Ionicons name={game.icon} size={22} color={game.color} />
+            </View>
+            <View style={styles.gameInfo}>
+              <Text style={styles.gameName}>{game.title}</Text>
+              <Text style={styles.gameDesc}>{game.description}</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="#8C8E92" />
+          </TouchableOpacity>
+        ))}
       </View>
     </SafeAreaView>
   );

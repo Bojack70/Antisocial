@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -13,7 +13,6 @@ import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter } from 'expo-router';
 
 // Import components
 import FastWeirdCard from '../components/FastWeirdCard';
@@ -26,6 +25,8 @@ import VideoCard from '../components/VideoCard';
 import AlmostNothingCard from '../components/AlmostNothingCard';
 import QuietContradictionCard from '../components/QuietContradictionCard';
 import ShareableCard from '../components/ShareableCard';
+import GameCard from '../components/GameCard';
+import { GAMES } from '../data/games';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
@@ -53,13 +54,13 @@ interface ContentItem {
 }
 
 export default function Index() {
-  const router = useRouter();
   const [feed, setFeed] = useState<ContentItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
   const [endSessionMessage, setEndSessionMessage] = useState('');
   const [sessionCompleted, setSessionCompleted] = useState(false);
+  const lastGameId = useRef<string | null>(null);
 
   // Generate body aware insertion indices (every 6-10 items)
   const generateInsertionIndices = (totalItems: number) => {
@@ -70,6 +71,29 @@ export default function Index() {
       current += Math.floor(Math.random() * 5) + 6;
     }
     return indices;
+  };
+
+  // One game rides in the feed like any other card, dropped a few items
+  // down the scroll — a surprise, not a fixture. Never the same game twice
+  // in a row, so a refresh always offers something different.
+  const insertGameCard = (items: ContentItem[]) => {
+    const candidates = GAMES.filter((g) => g.id !== lastGameId.current);
+    const pool = candidates.length > 0 ? candidates : GAMES;
+    const game = pool[Math.floor(Math.random() * pool.length)];
+    lastGameId.current = game.id;
+
+    const withGame = [...items];
+    const index = Math.min(
+      Math.floor(Math.random() * 3) + 2, // 2, 3 or 4
+      withGame.length
+    );
+    withGame.splice(index, 0, {
+      id: `game-${game.id}-${Date.now()}`,
+      type: 'game',
+      game,
+    });
+
+    return withGame;
   };
 
   // Fetch feed on mount
@@ -104,7 +128,10 @@ export default function Index() {
       if (data.success) {
         // We only want `sessionSize` number of items for this session
         let sessionItems = data.feed.slice(0, sessionSize);
-        
+
+        // Drop a game into the scroll as an ordinary card
+        sessionItems = insertGameCard(sessionItems);
+
         // Insert Body-Aware interruptions
         const indices = generateInsertionIndices(sessionItems.length);
         indices.reverse().forEach((index: number) => {
@@ -173,6 +200,8 @@ export default function Index() {
       );
     }
     switch (item.type) {
+      case 'game':
+        return <GameCard key={item.id} game={item.game} />;
       case 'video':
         return <VideoCard key={item.id} content={item as any} />;
       case 'body_aware_interruption':
@@ -227,14 +256,6 @@ export default function Index() {
           <Text style={styles.headerTitle}>Modern Weirdness</Text>
           <Text style={styles.headerSubtitle}>A museum of curiosity in your pocket</Text>
         </View>
-        <TouchableOpacity
-          style={styles.playButton}
-          onPress={() => router.push('/play')}
-          activeOpacity={0.7}
-        >
-          <Ionicons name="game-controller-outline" size={16} color="#3A3B3E" />
-          <Text style={styles.playButtonText}>Play</Text>
-        </TouchableOpacity>
       </View>
 
       {/* Feed */}
@@ -314,24 +335,6 @@ const styles = StyleSheet.create({
   headerContent: {
     flex: 1,
     alignItems: 'center',
-  },
-  playButton: {
-    position: 'absolute',
-    right: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 999,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#DDDDDA',
-  },
-  playButtonText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#3A3B3E',
   },
   headerTitle: {
     fontSize: 20,
