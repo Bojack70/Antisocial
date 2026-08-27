@@ -1,0 +1,98 @@
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import Text from './AppText';
+import CardHeader from './CardHeader';
+import { cards, colors, type } from '../lib/theme';
+import { WeekRecap } from '../lib/weekLedger';
+
+interface WeekRecapCardProps {
+  recap: WeekRecap;
+}
+
+const MONTHS = [
+  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+];
+
+// "2026-08-18".."2026-08-24" -> "Aug 18 – 24" (or "Aug 30 – Sep 5")
+function formatRange(start: string, end: string): string {
+  const [, sm, sd] = start.split('-').map(Number);
+  const [, em, ed] = end.split('-').map(Number);
+  const from = `${MONTHS[sm - 1]} ${sd}`;
+  return sm === em ? `${from} – ${ed}` : `${from} – ${MONTHS[em - 1]} ${ed}`;
+}
+
+// The week in review, on the dark surface: four honest numbers, nothing
+// the app can't actually measure. Positive ledger only — what you did,
+// never what you "wasted". The left-early stat is the one to share.
+export default function WeekRecapCard({ recap }: WeekRecapCardProps) {
+  const stats = [
+    { value: recap.daysVisited, label: 'Days visited' },
+    { value: recap.missions, label: 'Field trips' },
+    { value: recap.leftEarly, label: 'Left before closing' },
+    { value: recap.cards, label: 'Cards seen' },
+  ];
+
+  const voiceLine =
+    recap.leftEarly > 0
+      ? `Left before closing, ${recap.leftEarly === 1 ? 'once' : `${recap.leftEarly} times`}. The museum approves.`
+      : 'A quiet week at the museum.';
+
+  return (
+    <View style={cards.dark}>
+      <CardHeader
+        icon="stats-chart-outline"
+        color="#14b8a6"
+        label="The Week in Review"
+        tone="dark"
+      />
+
+      <Text style={styles.title}>Your week at the museum.</Text>
+      <Text style={styles.range}>{formatRange(recap.weekStart, recap.weekEnd)}</Text>
+
+      <View style={styles.grid}>
+        {stats.map((stat) => (
+          <View key={stat.label} style={styles.cell}>
+            <Text style={styles.value}>{stat.value}</Text>
+            <Text style={styles.statLabel}>{stat.label}</Text>
+          </View>
+        ))}
+      </View>
+
+      <Text style={styles.voiceLine}>{voiceLine}</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  title: {
+    ...type.titleOnDark,
+  },
+  range: {
+    ...type.micro,
+    marginTop: 4,
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 20,
+    rowGap: 18,
+  },
+  cell: {
+    width: '50%',
+  },
+  value: {
+    fontSize: 30,
+    fontWeight: '500',
+    lineHeight: 36,
+    color: '#FFFFFF',
+  },
+  statLabel: {
+    ...type.micro,
+    marginTop: 3,
+  },
+  voiceLine: {
+    ...type.bodyOnDark,
+    marginTop: 20,
+  },
+});

@@ -31,6 +31,8 @@ import { MISSIONS } from '../data/missions';
 import { cards, colors, type } from '../lib/theme';
 import { addMinute, minutesUsedToday, DAILY_LIMIT_MINUTES } from '../lib/usage';
 import { hasSessionsLeftToday, consumeSession } from '../lib/quota';
+import { recordSession, recordLeftEarly, dueRecap, markRecapShown } from '../lib/weekLedger';
+import WeekRecapCard from '../components/WeekRecapCard';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
@@ -255,6 +257,7 @@ export default function Index() {
           return;
         }
         await consumeSession();
+        await recordSession(sessionItems.length);
         setDriftLeft(await hasSessionsLeftToday());
 
         // Drop a game into the scroll as an ordinary card
@@ -273,6 +276,18 @@ export default function Index() {
 
         // The exit ramp goes on last
         sessionItems = appendMissionCard(sessionItems);
+
+        // Last week's recap rides in once, near the top of the first
+        // session of a new week — whichever day that turns out to be.
+        const recap = await dueRecap();
+        if (recap) {
+          sessionItems.splice(Math.min(1, sessionItems.length), 0, {
+            id: `week-recap-${recap.weekStart}`,
+            type: 'week_recap',
+            recap,
+          });
+          await markRecapShown(recap.weekStart);
+        }
 
         setFeed(sessionItems);
         setError('');
@@ -338,6 +353,12 @@ export default function Index() {
         return <GameCard key={item.id} game={item.game} />;
       case 'mission':
         return <MissionCard key={item.id} mission={item.mission} />;
+      case 'week_recap':
+        return (
+          <ShareableCard key={item.id} shareName="modern-weirdness-week">
+            <WeekRecapCard recap={item.recap} />
+          </ShareableCard>
+        );
       case 'video':
         return <VideoCard key={item.id} content={item as any} />;
       case 'body_aware_interruption':
@@ -446,6 +467,10 @@ export default function Index() {
             <TouchableOpacity
               style={styles.leaveButton}
               onPress={() => {
+                // Leaving with a drift still available is the early exit
+                // worth counting; leaving at the final card is just the
+                // museum closing.
+                if (driftLeft) recordLeftEarly();
                 setClosed(pick(LEFT_SCREENS));
                 setFeed([]);
               }}

@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { recordMission } from './weekLedger';
 
 // A lifetime count of completed Field Trips — one quiet number, nothing
 // else. Deliberately no streaks, no badges, no daily reset: tracking
@@ -20,5 +21,6 @@ export async function missionsDone(): Promise<number> {
 export async function recordMissionDone(): Promise<number> {
   const next = (await missionsDone()) + 1;
   await AsyncStorage.setItem(KEY, String(next));
+  await recordMission();
   return next;
 }
