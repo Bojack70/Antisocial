@@ -5,9 +5,10 @@ interface ReactionButtonsProps {
   reactions: string[];
   onReact?: (reaction: string) => void;
   microPrompt?: string;
+  tags?: string[];
 }
 
-export default function ReactionButtons({ reactions, onReact, microPrompt }: ReactionButtonsProps) {
+export default function ReactionButtons({ reactions, onReact, microPrompt, tags }: ReactionButtonsProps) {
   const [selectedReaction, setSelectedReaction] = useState<string | null>(null);
   const [showNoted, setShowNoted] = useState(false);
   const [showMicroPrompt, setShowMicroPrompt] = useState(false);
@@ -53,30 +54,37 @@ export default function ReactionButtons({ reactions, onReact, microPrompt }: Rea
       )}
       
       {!showNoted && !showMicroPrompt && (
-        <View style={styles.buttonsContainer}>
-          {reactions.map((reaction, index) => (
-            <TouchableOpacity
-              key={index}
-              style={[
-                styles.reactionButton,
-                selectedReaction === reaction && styles.reactionButtonSelected,
-              ]}
-              onPress={() => handleReaction(reaction)}
-              activeOpacity={0.7}
-              disabled={selectedReaction !== null}
-            >
-              <Animated.View style={{ opacity: selectedReaction === reaction ? fadeAnim : 1 }}>
-                <Text
-                  style={[
-                    styles.reactionText,
-                    selectedReaction === reaction && styles.reactionTextSelected,
-                  ]}
-                >
-                  {reaction}
-                </Text>
-              </Animated.View>
-            </TouchableOpacity>
-          ))}
+        <View style={styles.rowBetween}>
+          <View style={styles.buttonsContainer}>
+            {reactions.map((reaction, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[
+                  styles.reactionButton,
+                  selectedReaction === reaction && styles.reactionButtonSelected,
+                ]}
+                onPress={() => handleReaction(reaction)}
+                activeOpacity={0.7}
+                disabled={selectedReaction !== null}
+              >
+                <Animated.View style={{ opacity: selectedReaction === reaction ? fadeAnim : 1 }}>
+                  <Text
+                    style={[
+                      styles.reactionText,
+                      selectedReaction === reaction && styles.reactionTextSelected,
+                    ]}
+                  >
+                    {reaction}
+                  </Text>
+                </Animated.View>
+              </TouchableOpacity>
+            ))}
+          </View>
+          {tags && tags.length > 0 && (
+            <Text style={styles.tagsText} numberOfLines={1}>
+              {tags.join(' · ')}
+            </Text>
+          )}
         </View>
       )}
     </View>
@@ -86,31 +94,43 @@ export default function ReactionButtons({ reactions, onReact, microPrompt }: Rea
 const styles = StyleSheet.create({
   container: {
     marginTop: 16,
-    minHeight: 40,
+    minHeight: 34,
+  },
+  rowBetween: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   buttonsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: 6,
+    flexShrink: 1,
   },
   reactionButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 9,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
     backgroundColor: '#FFFFFF',
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: '#DDDDDA',
+    borderColor: '#E3E3E0',
   },
   reactionButtonSelected: {
     borderColor: '#16171A',
   },
   reactionText: {
-    fontSize: 14,
-    color: '#3A3B3E',
+    fontSize: 12.5,
+    color: '#6B6D76',
     fontWeight: '500',
   },
   reactionTextSelected: {
     color: '#16171A',
+  },
+  tagsText: {
+    fontSize: 11,
+    color: '#A9ABAF',
+    marginLeft: 8,
+    flexShrink: 0,
   },
   notedContainer: {
     alignItems: 'center',

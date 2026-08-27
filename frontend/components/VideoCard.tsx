@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Platform } from '
 import { Ionicons } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
 import ReactionButtons from './ReactionButtons';
+import CardHeader from './CardHeader';
 
 const { width } = Dimensions.get('window');
 
@@ -104,15 +105,18 @@ export default function VideoCard({ content }: VideoCardProps) {
 
   return (
     <View style={styles.card} ref={cardRef}>
-      <View style={styles.header}>
-        <Ionicons name="videocam-outline" size={20} color="#f43f5e" />
-        <Text style={styles.cardType}>Short Explainer</Text>
-        {content.duration && (
-          <View style={styles.durationBadge}>
-            <Text style={styles.durationText}>{formatDuration(content.duration)}</Text>
-          </View>
-        )}
-      </View>
+      <CardHeader
+        icon="videocam-outline"
+        color="#f43f5e"
+        label="Short Explainer"
+        badge={
+          content.duration ? (
+            <View style={styles.durationBadge}>
+              <Text style={styles.durationText}>{formatDuration(content.duration)}</Text>
+            </View>
+          ) : undefined
+        }
+      />
       
       <Text style={styles.title}>{content.title}</Text>
       <Text style={styles.description}>{content.description}</Text>
@@ -144,17 +148,10 @@ export default function VideoCard({ content }: VideoCardProps) {
         </View>
       )}
       
-      <ReactionButtons reactions={['Makes Sense', 'Noted', 'Unexpected']} />
-      
-      {content.tags && content.tags.length > 0 && (
-        <View style={styles.tagsContainer}>
-          {content.tags.map((tag, index) => (
-            <View key={index} style={styles.tag}>
-              <Text style={styles.tagText}>{tag}</Text>
-            </View>
-          ))}
-        </View>
-      )}
+      <ReactionButtons
+        reactions={['Makes Sense', 'Noted', 'Unexpected']}
+        tags={content.tags}
+      />
     </View>
   );
 }
@@ -162,23 +159,11 @@ export default function VideoCard({ content }: VideoCardProps) {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 24,
-    padding: 22,
+    borderRadius: 20,
+    padding: 20,
     marginBottom: 16,
     borderWidth: 1,
     borderColor: '#ECECE9',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 14,
-  },
-  cardType: {
-    fontSize: 15,
-    color: '#6B6D76',
-    marginLeft: 9,
-    fontWeight: '600',
-    flex: 1,
   },
   durationBadge: {
     paddingHorizontal: 8,
@@ -192,11 +177,12 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   title: {
-    fontSize: 20,
-    fontWeight: '700',
+    fontSize: 18,
+    fontWeight: '600',
+    letterSpacing: -0.2,
     color: '#16171A',
-    marginBottom: 12,
-    lineHeight: 28,
+    marginBottom: 10,
+    lineHeight: 25,
   },
   description: {
     fontSize: 15,
@@ -260,21 +246,5 @@ const styles = StyleSheet.create({
     color: '#8C8E92',
     textAlign: 'center',
     paddingHorizontal: 20,
-  },
-  tagsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: 12,
-    gap: 8,
-  },
-  tag: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    backgroundColor: '#F5F5F3',
-    borderRadius: 6,
-  },
-  tagText: {
-    fontSize: 11,
-    color: '#6B6D76',
   },
 });

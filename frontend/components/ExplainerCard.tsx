@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
 import ReactionButtons from './ReactionButtons';
+import CardHeader from './CardHeader';
 
 interface ExplainerCardProps {
   content: {
@@ -28,11 +29,8 @@ export default function ExplainerCard({ content }: ExplainerCardProps) {
 
   return (
     <View style={styles.card}>
-      <View style={styles.header}>
-        <Ionicons name="bulb-outline" size={20} color="#10b981" />
-        <Text style={styles.cardType}>How Does This Work?</Text>
-      </View>
-      
+      <CardHeader icon="bulb-outline" color="#10b981" label="How Does This Work?" />
+
       <Text style={styles.question}>{content.question}</Text>
 
       <TouchableOpacity
@@ -80,6 +78,7 @@ export default function ExplainerCard({ content }: ExplainerCardProps) {
 
       <ReactionButtons
         reactions={['Makes Sense', 'Noted', 'Unexpected']}
+        tags={content.tags}
       />
 
       {content.video_url && (
@@ -114,29 +113,19 @@ export default function ExplainerCard({ content }: ExplainerCardProps) {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 24,
-    padding: 22,
+    borderRadius: 20,
+    padding: 20,
     marginBottom: 16,
     borderWidth: 1,
     borderColor: '#ECECE9',
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 14,
-  },
-  cardType: {
-    fontSize: 15,
-    color: '#6B6D76',
-    marginLeft: 9,
-    fontWeight: '600',
-  },
   question: {
-    fontSize: 20,
-    fontWeight: '700',
+    fontSize: 18,
+    fontWeight: '600',
+    letterSpacing: -0.2,
     color: '#16171A',
-    marginBottom: 14,
-    lineHeight: 27,
+    marginBottom: 12,
+    lineHeight: 25,
   },
   seeHowRow: {
     flexDirection: 'row',

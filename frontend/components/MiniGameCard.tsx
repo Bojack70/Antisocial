@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import CardHeader from './CardHeader';
 
 interface MiniGameCardProps {
   content: {
@@ -35,11 +36,8 @@ export default function MiniGameCard({ content }: MiniGameCardProps) {
 
   return (
     <View style={styles.card}>
-      <View style={styles.header}>
-        <Ionicons name="game-controller-outline" size={20} color="#ec4899" />
-        <Text style={styles.cardType}>{gameTypeLabel}</Text>
-      </View>
-      
+      <CardHeader icon="game-controller-outline" color="#ec4899" label={gameTypeLabel} />
+
       <Text style={styles.prompt}>{content.prompt}</Text>
       
       <View style={styles.optionsContainer}>
@@ -116,29 +114,19 @@ export default function MiniGameCard({ content }: MiniGameCardProps) {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 24,
-    padding: 22,
+    borderRadius: 20,
+    padding: 20,
     marginBottom: 16,
     borderWidth: 1,
     borderColor: '#ECECE9',
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 14,
-  },
-  cardType: {
-    fontSize: 15,
-    color: '#6B6D76',
-    marginLeft: 9,
-    fontWeight: '600',
-  },
   prompt: {
-    fontSize: 19,
-    fontWeight: '700',
+    fontSize: 18,
+    fontWeight: '600',
+    letterSpacing: -0.2,
     color: '#16171A',
-    marginBottom: 18,
-    lineHeight: 26,
+    marginBottom: 16,
+    lineHeight: 25,
   },
   optionsContainer: {
     gap: 10,

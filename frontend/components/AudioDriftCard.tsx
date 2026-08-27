@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import ReactionButtons from './ReactionButtons';
+import CardHeader from './CardHeader';
 
 interface AudioDriftCardProps {
   content: {
@@ -136,11 +137,8 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
 
   return (
     <View style={styles.card}>
-      <View style={styles.header}>
-        <Ionicons name="headset-outline" size={20} color="#06b6d4" />
-        <Text style={styles.cardType}>Audio Drift</Text>
-      </View>
-      
+      <CardHeader icon="headset-outline" color="#06b6d4" label="Audio Drift" />
+
       <Text style={styles.title}>{content.title}</Text>
       
       {audioUrl ? (
@@ -172,7 +170,10 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
         </View>
       )}
       
-      <ReactionButtons reactions={['Stayed With Me', 'Lingering', 'Unsettling', 'Let It Pass']} />
+      <ReactionButtons
+        reactions={['Stayed With Me', 'Lingering', 'Unsettling', 'Let It Pass']}
+        tags={content.tags}
+      />
     </View>
   );
 }
@@ -180,29 +181,19 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 24,
-    padding: 22,
+    borderRadius: 20,
+    padding: 20,
     marginBottom: 16,
     borderWidth: 1,
     borderColor: '#ECECE9',
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 14,
-  },
-  cardType: {
-    fontSize: 15,
-    color: '#6B6D76',
-    marginLeft: 9,
-    fontWeight: '600',
-  },
   title: {
-    fontSize: 21,
-    fontWeight: '700',
+    fontSize: 18,
+    fontWeight: '600',
+    letterSpacing: -0.2,
     color: '#16171A',
-    marginBottom: 18,
-    lineHeight: 28,
+    marginBottom: 14,
+    lineHeight: 25,
   },
   audioPlayerContainer: {
     width: '100%',
@@ -249,8 +240,8 @@ const styles = StyleSheet.create({
   },
   scriptContainer: {
     backgroundColor: '#F5F5F3',
-    borderRadius: 18,
-    padding: 18,
+    borderRadius: 12,
+    padding: 16,
     marginBottom: 16,
   },
   scriptText: {

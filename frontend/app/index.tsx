@@ -7,7 +7,6 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Image,
-  Dimensions,
   RefreshControl,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
@@ -26,9 +25,9 @@ import AudioDriftCard from '../components/AudioDriftCard';
 import VideoCard from '../components/VideoCard';
 import AlmostNothingCard from '../components/AlmostNothingCard';
 import QuietContradictionCard from '../components/QuietContradictionCard';
+import ShareableCard from '../components/ShareableCard';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
-const { width, height } = Dimensions.get('window');
 
 // PRD Constants
 const BODY_AWARE_INTERRUPTIONS = [
@@ -138,26 +137,44 @@ export default function Index() {
     fetchFeed();
   };
 
-  const renderContentCard = (item: ContentItem) => {
+  // Shareable card types get wrapped so their header shows a share icon
+  // that exports the card as a branded image. Video capture is unreliable
+  // (embedded iframes), so video cards stay unwrapped.
+  const shareableCardFor = (item: ContentItem): React.ReactNode | null => {
     switch (item.type) {
       case 'fast_weird':
-        return <FastWeirdCard key={item.id} content={item as any} />;
+        return <FastWeirdCard content={item as any} />;
       case 'explainer':
-        return <ExplainerCard key={item.id} content={item as any} />;
+        return <ExplainerCard content={item as any} />;
       case 'ponder':
-        return <PonderCard key={item.id} content={item as any} />;
+        return <PonderCard content={item as any} />;
       case 'incident':
-        return <IncidentCard key={item.id} content={item as any} />;
+        return <IncidentCard content={item as any} />;
       case 'mini_game':
-        return <MiniGameCard key={item.id} content={item as any} />;
+        return <MiniGameCard content={item as any} />;
       case 'audio_drift':
-        return <AudioDriftCard key={item.id} content={item as any} />;
+        return <AudioDriftCard content={item as any} />;
+      case 'almost_nothing':
+        return <AlmostNothingCard content={item as any} />;
+      case 'quiet_contradiction':
+        return <QuietContradictionCard content={item as any} />;
+      default:
+        return null;
+    }
+  };
+
+  const renderContentCard = (item: ContentItem) => {
+    const shareable = shareableCardFor(item);
+    if (shareable) {
+      return (
+        <ShareableCard key={item.id} shareName={`modern-weirdness-${item.type}`}>
+          {shareable}
+        </ShareableCard>
+      );
+    }
+    switch (item.type) {
       case 'video':
         return <VideoCard key={item.id} content={item as any} />;
-      case 'almost_nothing':
-        return <AlmostNothingCard key={item.id} content={item as any} />;
-      case 'quiet_contradiction':
-        return <QuietContradictionCard key={item.id} content={item as any} />;
       case 'body_aware_interruption':
         return (
           <View key={item.id} style={styles.interruptionContainer}>
@@ -317,10 +334,10 @@ const styles = StyleSheet.create({
     color: '#3A3B3E',
   },
   headerTitle: {
-    fontSize: 24,
-    fontWeight: '800',
+    fontSize: 20,
+    fontWeight: '700',
     color: '#16171A',
-    letterSpacing: -0.5,
+    letterSpacing: -0.3,
   },
   headerSubtitle: {
     fontSize: 13,
@@ -387,9 +404,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   endSessionCard: {
-    width: width - 32,
+    alignSelf: 'stretch',
     backgroundColor: '#FFFFFF',
-    borderRadius: 24,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: '#ECECE9',
     padding: 32,
