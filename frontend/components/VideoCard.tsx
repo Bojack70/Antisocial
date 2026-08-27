@@ -133,7 +133,13 @@ export default function VideoCard({ content }: VideoCardProps) {
         )
       ) : null}
 
-      <Text style={styles.description}>{content.description}</Text>
+      {/* Plenty of shorts ship with no description at all — render the gap
+          away rather than leaving an empty line of padding. */}
+      {content.description?.trim() ? (
+        <Text style={styles.description}>{content.description}</Text>
+      ) : (
+        <View style={styles.descriptionSpacer} />
+      )}
 
       {embedUrl ? (
         <>
@@ -193,6 +199,9 @@ const styles = StyleSheet.create({
   description: {
     ...type.body,
     marginBottom: 16,
+  },
+  descriptionSpacer: {
+    height: 6,
   },
   videoButton: {
     flexDirection: 'row',

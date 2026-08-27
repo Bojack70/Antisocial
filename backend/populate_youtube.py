@@ -41,11 +41,24 @@ API = "https://www.googleapis.com/youtube/v3"
 
 # Hard ceiling. Nothing longer than this ever enters the collection.
 MAX_DURATION_SEC = 300
+# Below this a clip is a teaser, not an explainer.
+MIN_DURATION_SEC = 30
 # The feed weights videos at or under this to surface roughly twice as
 # often as the 3-5 minute ones. See sample_videos() in server.py.
 PREFERRED_MAX_SEC = 180
 # How far back through each channel's uploads to look.
 UPLOADS_TO_SCAN = 100
+
+# Even good channels post announcements, merch plugs and trailers between
+# the explainers. Those are advertising, and they fail the feed's content
+# bar on sight, so they never make it into the collection.
+PROMO_TITLE = re.compile(
+    r"\b(out now|introducing|announcing|official trailer|patreon|merch|"
+    r"kickstarter|pre-?order|giveaway|sponsored|now available|"
+    r"our new (game|book|shop|store|app|calendar))\b", re.I)
+
+# Trailing hashtag runs: "What Causes Earth To Lose Weight? #shorts #sci"
+TRAILING_HASHTAGS = re.compile(r"(\s*#[\w-]+)+\s*$")
 
 # Channel IDs, not @handles: an ID is permanent, a handle can be changed by
 # its owner. These are the creators already represented in the feed, plus
@@ -59,8 +72,10 @@ CHANNELS = [
      "tags": ["physics", "science", "explainer"]},
     {"name": "Physics Girl", "id": "UC7DdEm33SyaTDtWYGO2CwdA",
      "tags": ["physics", "science", "experiments"]},
-    {"name": "Mashable", "id": "UCL8Nxsa1LB9DrMTHtt3IKiw",
-     "tags": ["technology", "explainer"]},
+    # Mashable was dropped 2026-08-27. It was only ever in the feed because
+    # one of its videos had been hand-picked years ago; its actual recent
+    # uploads are celebrity interviews and movie trailers, which fail the
+    # feed's content bar. Per-video curation didn't generalise to the channel.
     {"name": "sciBRIGHT", "id": "UCpYJfjTZosH1-W0ZDnNclUg",
      "tags": ["science", "technology", "explainer"]},
 ]
@@ -162,8 +177,9 @@ def build_doc(video, channel, tags):
         "id": str(uuid.uuid4()),
         "type": "video",
         "source": "youtube",
-        # The creator's real title, not a rewrite of it.
-        "title": snippet["title"],
+        # The creator's real title, not a rewrite of it — minus the trailing
+        # hashtags, which are discovery metadata rather than part of the title.
+        "title": TRAILING_HASHTAGS.sub("", snippet["title"]).strip(),
         "description": clean_description(snippet.get("description")),
         "video_url": f"https://www.youtube.com/watch?v={video['id']}",
         "video_id": video["id"],
@@ -193,10 +209,12 @@ def keep(video):
     duration = parse_iso_duration(video["contentDetails"].get("duration"))
     if duration is None:
         return "no duration"
-    if duration == 0:
-        return "zero length"
     if duration > MAX_DURATION_SEC:
         return "too long"
+    if duration < MIN_DURATION_SEC:
+        return "too short"
+    if PROMO_TITLE.search(snippet.get("title", "")):
+        return "promo/announcement"
     return None
 
 
