@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useRef, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import Text from './AppText';
 import { shareCardImage } from '../lib/shareCard';
 
 // Cards consume this via CardHeader to render the share icon.

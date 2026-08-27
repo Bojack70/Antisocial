@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import Text from './AppText';
 import { Ionicons } from '@expo/vector-icons';
 import ReactionButtons from './ReactionButtons';
 import CardHeader from './CardHeader';
