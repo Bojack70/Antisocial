@@ -125,11 +125,13 @@ const styles = StyleSheet.create({
     // tags held their full width (flexShrink 0) and squeezed this box until
     // every chip stacked; now the tags drop to their own line first.
     flexWrap: 'wrap',
-    gap: 8,
+    // 6, not 8: the widest three-chip sets came to 279-280px against a 278px
+    // row on a 360px phone, and wrapped over one or two pixels.
+    gap: 6,
     flexShrink: 1,
   },
   reactionButton: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
     paddingVertical: 6,
     backgroundColor: 'transparent',
     borderRadius: 8,
