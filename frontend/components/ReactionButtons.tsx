@@ -114,9 +114,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    // If the tags can't fit beside the chips they drop to their own line —
+    // the chip row itself never wraps.
+    flexWrap: 'wrap',
+    rowGap: 8,
   },
   buttonsContainer: {
     flexDirection: 'row',
+    // Chips only wrap once they genuinely can't fit the line. Previously the
+    // tags held their full width (flexShrink 0) and squeezed this box until
+    // every chip stacked; now the tags drop to their own line first.
     flexWrap: 'wrap',
     gap: 8,
     flexShrink: 1,
@@ -156,8 +163,10 @@ const styles = StyleSheet.create({
   },
   tagsText: {
     ...type.micro,
-    marginLeft: 8,
-    flexShrink: 0,
+    marginLeft: 'auto',
+    paddingLeft: 8,
+    flexShrink: 1,
+    textAlign: 'right',
   },
   notedContainer: {
     alignItems: 'center',

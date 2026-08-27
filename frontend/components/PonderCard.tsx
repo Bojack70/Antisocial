@@ -88,6 +88,11 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: colors.hairline,
+    // Options are full sentences, so a pill can be wider than the card.
+    // Without these it keeps its one-line intrinsic width and runs off the
+    // right edge instead of wrapping its text.
+    flexShrink: 1,
+    maxWidth: '100%',
   },
   optionCardSelected: {
     borderColor: colors.ink,
@@ -97,6 +102,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     lineHeight: 16.5,
     color: colors.body,
+    flexShrink: 1,
   },
   optionTextSelected: {
     color: colors.ink,

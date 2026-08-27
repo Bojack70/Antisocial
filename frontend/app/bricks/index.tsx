@@ -166,18 +166,54 @@ export default function BrickBreaker() {
     const node = boardRef.current as HTMLElement | null;
     if (!node || !node.addEventListener) return;
 
+    // Without this the browser reads a finger drag as a scroll gesture,
+    // fires pointercancel, and the move stream dies after the first touch —
+    // which is why the paddle only jumped on tap and never followed a slide.
+    const prevTouchAction = node.style.touchAction;
+    node.style.touchAction = 'none';
+
     const localX = (clientX: number) => clientX - node.getBoundingClientRect().left;
     const onDown = (e: any) => {
+      // Capture keeps the moves coming even if the finger slides off the
+      // board (or over a brick, which is its own element).
+      try {
+        node.setPointerCapture?.(e.pointerId);
+      } catch {}
       movePaddle(localX(e.clientX));
       launch();
     };
-    const onMove = (e: any) => movePaddle(localX(e.clientX));
+    const onMove = (e: any) => {
+      // Mouse steering is passive; a finger only steers while it's down.
+      if (e.pointerType !== 'mouse' && e.buttons === 0 && !node.hasPointerCapture?.(e.pointerId)) {
+        return;
+      }
+      movePaddle(localX(e.clientX));
+    };
+    const onUp = (e: any) => {
+      try {
+        node.releasePointerCapture?.(e.pointerId);
+      } catch {}
+    };
+    // Safari on iOS still emits touch events for the same gesture; keeping
+    // this as a fallback covers browsers where pointer capture is flaky.
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length === 0) return;
+      e.preventDefault();
+      movePaddle(localX(e.touches[0].clientX));
+    };
 
     node.addEventListener('pointerdown', onDown);
     node.addEventListener('pointermove', onMove);
+    node.addEventListener('pointerup', onUp);
+    node.addEventListener('pointercancel', onUp);
+    node.addEventListener('touchmove', onTouchMove, { passive: false });
     return () => {
+      node.style.touchAction = prevTouchAction;
       node.removeEventListener('pointerdown', onDown);
       node.removeEventListener('pointermove', onMove);
+      node.removeEventListener('pointerup', onUp);
+      node.removeEventListener('pointercancel', onUp);
+      node.removeEventListener('touchmove', onTouchMove as any);
     };
   }, [size]);
 
