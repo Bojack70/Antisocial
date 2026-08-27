@@ -195,9 +195,9 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
       ) : (
         <View style={styles.noAudioContainer}>
           <Ionicons name="musical-notes-outline" size={32} color={colors.darkLine} />
-          <Text style={styles.noAudioText}>Audio coming soon</Text>
+          <Text style={styles.noAudioText}>This one hasn’t found its voice yet.</Text>
           <Text style={styles.noAudioSubtext}>
-            Pre-recorded narrations will be added
+            It will speak eventually.
           </Text>
         </View>
       )}

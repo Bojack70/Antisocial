@@ -93,7 +93,7 @@ export default function MiniGameCard({ content }: MiniGameCardProps) {
             color={colors.muted}
           />
           <Text style={styles.resultText}>
-            {isCorrect ? 'You got it!' : 'Interesting choice'}
+            {isCorrect ? 'Correct.' : 'Interesting choice'}
           </Text>
         </View>
       )}

@@ -161,9 +161,9 @@ export default function VideoCard({ content }: VideoCardProps) {
       ) : (
         <View style={styles.placeholderContainer}>
           <Ionicons name="film-outline" size={28} color={colors.muted} />
-          <Text style={styles.placeholderText}>Video coming soon</Text>
+          <Text style={styles.placeholderText}>The projector is down.</Text>
           <Text style={styles.placeholderSubtext}>
-            Real video URLs will be added in production
+            Someone is looking at it.
           </Text>
         </View>
       )}

@@ -39,38 +39,78 @@ const BODY_AWARE_INTERRUPTIONS = [
   "Time passed while you were here.",
   "Check the tension in your jaw.",
   "Feel the weight of the device in your hands.",
-  "Take a single, intentional breath."
+  "Take a single, intentional breath.",
+  "Blink. Properly, this time.",
+  "Look at the farthest thing you can see.",
+  "Notice which hand is holding the phone.",
+  "Your feet are somewhere. Find them."
 ];
 
 // Terminal screens. The museum closes; there is deliberately no button that
-// reopens it. Copy is placeholder-grade until the voice pass.
-const CLOSED_SCREENS = {
-  caughtUp: {
-    icon: 'moon-outline',
-    title: 'The museum is closed for today.',
-    subtext: 'New exhibits tomorrow.',
-  },
-  timeUp: {
-    icon: 'moon-outline',
-    title: "That's enough for today.",
-    subtext: 'The museum reopens tomorrow.',
-  },
-  left: {
-    icon: 'walk-outline',
-    title: 'You chose to leave.',
-    subtext: 'Close the app to fully step away.',
-  },
-} as const;
+// reopens it. Each pool is drawn from at the moment of closing so the line
+// varies day to day — a repeated line stops landing by Thursday. Voice rule
+// for every pool here: irony by understatement only; if a line sounds like
+// it knows it's funny, it doesn't ship.
+type ClosedScreen = {
+  icon: 'moon-outline' | 'walk-outline';
+  title: string;
+  subtext: string;
+};
 
-type ClosedScreen = (typeof CLOSED_SCREENS)[keyof typeof CLOSED_SCREENS];
+const pick = <T,>(pool: readonly T[]): T =>
+  pool[Math.floor(Math.random() * pool.length)];
 
-const FINAL_SESSION_MESSAGE = "That's everything for today. The museum reopens tomorrow.";
+const CAUGHT_UP_SCREENS: readonly ClosedScreen[] = [
+  { icon: 'moon-outline', title: 'The museum is closed for today.', subtext: 'New exhibits tomorrow.' },
+  { icon: 'moon-outline', title: 'You’ve seen today’s collection.', subtext: 'The rest of the world is still open.' },
+  { icon: 'moon-outline', title: 'The doors are locked. Nothing personal.', subtext: 'Tomorrow there will be more.' },
+  { icon: 'moon-outline', title: 'That was everything.', subtext: 'More arrives overnight.' },
+  { icon: 'moon-outline', title: 'Closed. Even the curators went home.', subtext: 'Come back tomorrow.' },
+  { icon: 'moon-outline', title: 'The museum is closed.', subtext: 'It will manage without you.' },
+  { icon: 'moon-outline', title: 'Nothing left to see today.', subtext: 'That was always the arrangement.' },
+  { icon: 'moon-outline', title: 'The lights are off.', subtext: 'The exhibits need their rest.' },
+];
+
+// Rarely seen (requires idling three hours in one day), so a smaller pool —
+// eight variants would outnumber sightings.
+const TIME_UP_SCREENS: readonly ClosedScreen[] = [
+  { icon: 'moon-outline', title: 'Three hours. The benches are worn.', subtext: 'The museum reopens tomorrow.' },
+  { icon: 'moon-outline', title: 'That’s enough for today.', subtext: 'Even museums close.' },
+  { icon: 'moon-outline', title: 'You’ve been here a while.', subtext: 'The exit is well marked.' },
+  { icon: 'moon-outline', title: 'The staff have gone home.', subtext: 'You should too.' },
+];
+
+// The success state — leaving is the point, so this is the voice at its
+// warmest, which for this museum means faint approval.
+const LEFT_SCREENS: readonly ClosedScreen[] = [
+  { icon: 'walk-outline', title: 'You left before closing time.', subtext: 'The museum approves.' },
+  { icon: 'walk-outline', title: 'Gone before the doors shut.', subtext: 'That’s the idea.' },
+  { icon: 'walk-outline', title: 'An intentional exit.', subtext: 'Rare. Noted.' },
+  { icon: 'walk-outline', title: 'You chose to leave.', subtext: 'The exhibits will keep.' },
+  { icon: 'walk-outline', title: 'You walked out on your own.', subtext: 'The best way to leave.' },
+  { icon: 'walk-outline', title: 'Left with time to spare.', subtext: 'Spend it somewhere real.' },
+];
+
+const FINAL_SESSION_MESSAGES = [
+  'That’s everything for today. The museum reopens tomorrow.',
+  'The collection ends here. Tomorrow it grows back.',
+  'You’ve reached the last room.',
+  'Nothing else today. That’s deliberate.',
+  'The wall you just hit was built on purpose.',
+  'No more rooms today. The door out is right there.',
+  'That’s the whole museum. Come back tomorrow.',
+  'End of the collection. The rest of the day is yours.',
+];
 
 const END_SESSION_CARDS = [
-  "That’s enough input for now.",
-  "Some things don’t improve with more information.",
-  "There’s nothing new here right now.",
-  "You've wandered far enough for this session."
+  'That’s enough input for now.',
+  'Some things don’t improve with more information.',
+  'There’s nothing new here right now.',
+  'You’ve wandered far enough for this session.',
+  'A good museum visit is a short one.',
+  'This is a natural place to stop.',
+  'Whatever you were looking for, it isn’t further down.',
+  'The exhibits thin out past this point.',
 ];
 
 interface ContentItem {
@@ -85,6 +125,7 @@ export default function Index() {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
   const [endSessionMessage, setEndSessionMessage] = useState('');
+  const [finalSessionMessage, setFinalSessionMessage] = useState('');
   const [sessionCompleted, setSessionCompleted] = useState(false);
   const [closed, setClosed] = useState<ClosedScreen | null>(null);
   const [driftLeft, setDriftLeft] = useState(false);
@@ -135,7 +176,7 @@ export default function Index() {
 
     minutesUsedToday().then((used) => {
       if (used >= DAILY_LIMIT_MINUTES) {
-        setClosed(CLOSED_SCREENS.timeUp);
+        setClosed(pick(TIME_UP_SCREENS));
         setLoading(false);
         return;
       }
@@ -154,7 +195,7 @@ export default function Index() {
       }
 
       if (minutes >= DAILY_LIMIT_MINUTES) {
-        setClosed(CLOSED_SCREENS.timeUp);
+        setClosed(pick(TIME_UP_SCREENS));
         setFeed([]);
       }
     }, 60000);
@@ -169,7 +210,7 @@ export default function Index() {
       // The daily quota gates every path here — mount, drift, retry and
       // refresh — so no button can serve a session the day no longer has.
       if (!(await hasSessionsLeftToday())) {
-        setClosed(CLOSED_SCREENS.caughtUp);
+        setClosed(pick(CAUGHT_UP_SCREENS));
         setFeed([]);
         setError('');
         return;
@@ -213,13 +254,14 @@ export default function Index() {
         setError('');
         setClosed(null);
 
-        setEndSessionMessage(END_SESSION_CARDS[Math.floor(Math.random() * END_SESSION_CARDS.length)]);
+        setEndSessionMessage(pick(END_SESSION_CARDS));
+        setFinalSessionMessage(pick(FINAL_SESSION_MESSAGES));
       } else {
-        setError('Failed to load feed');
+        setError('The exhibits didn’t arrive.');
       }
     } catch (err) {
       console.error('Feed fetch error:', err);
-      setError('Unable to connect to server');
+      setError('The museum isn’t answering.');
     } finally {
       fetchInFlight.current = false;
       setLoading(false);
@@ -297,7 +339,7 @@ export default function Index() {
     return (
       <View style={styles.centerContainer}>
         <ActivityIndicator size="small" color={colors.muted} />
-        <Text style={styles.loadingText}>Loading curiosities...</Text>
+        <Text style={styles.loadingText}>Opening the museum…</Text>
       </View>
     );
   }
@@ -319,7 +361,7 @@ export default function Index() {
         <Ionicons name="alert-circle-outline" size={40} color={colors.muted} />
         <Text style={styles.errorText}>{error}</Text>
         <TouchableOpacity style={styles.retryButton} onPress={fetchFeed}>
-          <Text style={styles.retryButtonText}>Retry</Text>
+          <Text style={styles.retryButtonText}>Knock again</Text>
         </TouchableOpacity>
       </View>
     );
@@ -361,8 +403,8 @@ export default function Index() {
         {feed.length === 0 ? (
           <View style={styles.emptyState}>
             <Ionicons name="telescope-outline" size={40} color={colors.muted} />
-            <Text style={styles.emptyText}>No content yet</Text>
-            <Text style={styles.emptySubtext}>Pull down to refresh</Text>
+            <Text style={styles.emptyText}>The rooms are empty.</Text>
+            <Text style={styles.emptySubtext}>Pull down to check again.</Text>
           </View>
         ) : (
           feed.map((item) => renderContentCard(item))
@@ -372,13 +414,13 @@ export default function Index() {
         {feed.length > 0 && sessionCompleted && (
           <View style={styles.endSessionCard}>
             <Text style={styles.endSessionText}>
-              {driftLeft ? endSessionMessage : FINAL_SESSION_MESSAGE}
+              {driftLeft ? endSessionMessage : finalSessionMessage}
             </Text>
 
             <TouchableOpacity
               style={styles.leaveButton}
               onPress={() => {
-                setClosed(CLOSED_SCREENS.left);
+                setClosed(pick(LEFT_SCREENS));
                 setFeed([]);
               }}
             >

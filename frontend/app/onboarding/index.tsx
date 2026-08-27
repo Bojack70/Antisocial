@@ -48,7 +48,8 @@ const SCREENS = [
   {
     id: 5,
     content: [
-      'If you use this app for more than three hours in a day, you will be logged out.',
+      'Each day has a limited collection.',
+      'When you’ve seen it, the museum closes.',
     ],
     button: 'Continue',
   },
