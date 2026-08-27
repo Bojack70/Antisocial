@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   },
   gameName: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '500',
     color: '#16171A',
   },
   gameDesc: {

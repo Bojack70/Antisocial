@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
   },
   question: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: '500',
     letterSpacing: -0.2,
     color: '#16171A',
     marginBottom: 12,
