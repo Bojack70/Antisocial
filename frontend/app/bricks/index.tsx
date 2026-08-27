@@ -118,7 +118,7 @@ export default function BrickBreaker() {
     setBricks(built);
     paddleX.current = width / 2;
     paddleAnim.setValue(width / 2 - paddleWRef.current / 2);
-    speedRef.current = Math.max(0.3, height * 0.0012);
+    speedRef.current = Math.max(0.26, height * 0.001);
     resetBall(width, height);
   };
 
@@ -261,7 +261,7 @@ export default function BrickBreaker() {
     setBricks(built);
     setLevel((l) => l + 1);
     setFact(null);
-    speedRef.current = Math.min(speedRef.current * 1.08, size.h * 0.0022);
+    speedRef.current = Math.min(speedRef.current * 1.08, size.h * 0.0019);
     resetBall(size.w, size.h);
   };
 
@@ -274,7 +274,7 @@ export default function BrickBreaker() {
     setLives(START_LIVES);
     setLevel(1);
     setFact(null);
-    speedRef.current = Math.max(0.3, size.h * 0.0012);
+    speedRef.current = Math.max(0.26, size.h * 0.001);
     resetBall(size.w, size.h);
   };
 
