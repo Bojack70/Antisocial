@@ -445,27 +445,34 @@ VIDEO_PREFERRED_MAX_SEC = 180
 NO_AI_FALLBACK = {"video"}
 
 
-async def sample_videos(db, count):
+async def sample_videos(db, count, seen=None):
     """
     Pick `count` videos, favouring short ones. Roughly two thirds come from
     the under-3-minute pool and the rest from 3-5 minutes; if either pool is
     thin, the other backfills so the feed still gets a full slate.
+
+    `seen` holds ids this visitor has already been shown; they are excluded
+    from both pools. The final backfill deliberately ignores `seen` — once a
+    visitor has worked through everything, repeating a video beats serving a
+    short session.
     """
+    unseen = {"id": {"$nin": seen}} if seen else {}
+
     short_target = (count * 2 + 2) // 3
     picked = await db.video_content.aggregate([
-        {"$match": {"duration": {"$lte": VIDEO_PREFERRED_MAX_SEC}}},
+        {"$match": {"duration": {"$lte": VIDEO_PREFERRED_MAX_SEC}, **unseen}},
         {"$sample": {"size": short_target}},
     ]).to_list(short_target)
 
     remaining = count - len(picked)
     if remaining > 0:
         picked += await db.video_content.aggregate([
-            {"$match": {"duration": {"$gt": VIDEO_PREFERRED_MAX_SEC}}},
+            {"$match": {"duration": {"$gt": VIDEO_PREFERRED_MAX_SEC}, **unseen}},
             {"$sample": {"size": remaining}},
         ]).to_list(remaining)
 
     remaining = count - len(picked)
-    if remaining > 0:  # one pool was empty - backfill from whatever exists
+    if remaining > 0:  # pools empty or exhausted - backfill from whatever exists
         picked += await db.video_content.aggregate([
             {"$match": {"_id": {"$nin": [p["_id"] for p in picked]}}},
             {"$sample": {"size": remaining}},
@@ -475,57 +482,117 @@ async def sample_videos(db, count):
     return picked
 
 
+async def sample_unseen(db, collection_name, count, seen=None):
+    """
+    Sample `count` items the visitor has not been shown before.
+
+    $sample alone draws independently every request, so the same card can
+    reappear the same day no matter how large the collection is. Excluding
+    `seen` first is what actually makes the feed non-repeating; volume only
+    decides how many days it lasts.
+
+    If the unseen pool is short, top up with already-seen items rather than
+    returning a thin session — running dry should feel like the museum
+    repeating itself, not like the museum being broken.
+    """
+    pipeline = []
+    if seen:
+        pipeline.append({"$match": {"id": {"$nin": seen}}})
+    pipeline.append({"$sample": {"size": count}})
+    items = await db[collection_name].aggregate(pipeline).to_list(count)
+
+    shortfall = count - len(items)
+    if shortfall > 0 and seen:
+        items += await db[collection_name].aggregate([
+            {"$match": {"_id": {"$nin": [i["_id"] for i in items]}}},
+            {"$sample": {"size": shortfall}},
+        ]).to_list(shortfall)
+
+    return items
+
+
+# Ratios for a 35-item slate. The client shows only the first 9-12 and marks
+# just those as seen, so the rest of the slate stays available for next time.
+FEED_RATIOS = {
+    "fast_weird": 8,
+    "explainer": 6,
+    "ponder": 5,
+    "incident": 3,
+    "mini_game": 3,
+    "audio_drift": 3,
+    "video": 3,
+    "almost_nothing": 2,
+    "quiet_contradiction": 2,
+}
+
+
+class FeedRequest(BaseModel):
+    limit: int = 35
+    seen: List[str] = Field(default_factory=list)
+
+
+async def build_feed(seen=None):
+    """Assemble one mixed slate, preferring content this visitor hasn't seen."""
+    seen = seen or []
+    feed = []
+
+    for content_type, count in FEED_RATIOS.items():
+        collection_name = f"{content_type}_content"
+        if content_type == "video":
+            items = await sample_videos(db, count, seen)
+        else:
+            items = await sample_unseen(db, collection_name, count, seen)
+
+        # If not enough items, generate more
+        if len(items) < count and content_type not in NO_AI_FALLBACK:
+            needed = count - len(items)
+            new_items = await generate_content_with_ai(content_type, needed)
+            for item in new_items:
+                item['id'] = str(uuid.uuid4())
+                item['type'] = content_type
+                item['created_at'] = datetime.utcnow()
+                await db[collection_name].insert_one(item)
+                items.append(item)
+
+        feed.extend(items)
+
+    # Shuffle feed to mix content types
+    random.shuffle(feed)
+
+    # Clean MongoDB _id field
+    for item in feed:
+        item.pop('_id', None)
+
+    # `fresh` is how much of this slate the visitor has never been shown. The
+    # client can use it to tell "the museum is repeating itself" apart from a
+    # failed fetch, which otherwise look identical.
+    seen_set = set(seen)
+    fresh = sum(1 for item in feed if item.get("id") not in seen_set)
+
+    return {"success": True, "count": len(feed), "fresh": fresh, "feed": feed}
+
+
 @api_router.get("/feed")
 async def get_feed(limit: int = 35):
-    """Get mixed feed with algorithmic ratio (10:7:6:3:3:3:3)"""
+    """Mixed feed with no exclusions — kept so older clients keep working."""
     try:
-        feed = []
-        
-        # Define ratios for 35 items
-        ratios = {
-            "fast_weird": 8,
-            "explainer": 6,
-            "ponder": 5,
-            "incident": 3,
-            "mini_game": 3,
-            "audio_drift": 3,
-            "video": 3,
-            "almost_nothing": 2,
-            "quiet_contradiction": 2
-        }
-        
-        # Fetch content from each type
-        for content_type, count in ratios.items():
-            collection_name = f"{content_type}_content"
-            if content_type == "video":
-                items = await sample_videos(db, count)
-            else:
-                # Get random items
-                items = await db[collection_name].aggregate([
-                    {"$sample": {"size": count}}
-                ]).to_list(count)
+        return await build_feed()
+    except Exception as e:
+        logging.error(f"Feed generation error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
-            # If not enough items, generate more
-            if len(items) < count and content_type not in NO_AI_FALLBACK:
-                needed = count - len(items)
-                new_items = await generate_content_with_ai(content_type, needed)
-                for item in new_items:
-                    item['id'] = str(uuid.uuid4())
-                    item['type'] = content_type
-                    item['created_at'] = datetime.utcnow()
-                    await db[collection_name].insert_one(item)
-                    items.append(item)
-            
-            feed.extend(items)
-        
-        # Shuffle feed to mix content types
-        random.shuffle(feed)
-        
-        # Clean MongoDB _id field
-        for item in feed:
-            item.pop('_id', None)
-        
-        return {"success": True, "count": len(feed), "feed": feed}
+
+@api_router.post("/feed")
+async def post_feed(request: FeedRequest):
+    """
+    Mixed feed that skips what this visitor has already been shown.
+
+    The seen list travels in the body rather than the query string on
+    purpose: a week of ids is several kilobytes, well past what is safe in
+    a URL.
+    """
+    try:
+        return await build_feed(request.seen)
     except Exception as e:
         logging.error(f"Feed generation error: {e}")
         raise HTTPException(status_code=500, detail=str(e))

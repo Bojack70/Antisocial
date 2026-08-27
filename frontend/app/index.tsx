@@ -31,6 +31,7 @@ import { MISSIONS } from '../data/missions';
 import { cards, colors, type } from '../lib/theme';
 import { addMinute, minutesUsedToday, DAILY_LIMIT_MINUTES } from '../lib/usage';
 import { hasSessionsLeftToday, consumeSession } from '../lib/quota';
+import { getSeenIds, markSeen } from '../lib/seen';
 import { recordSession, recordLeftEarly, dueRecap, markRecapShown } from '../lib/weekLedger';
 import WeekRecapCard from '../components/WeekRecapCard';
 
@@ -243,7 +244,13 @@ export default function Index() {
       // Determine session size (9-12 items as per PRD)
       const sessionSize = Math.floor(Math.random() * 4) + 9;
 
-      const response = await fetch(`${BACKEND_URL}/api/feed?limit=${sessionSize}`);
+      // The seen ledger travels in the body, not the query string: a week of
+      // ids runs to several kilobytes, past what is safe in a URL.
+      const response = await fetch(`${BACKEND_URL}/api/feed`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ limit: sessionSize, seen: await getSeenIds() }),
+      });
       const data = await response.json();
 
       if (data.success) {
@@ -257,6 +264,10 @@ export default function Index() {
           return;
         }
         await consumeSession();
+        // Spend only the cards that reach the screen. The slate holds 35 and
+        // this session shows 9-12; marking the whole slate would burn three
+        // sessions of content for one session's worth of reading.
+        await markSeen(sessionItems.map((item: ContentItem) => item.id));
         await recordSession(sessionItems.length);
         setDriftLeft(await hasSessionsLeftToday());
 
