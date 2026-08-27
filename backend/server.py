@@ -51,7 +51,6 @@ class ExplainerContent(BaseModel):
 class PonderContent(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     type: Literal["ponder"] = "ponder"
-    image_url: str
     question: str
     options: List[str]
     rarity: Literal["common", "uncommon", "rare"] = "common"
@@ -224,13 +223,12 @@ real mechanism is more clever than they'd guess:
 3-5 steps, each one concrete. The last step or the interaction line should
 carry a small payoff ("So which one is your real voice?"). ≤120 words total.""",
         
-        "ponder": f"""Generate {count} PONDER content items. Evocative images with reflective questions.
+        "ponder": f"""Generate {count} PONDER content items. Reflective questions, text only.
 
 Format as JSON array:
 {{
   "items": [
     {{
-      "image_url": "https://source.unsplash.com/800x600/?abstract,architecture",
       "question": "Open-ended question?",
       "options": ["Option 1", "Option 2", "Option 3"],
       "rarity": "common",

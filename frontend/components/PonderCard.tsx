@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import Text from './AppText';
 import { Ionicons } from '@expo/vector-icons';
 import ReactionButtons from './ReactionButtons';
 import CardHeader from './CardHeader';
 import { cards, colors, type } from '../lib/theme';
 
+// This card carries no visual. The question is the content, and any image
+// above it quietly suggests a mood — which works against the card's own
+// closing line, "No right answer. Just you thinking."
+
 interface PonderCardProps {
   content: {
-    image_url: string;
     question: string;
     options: string[];
     rarity?: string;
@@ -23,14 +26,6 @@ export default function PonderCard({ content }: PonderCardProps) {
     <View style={cards.white}>
       <CardHeader icon="infinite-outline" color="#8b5cf6" label="Ponder & Play" />
 
-      {content.image_url && (
-        <Image
-          source={{ uri: content.image_url }}
-          style={styles.image}
-          resizeMode="cover"
-        />
-      )}
-      
       <Text style={styles.question}>{content.question}</Text>
       
       <View style={styles.optionsContainer}>
@@ -74,13 +69,6 @@ export default function PonderCard({ content }: PonderCardProps) {
 }
 
 const styles = StyleSheet.create({
-  image: {
-    width: '100%',
-    height: 200,
-    borderRadius: 12,
-    marginBottom: 16,
-    backgroundColor: colors.surfaceTinted,
-  },
   question: {
     ...type.title,
     marginBottom: 16,

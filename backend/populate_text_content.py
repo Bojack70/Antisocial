@@ -471,11 +471,8 @@ QUIET_CONTRADICTION = [
     },
 ]
 
-# Real, freely usable placeholder photography (Lorem Picsum, backed by Unsplash
-# photographers) - seeded so each item gets a stable image across reloads.
 PONDER = [
     {
-        "image_url": "https://picsum.photos/seed/ponder-memory/800/600",
         "question": "If you could erase one memory, would you?",
         "options": [
             "Yes — there's something I want gone",
@@ -486,7 +483,6 @@ PONDER = [
         "tags": ["memory", "philosophy"],
     },
     {
-        "image_url": "https://picsum.photos/seed/ponder-deathdate/800/600",
         "question": "Would you press a button that shows you the exact date of your death?",
         "options": [
             "Yes — I'd plan everything around it",
@@ -496,7 +492,6 @@ PONDER = [
         "tags": ["time", "philosophy"],
     },
     {
-        "image_url": "https://picsum.photos/seed/ponder-honest/800/600",
         "question": "If you could hear what people honestly think of you, would you listen?",
         "options": [
             "Yes — truth over comfort",
@@ -506,19 +501,16 @@ PONDER = [
         "tags": ["people", "philosophy"],
     },
     {
-        "image_url": "https://picsum.photos/seed/ponder-clock/800/600",
         "question": "Do we keep time, or does time keep us?",
         "options": ["We keep it", "It keeps us", "Neither"],
         "tags": ["philosophy", "time"],
     },
     {
-        "image_url": "https://picsum.photos/seed/ponder-crowd/800/600",
         "question": "Is a crowd one thing, or many things at once?",
         "options": ["One thing", "Many things", "It depends on the moment"],
         "tags": ["society", "philosophy"],
     },
     {
-        "image_url": "https://picsum.photos/seed/ponder-escalator/800/600",
         "question": "Is this designed for humans, or for schedules?",
         "options": ["For humans", "For schedules", "Neither, really"],
         "tags": ["design", "systems"],
