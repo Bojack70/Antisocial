@@ -210,6 +210,14 @@ export default function Index() {
           <Text style={styles.headerTitle}>Modern Weirdness</Text>
           <Text style={styles.headerSubtitle}>A museum of curiosity in your pocket</Text>
         </View>
+        <TouchableOpacity
+          style={styles.playButton}
+          onPress={() => router.push('/play')}
+          activeOpacity={0.7}
+        >
+          <Ionicons name="game-controller-outline" size={16} color="#3A3B3E" />
+          <Text style={styles.playButtonText}>Play</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Feed */}
@@ -283,9 +291,30 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#ECECE9',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   headerContent: {
+    flex: 1,
     alignItems: 'center',
+  },
+  playButton: {
+    position: 'absolute',
+    right: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 999,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#DDDDDA',
+  },
+  playButtonText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#3A3B3E',
   },
   headerTitle: {
     fontSize: 24,

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
 interface MiniGameCardProps {
   content: {
@@ -14,6 +15,7 @@ interface MiniGameCardProps {
 }
 
 export default function MiniGameCard({ content }: MiniGameCardProps) {
+  const router = useRouter();
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [showResult, setShowResult] = useState(false);
 
@@ -94,6 +96,18 @@ export default function MiniGameCard({ content }: MiniGameCardProps) {
             {isCorrect ? 'You got it!' : 'Interesting choice'}
           </Text>
         </View>
+      )}
+
+      {showResult && (
+        <TouchableOpacity
+          style={styles.timelineLink}
+          onPress={() => router.push('/play')}
+          activeOpacity={0.7}
+        >
+          <Ionicons name="game-controller-outline" size={15} color="#6B6D76" />
+          <Text style={styles.timelineLinkText}>Want a real run? Visit the Game Room</Text>
+          <Ionicons name="arrow-forward" size={14} color="#6B6D76" />
+        </TouchableOpacity>
       )}
     </View>
   );
@@ -181,5 +195,21 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#3A3B3E',
     fontWeight: '600',
+  },
+  timelineLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    marginTop: 14,
+    paddingVertical: 11,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: '#DDDDDA',
+  },
+  timelineLinkText: {
+    fontSize: 13,
+    color: '#6B6D76',
+    fontWeight: '500',
   },
 });
