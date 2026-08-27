@@ -73,6 +73,10 @@ class MiniGameContent(BaseModel):
     prompt: str
     options: List[str]
     correct_answer: str
+    # One line explaining WHY, shown after answering. For a Fact-or-Myth card
+    # this is the whole point: "wrong" is worthless without knowing where the
+    # belief came from. Optional so the older game types stay valid.
+    reveal: Optional[str] = None
     rarity: Literal["common", "uncommon", "rare"] = "common"
     tags: List[str] = []
     created_at: datetime = Field(default_factory=datetime.utcnow)

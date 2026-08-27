@@ -12,6 +12,9 @@ interface MiniGameCardProps {
     prompt: string;
     options: string[];
     correct_answer: string;
+    // The line that turns a right/wrong answer into an "oh — really?".
+    // Without it a Fact-or-Myth card just scores you and moves on.
+    reveal?: string;
     rarity?: string;
     tags?: string[];
   };
@@ -30,7 +33,7 @@ export default function MiniGameCard({ content }: MiniGameCardProps) {
   const isCorrect = selectedOption === content.correct_answer;
 
   const gameTypeLabel = {
-    fact_vs_fiction: 'Fact vs Fiction',
+    fact_vs_fiction: 'Fact or Myth',
     predict_outcome: 'Predict Outcome',
     arrange_steps: 'Arrange Steps',
     guess_scale: 'Guess Scale',
@@ -81,20 +84,26 @@ export default function MiniGameCard({ content }: MiniGameCardProps) {
       </View>
       
       {showResult && (
-        <View
-          style={[
-            styles.resultContainer,
-            isCorrect ? styles.resultCorrect : styles.resultWrong,
-          ]}
-        >
-          <Ionicons
-            name={isCorrect ? 'happy-outline' : 'bulb-outline'}
-            size={15}
-            color={colors.muted}
-          />
-          <Text style={styles.resultText}>
-            {isCorrect ? 'Correct.' : 'Interesting choice'}
-          </Text>
+        <View>
+          <View
+            style={[
+              styles.resultContainer,
+              isCorrect ? styles.resultCorrect : styles.resultWrong,
+            ]}
+          >
+            <Ionicons
+              name={isCorrect ? 'happy-outline' : 'bulb-outline'}
+              size={15}
+              color={colors.muted}
+            />
+            <Text style={styles.resultText}>
+              {isCorrect ? 'Correct.' : 'Interesting choice'}
+            </Text>
+          </View>
+
+          {/* The payoff. Being told you were wrong is worth nothing on its own —
+              what makes the card land is finding out where the belief came from. */}
+          {!!content.reveal && <Text style={styles.reveal}>{content.reveal}</Text>}
         </View>
       )}
 
@@ -159,6 +168,10 @@ const styles = StyleSheet.create({
   resultWrong: {},
   resultText: {
     ...type.micro,
+  },
+  reveal: {
+    ...type.body,
+    marginTop: 10,
   },
   timelineLink: {
     flexDirection: 'row',
