@@ -84,6 +84,13 @@ class AudioDriftContent(BaseModel):
     narration_script: str
     audio_url: Optional[str] = None
     duration: Optional[int] = None  # in seconds
+    # Attribution for episodes sourced from a podcast's own RSS feed. The
+    # card credits the show and links back; the audio always streams from
+    # the publisher's server, never ours. See populate_podcast_rss.py.
+    show_title: Optional[str] = None
+    author: Optional[str] = None
+    episode_link: Optional[str] = None
+    source: Optional[str] = None  # "rss" for feed-sourced episodes
     rarity: Literal["common", "uncommon", "rare"] = "common"
     tags: List[str] = []
     created_at: datetime = Field(default_factory=datetime.utcnow)
