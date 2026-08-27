@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, TouchableOpacity, Dimensions, Platform } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, StyleSheet, TouchableOpacity, Dimensions, Platform, Linking } from 'react-native';
 import Text from './AppText';
 import { Ionicons } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
@@ -15,19 +15,27 @@ interface VideoCardProps {
     description: string;
     video_url: string;
     duration?: number;
+    channel_title?: string;
+    channel_url?: string;
     rarity?: string;
     tags?: string[];
   };
 }
 
 export default function VideoCard({ content }: VideoCardProps) {
+  // Playback is only ever started by a tap. There used to be a 500ms timer
+  // here that set this true on mount, with no visibility check — which
+  // breaks YouTube's terms twice over: an API Client "must not initiate an
+  // automatic playback until the player is visible and more than half of
+  // the player is visible", and a screen "must not have more than one
+  // YouTube player that automatically plays content simultaneously" (the
+  // feed carries three video cards per load).
   const [isPlaying, setIsPlaying] = useState(false);
-  const [hasAutoPlayed, setHasAutoPlayed] = useState(false);
   const cardRef = useRef<View>(null);
 
-  const getYouTubeEmbedUrl = (url: string, autoplay: boolean = false) => {
+  const getYouTubeEmbedUrl = (url: string) => {
     if (!url || url.includes('PLACEHOLDER')) return null;
-    
+
     // Extract video ID from various YouTube URL formats
     let videoId = '';
     if (url.includes('youtube.com/watch?v=')) {
@@ -37,33 +45,20 @@ export default function VideoCard({ content }: VideoCardProps) {
     } else if (url.includes('youtube.com/shorts/')) {
       videoId = url.split('shorts/')[1]?.split('?')[0];
     }
-    
+
     if (!videoId) return null;
-    
-    // Add autoplay, mute (required for autoplay), and other parameters
-    const params = autoplay 
-      ? '?autoplay=1&mute=1&playsinline=1&controls=1&modestbranding=1&rel=0'
-      : '?autoplay=1&playsinline=1&controls=1&modestbranding=1&rel=0';
-    
-    return `https://www.youtube.com/embed/${videoId}${params}`;
+
+    // autoplay is safe here because this URL is only ever mounted after the
+    // viewer taps play. modestbranding was removed: YouTube deprecated it in
+    // August 2023 and it has no effect, and suppressing their branding is
+    // not something we should look like we're attempting.
+    return `https://www.youtube.com/embed/${videoId}?autoplay=1&playsinline=1&controls=1&rel=0`;
   };
 
-  // Auto-play when scrolled into view (first time only)
-  useEffect(() => {
-    if (!hasAutoPlayed) {
-      const timer = setTimeout(() => {
-        setIsPlaying(true);
-        setHasAutoPlayed(true);
-      }, 500);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [hasAutoPlayed]);
-
-  const embedUrl = getYouTubeEmbedUrl(content.video_url, isPlaying);
+  const embedUrl = getYouTubeEmbedUrl(content.video_url);
   const formatDuration = (seconds?: number) => {
     if (!seconds) return '';
-    return `${seconds}s`;
+    return `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}`;
   };
 
   // Render iframe for web, WebView for native
@@ -119,8 +114,27 @@ export default function VideoCard({ content }: VideoCardProps) {
       />
       
       <Text style={styles.title}>{content.title}</Text>
+
+      {/* Whose work this is, before you press play. The embedded player
+          credits the channel too, but the card shouldn't pass off someone
+          else's explainer as unattributed content. */}
+      {content.channel_title ? (
+        content.channel_url ? (
+          <TouchableOpacity
+            style={styles.creditRow}
+            onPress={() => Linking.openURL(content.channel_url!)}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.credit}>{content.channel_title}</Text>
+            <Ionicons name="open-outline" size={11} color={colors.muted} />
+          </TouchableOpacity>
+        ) : (
+          <Text style={[styles.credit, styles.creditRow]}>{content.channel_title}</Text>
+        )
+      ) : null}
+
       <Text style={styles.description}>{content.description}</Text>
-      
+
       {embedUrl ? (
         <>
           {isPlaying ? (
@@ -162,7 +176,19 @@ const styles = StyleSheet.create({
   },
   title: {
     ...type.title,
+    marginBottom: 6,
+  },
+  creditRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
     marginBottom: 10,
+  },
+  credit: {
+    ...type.micro,
+    textTransform: 'none',
+    letterSpacing: 0,
+    fontSize: 11,
   },
   description: {
     ...type.body,

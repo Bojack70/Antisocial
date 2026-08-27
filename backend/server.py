@@ -101,8 +101,17 @@ class VideoContent(BaseModel):
     title: str
     description: str
     video_url: str
-    duration: int  # in seconds (15-60s)
+    duration: int  # in seconds; hard ceiling of 300 enforced at populate time
     thumbnail_url: Optional[str] = None
+    # Attribution for videos sourced from the YouTube Data API. The card
+    # credits the channel and links to it; the video always plays in
+    # YouTube's own embedded player. See populate_youtube.py.
+    video_id: Optional[str] = None
+    channel_title: Optional[str] = None
+    channel_id: Optional[str] = None
+    channel_url: Optional[str] = None
+    published_at: Optional[str] = None
+    source: Optional[str] = None  # "youtube" for API-sourced videos
     rarity: Literal["common", "uncommon", "rare"] = "common"
     tags: List[str] = []
     created_at: datetime = Field(default_factory=datetime.utcnow)
@@ -324,34 +333,6 @@ Themes — atmospheric true stories about real places and events:
 Calm, neutral voice, real dates and numbers, sensory detail. Ends with the
 image that lingers, not a moral.""",
         
-        "video": f"""Generate {count} VIDEO content items. Short explainer videos (15-60 seconds).
-
-Format as JSON array:
-{{
-  "items": [
-    {{
-      "title": "Short catchy title",
-      "description": "Brief description of what the video shows (1-2 sentences)",
-      "video_url": "https://www.youtube.com/watch?v=PLACEHOLDER",
-      "duration": 45,
-      "thumbnail_url": null,
-      "rarity": "common",
-      "tags": ["tag1", "tag2"]
-    }}
-  ]
-}}
-
-Topics:
-- How everyday objects work
-- Manufacturing processes
-- Natural phenomena explained
-- Optical illusions and perception
-- Time-lapse processes
-- Satisfying mechanical movements
-
-Keep descriptions under 50 words. Focus on visual explanations.
-Use PLACEHOLDER for video_url - these will be replaced with real URLs later.""",
-
         "almost_nothing": f"""Generate {count} ALMOST_NOTHING content items. These are extremely minimal screens.
 
 Format as JSON array:
@@ -454,6 +435,46 @@ async def generate_content(request: ContentGenerationRequest):
         logging.error(f"Content generation error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# Videos at or under this surface about twice as often as the 3-5 minute
+# ones. Kept in step with PREFERRED_MAX_SEC in populate_youtube.py.
+VIDEO_PREFERRED_MAX_SEC = 180
+
+# Content types whose items are real third-party media. There is nothing to
+# invent here: a generated video is a YouTube URL that doesn't exist, which
+# is how the old feed accumulated permanent "Video coming soon" cards.
+NO_AI_FALLBACK = {"video"}
+
+
+async def sample_videos(db, count):
+    """
+    Pick `count` videos, favouring short ones. Roughly two thirds come from
+    the under-3-minute pool and the rest from 3-5 minutes; if either pool is
+    thin, the other backfills so the feed still gets a full slate.
+    """
+    short_target = (count * 2 + 2) // 3
+    picked = await db.video_content.aggregate([
+        {"$match": {"duration": {"$lte": VIDEO_PREFERRED_MAX_SEC}}},
+        {"$sample": {"size": short_target}},
+    ]).to_list(short_target)
+
+    remaining = count - len(picked)
+    if remaining > 0:
+        picked += await db.video_content.aggregate([
+            {"$match": {"duration": {"$gt": VIDEO_PREFERRED_MAX_SEC}}},
+            {"$sample": {"size": remaining}},
+        ]).to_list(remaining)
+
+    remaining = count - len(picked)
+    if remaining > 0:  # one pool was empty - backfill from whatever exists
+        picked += await db.video_content.aggregate([
+            {"$match": {"_id": {"$nin": [p["_id"] for p in picked]}}},
+            {"$sample": {"size": remaining}},
+        ]).to_list(remaining)
+
+    random.shuffle(picked)
+    return picked
+
+
 @api_router.get("/feed")
 async def get_feed(limit: int = 35):
     """Get mixed feed with algorithmic ratio (10:7:6:3:3:3:3)"""
@@ -476,13 +497,16 @@ async def get_feed(limit: int = 35):
         # Fetch content from each type
         for content_type, count in ratios.items():
             collection_name = f"{content_type}_content"
-            # Get random items
-            items = await db[collection_name].aggregate([
-                {"$sample": {"size": count}}
-            ]).to_list(count)
-            
+            if content_type == "video":
+                items = await sample_videos(db, count)
+            else:
+                # Get random items
+                items = await db[collection_name].aggregate([
+                    {"$sample": {"size": count}}
+                ]).to_list(count)
+
             # If not enough items, generate more
-            if len(items) < count:
+            if len(items) < count and content_type not in NO_AI_FALLBACK:
                 needed = count - len(items)
                 new_items = await generate_content_with_ai(content_type, needed)
                 for item in new_items:
