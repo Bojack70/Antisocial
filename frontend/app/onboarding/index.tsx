@@ -10,6 +10,7 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
+import { resetUsage } from '../../lib/usage';
 import { Ionicons } from '@expo/vector-icons';
 
 const { width, height } = Dimensions.get('window');
@@ -65,7 +66,7 @@ export default function Onboarding() {
       try {
         await AsyncStorage.setItem('onboarding_complete', 'true');
         await AsyncStorage.setItem('daily_usage_start', new Date().toISOString());
-        await AsyncStorage.setItem('daily_usage_minutes', '0');
+        await resetUsage();
         
         // Navigate to main feed
         router.replace('/');

@@ -12,7 +12,6 @@ import Text from '../components/AppText';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Import components
 import FastWeirdCard from '../components/FastWeirdCard';
@@ -28,6 +27,7 @@ import ShareableCard from '../components/ShareableCard';
 import GameCard from '../components/GameCard';
 import { GAMES } from '../data/games';
 import { cards, colors, type } from '../lib/theme';
+import { addMinute, minutesUsedToday, DAILY_LIMIT_MINUTES } from '../lib/usage';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
@@ -40,6 +40,8 @@ const BODY_AWARE_INTERRUPTIONS = [
   "Feel the weight of the device in your hands.",
   "Take a single, intentional breath."
 ];
+
+const BOUNDARY_MESSAGE = 'Daily time boundary reached. See you tomorrow.';
 
 const END_SESSION_CARDS = [
   "That’s enough input for now.",
@@ -97,19 +99,30 @@ export default function Index() {
     return withGame;
   };
 
-  // Fetch feed on mount
+  // Fetch feed on mount, unless today's boundary has already been reached.
   useEffect(() => {
-    fetchFeed();
-    
+    minutesUsedToday().then((used) => {
+      if (used >= DAILY_LIMIT_MINUTES) {
+        setError(BOUNDARY_MESSAGE);
+        setLoading(false);
+        return;
+      }
+      fetchFeed();
+    });
+
     // Track usage time every minute
     const interval = setInterval(async () => {
-      const currentMinutes = await AsyncStorage.getItem('daily_usage_minutes');
-      const newMinutes = (parseInt(currentMinutes || '0') + 1).toString();
-      await AsyncStorage.setItem('daily_usage_minutes', newMinutes);
-      
-      // Check if limit reached (3 hours = 180 minutes)
-      if (parseInt(newMinutes) >= 180) {
-        setError('Daily time boundary reached. See you tomorrow.');
+      const { minutes, rolledOver } = await addMinute();
+
+      // A session running past midnight gets its day back rather than
+      // staying locked out until the app is restarted.
+      if (rolledOver) {
+        setError((current) => (current === BOUNDARY_MESSAGE ? '' : current));
+        return;
+      }
+
+      if (minutes >= DAILY_LIMIT_MINUTES) {
+        setError(BOUNDARY_MESSAGE);
         setFeed([]);
       }
     }, 60000);
