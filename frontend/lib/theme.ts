@@ -30,8 +30,9 @@ export const colors = {
 } as const;
 
 export const type = StyleSheet.create({
-  // 10px uppercase with wide tracking — deliberately quiet. The icon
-  // beside it is tinted the same grey, never the card's accent.
+  // 10px uppercase with wide tracking — deliberately quiet. CardHeader
+  // overrides the colour with the card type's accent so the label and its
+  // icon read as one marker; this grey is the fallback for any other use.
   label: {
     fontSize: 10,
     fontWeight: '500',

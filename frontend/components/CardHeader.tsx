@@ -13,16 +13,16 @@ interface CardHeaderProps {
   badge?: React.ReactNode;
 }
 
-// The one header system for every feed card. The icon keeps the card
-// type's accent colour; the label beside it stays quiet grey so the top
-// of the card reads as a marker, not a headline.
+// The one header system for every feed card. The icon and the label
+// beside it both carry the card type's accent colour, so the top of the
+// card reads as a single marker rather than an icon next to grey text.
 export default function CardHeader({ icon, color, label, tone = 'light', badge }: CardHeaderProps) {
   const onShare = useContext(ShareContext);
 
   return (
     <View style={styles.header}>
       <Ionicons name={icon} size={17} color={color} />
-      <Text style={styles.label}>{label}</Text>
+      <Text style={[styles.label, { color }]}>{label}</Text>
       {badge}
       {onShare && (
         <TouchableOpacity

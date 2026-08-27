@@ -23,8 +23,8 @@ export default function MissionCard({ mission }: MissionCardProps) {
   };
 
   return (
-    <View style={cards.tinted}>
-      <CardHeader icon="compass-outline" color="#f97316" label="Field Trip" />
+    <View style={cards.mint}>
+      <CardHeader icon="compass-outline" color="#3F9A6C" label="Field Trip" />
 
       <Text style={styles.text}>{mission.text}</Text>
 
