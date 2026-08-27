@@ -32,7 +32,7 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
               width: '100%',
               height: '54px',
               borderRadius: '12px',
-              backgroundColor: '#1a1a1a',
+              backgroundColor: '#F5F5F3',
             }}
             preload="metadata"
           >
@@ -146,15 +146,21 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
       {audioUrl ? (
         <>
           {renderAudioPlayer()}
-          <View style={styles.instructionContainer}>
-            <Text style={styles.instructionText}>
-              Listen to the audio above, then share your reaction
-            </Text>
-          </View>
+          {content.narration_script ? (
+            <View style={styles.scriptContainer}>
+              <Text style={styles.scriptText}>{content.narration_script}</Text>
+            </View>
+          ) : (
+            <View style={styles.instructionContainer}>
+              <Text style={styles.instructionText}>
+                Listen to the audio above, then share your reaction
+              </Text>
+            </View>
+          )}
         </>
       ) : (
         <View style={styles.noAudioContainer}>
-          <Ionicons name="musical-notes-outline" size={40} color="#4b5563" />
+          <Ionicons name="musical-notes-outline" size={40} color="#8C8E92" />
           <Text style={styles.noAudioText}>Audio coming soon</Text>
           <Text style={styles.noAudioSubtext}>
             Pre-recorded narrations will be added
@@ -162,37 +168,37 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
         </View>
       )}
       
-      <ReactionButtons reactions={['Stayed With Me', 'Drifted Off', 'Unsettling', 'Let It Pass']} />
+      <ReactionButtons reactions={['Stayed With Me', 'Lingering', 'Unsettling', 'Let It Pass']} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#141414',
-    borderRadius: 16,
-    padding: 20,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 22,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#1f1f1f',
+    borderColor: '#ECECE9',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 14,
   },
   cardType: {
-    fontSize: 13,
-    color: '#9ca3af',
-    marginLeft: 8,
+    fontSize: 15,
+    color: '#6B6D76',
+    marginLeft: 9,
     fontWeight: '600',
   },
   title: {
-    fontSize: 22,
+    fontSize: 21,
     fontWeight: '700',
-    color: '#f9fafb',
-    marginBottom: 20,
-    lineHeight: 32,
+    color: '#16171A',
+    marginBottom: 18,
+    lineHeight: 28,
   },
   audioPlayerContainer: {
     width: '100%',
@@ -201,7 +207,7 @@ const styles = StyleSheet.create({
   mobilePlayerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1a1a1a',
+    backgroundColor: '#F5F5F3',
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
@@ -220,7 +226,7 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: 4,
-    backgroundColor: '#262626',
+    backgroundColor: '#ECECE9',
     borderRadius: 2,
     overflow: 'hidden',
   },
@@ -235,18 +241,29 @@ const styles = StyleSheet.create({
   },
   timeText: {
     fontSize: 11,
-    color: '#6b7280',
+    color: '#8C8E92',
+  },
+  scriptContainer: {
+    backgroundColor: '#F5F5F3',
+    borderRadius: 18,
+    padding: 18,
+    marginBottom: 16,
+  },
+  scriptText: {
+    fontSize: 14.5,
+    color: '#5B5D63',
+    lineHeight: 22,
   },
   instructionContainer: {
     paddingVertical: 8,
     paddingHorizontal: 12,
-    backgroundColor: '#1a1a1a',
+    backgroundColor: '#F5F5F3',
     borderRadius: 8,
     marginBottom: 16,
   },
   instructionText: {
     fontSize: 12,
-    color: '#6b7280',
+    color: '#6B6D76',
     textAlign: 'center',
     fontStyle: 'italic',
   },
@@ -254,23 +271,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 48,
-    backgroundColor: '#1a1a1a',
+    backgroundColor: '#F5F5F3',
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#262626',
+    borderColor: '#ECECE9',
     borderStyle: 'dashed',
     marginBottom: 16,
   },
   noAudioText: {
     marginTop: 12,
     fontSize: 15,
-    color: '#9ca3af',
+    color: '#6B6D76',
     fontWeight: '600',
   },
   noAudioSubtext: {
     marginTop: 6,
     fontSize: 13,
-    color: '#6b7280',
+    color: '#8C8E92',
     textAlign: 'center',
     paddingHorizontal: 20,
   },

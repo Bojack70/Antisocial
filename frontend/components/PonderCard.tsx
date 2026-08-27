@@ -65,77 +65,78 @@ export default function PonderCard({ content }: PonderCardProps) {
         </View>
       )}
       
-      <ReactionButtons reactions={['I’m Unsure', 'Lingering', 'Let It Sit']} />
+      <ReactionButtons reactions={['I’m Unsure', 'Lingering', 'Stayed With Me']} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#141414',
-    borderRadius: 16,
-    padding: 20,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 22,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#1f1f1f',
+    borderColor: '#ECECE9',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 14,
   },
   cardType: {
-    fontSize: 13,
-    color: '#9ca3af',
-    marginLeft: 8,
+    fontSize: 15,
+    color: '#6B6D76',
+    marginLeft: 9,
     fontWeight: '600',
   },
   image: {
     width: '100%',
     height: 200,
-    borderRadius: 12,
+    borderRadius: 16,
     marginBottom: 16,
-    backgroundColor: '#1a1a1a',
+    backgroundColor: '#F5F5F3',
   },
   question: {
-    fontSize: 18,
+    fontSize: 19,
     fontWeight: '700',
-    color: '#f9fafb',
+    color: '#16171A',
     marginBottom: 16,
     lineHeight: 26,
   },
   optionsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 10,
     marginBottom: 12,
   },
   optionCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 14,
-    backgroundColor: '#1a1a1a',
-    borderRadius: 10,
+    gap: 6,
+    paddingVertical: 9,
+    paddingHorizontal: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 999,
     borderWidth: 1,
-    borderColor: '#262626',
+    borderColor: '#DDDDDA',
   },
   optionCardSelected: {
     borderColor: '#8b5cf6',
-    backgroundColor: '#8b5cf610',
   },
   optionText: {
-    flex: 1,
     fontSize: 14,
-    color: '#d1d5db',
-    lineHeight: 20,
+    color: '#3A3B3E',
+    fontWeight: '500',
   },
   optionTextSelected: {
-    color: '#f9fafb',
+    color: '#16171A',
     fontWeight: '600',
   },
   responseContainer: {
-    marginTop: 16,
+    marginTop: 6,
     padding: 12,
-    backgroundColor: '#1a1a1a',
+    backgroundColor: '#F5F5F3',
     borderRadius: 8,
     borderLeftWidth: 3,
     borderLeftColor: '#8b5cf6',
@@ -143,7 +144,7 @@ const styles = StyleSheet.create({
   },
   responseText: {
     fontSize: 13,
-    color: '#9ca3af',
+    color: '#6B6D76',
     fontStyle: 'italic',
   },
 });

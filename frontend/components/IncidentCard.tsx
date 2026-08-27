@@ -30,7 +30,7 @@ export default function IncidentCard({ content }: IncidentCardProps) {
         ))}
       </View>
       
-      <ReactionButtons reactions={['I’d Forgotten This Happens', 'Unexpected', 'Makes Sense']} />
+      <ReactionButtons reactions={['Let It Pass', 'Unexpected', 'Makes Sense']} />
       
       {content.tags && content.tags.length > 0 && (
         <View style={styles.tagsContainer}>
@@ -47,29 +47,29 @@ export default function IncidentCard({ content }: IncidentCardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#141414',
-    borderRadius: 16,
-    padding: 20,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 22,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#1f1f1f',
+    borderColor: '#ECECE9',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 14,
   },
   cardType: {
-    fontSize: 13,
-    color: '#9ca3af',
-    marginLeft: 8,
+    fontSize: 15,
+    color: '#6B6D76',
+    marginLeft: 9,
     fontWeight: '600',
   },
   hook: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#f9fafb',
-    marginBottom: 16,
+    color: '#16171A',
+    marginBottom: 14,
     lineHeight: 28,
   },
   storyContainer: {
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
   },
   storyLine: {
     fontSize: 15,
-    color: '#d1d5db',
+    color: '#5B5D63',
     lineHeight: 22,
   },
   tagsContainer: {
@@ -90,11 +90,11 @@ const styles = StyleSheet.create({
   tag: {
     paddingHorizontal: 10,
     paddingVertical: 4,
-    backgroundColor: '#1f1f1f',
+    backgroundColor: '#F5F5F3',
     borderRadius: 6,
   },
   tagText: {
     fontSize: 11,
-    color: '#9ca3af',
+    color: '#6B6D76',
   },
 });

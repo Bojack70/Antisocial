@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field
 from typing import List, Optional, Literal
 import uuid
 from datetime import datetime
-from emergentintegrations.llm.chat import LlmChat, UserMessage
+from openai import AsyncOpenAI
 import json
 import random
 
@@ -101,6 +101,23 @@ class VideoContent(BaseModel):
     tags: List[str] = []
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
+class AlmostNothingContent(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    type: Literal["almost_nothing"] = "almost_nothing"
+    text: str # Can be a single line or whitespace
+    rarity: Literal["common", "uncommon", "rare"] = "uncommon"
+    tags: List[str] = []
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class QuietContradictionContent(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    type: Literal["quiet_contradiction"] = "quiet_contradiction"
+    statement1: str
+    statement2: str
+    rarity: Literal["common", "uncommon", "rare"] = "uncommon"
+    tags: List[str] = []
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
 class UserPreference(BaseModel):
     user_id: str
     preference_type: str
@@ -108,7 +125,7 @@ class UserPreference(BaseModel):
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
 class ContentGenerationRequest(BaseModel):
-    content_type: Literal["fast_weird", "explainer", "ponder", "incident", "mini_game", "audio_drift", "video"]
+    content_type: Literal["fast_weird", "explainer", "ponder", "incident", "mini_game", "audio_drift", "video", "almost_nothing", "quiet_contradiction"]
     count: int = 1
 
 # Initialize AI Chat
@@ -122,10 +139,14 @@ def serialize_mongodb_doc(doc):
 
 async def generate_content_with_ai(content_type: str, count: int = 1) -> List[dict]:
     """Generate content using AI based on type"""
-    chat = LlmChat(
-        api_key=emergent_key,
-        session_id=f"content_gen_{uuid.uuid4()}",
-        system_message="""You are a content generator for a curiosity app called 'modern weirdness'.
+    # If no key is set or the dummy key is used locally without an endpoint,
+    # skip actual API generation to not break the startup flow in development/testing.
+    if not emergent_key or emergent_key == "dummy_key":
+        logging.warning("No valid OPENAI_API_KEY found, returning simple mock fallback.")
+        return []
+        
+    client = AsyncOpenAI(api_key=emergent_key)
+    system_message="""You are a content generator for a curiosity app called 'modern weirdness'.
 
 GENERAL TONE RULES:
 - Calm, intelligent, curious
@@ -134,7 +155,6 @@ GENERAL TONE RULES:
 - Everything must feel timeless and quietly surprising
 
 Respond ONLY with valid JSON. No markdown, no explanation."""
-    ).with_model("openai", "gpt-5.2")
     
     prompts = {
         "fast_weird": f"""Generate {count} FAST_WEIRD content items. These are absurd, surprising real-world facts.
@@ -294,17 +314,59 @@ Topics:
 - Satisfying mechanical movements
 
 Keep descriptions under 50 words. Focus on visual explanations.
-Use PLACEHOLDER for video_url - these will be replaced with real URLs later."""
+Use PLACEHOLDER for video_url - these will be replaced with real URLs later.""",
+
+        "almost_nothing": f"""Generate {count} ALMOST_NOTHING content items. These are extremely minimal screens.
+
+Format as JSON array:
+{{
+  "items": [
+    {{
+      "text": "A single line of text",
+      "rarity": "uncommon",
+      "tags": ["tag1", "tag2"]
+    }}
+  ]
+}}
+
+Rules:
+- The text should be exactly one line, or sometimes just whitespace.
+- Examples: "Silence.", "Just whitespace.", "A quiet space."
+- Must be brief and calm.""",
+
+        "quiet_contradiction": f"""Generate {count} QUIET_CONTRADICTION content items. These are two true ideas that don't resolve.
+
+Format as JSON array:
+{{
+  "items": [
+    {{
+      "statement1": "First true statement",
+      "statement2": "Second true statement that contradicts the first, without a conclusion",
+      "rarity": "uncommon",
+      "tags": ["tag1", "tag2"]
+    }}
+  ]
+}}
+
+Examples:
+- "Nothing you do will matter in a trillion years. The universe will expand into cold darkness, and no trace of humanity will remain." vs "The fact that you cared about anything today—at all—is the only meaning that ever existed."
+- No conclusion offered."""
     }
     
     prompt = prompts.get(content_type, "")
     
     try:
-        user_message = UserMessage(text=prompt)
-        response = await chat.send_message(user_message)
+        response = await client.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": system_message},
+                {"role": "user", "content": prompt}
+            ],
+            response_format={"type": "json_object"}
+        )
         
         # Parse JSON response
-        response_text = response.strip()
+        response_text = response.choices[0].message.content or "{}"
         if response_text.startswith('```json'):
             response_text = response_text[7:]
         if response_text.endswith('```'):
@@ -338,7 +400,7 @@ async def generate_content(request: ContentGenerationRequest):
             item['id'] = str(uuid.uuid4())
             item['type'] = request.content_type
             item['created_at'] = datetime.utcnow()
-            result = await db[collection_name].insert_one(item.copy())
+            await db[collection_name].insert_one(item.copy())
             # Remove _id for response
             item.pop('_id', None)
             clean_items.append(item)
@@ -354,15 +416,17 @@ async def get_feed(limit: int = 35):
     try:
         feed = []
         
-        # Define ratios for 35 items (added 3 videos, 1 more mini game)
+        # Define ratios for 35 items
         ratios = {
-            "fast_weird": 10,
-            "explainer": 7,
-            "ponder": 6,
+            "fast_weird": 8,
+            "explainer": 6,
+            "ponder": 5,
             "incident": 3,
             "mini_game": 3,
             "audio_drift": 3,
-            "video": 3
+            "video": 3,
+            "almost_nothing": 2,
+            "quiet_contradiction": 2
         }
         
         # Fetch content from each type

@@ -94,23 +94,23 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   reactionButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: '#1a1a1a',
-    borderRadius: 6,
+    paddingHorizontal: 16,
+    paddingVertical: 9,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 999,
     borderWidth: 1,
-    borderColor: '#262626',
+    borderColor: '#DDDDDA',
   },
   reactionButtonSelected: {
-    borderColor: '#3f3f3f',
+    borderColor: '#16171A',
   },
   reactionText: {
-    fontSize: 12,
-    color: '#6b7280',
+    fontSize: 14,
+    color: '#3A3B3E',
     fontWeight: '500',
   },
   reactionTextSelected: {
-    color: '#4b5563',
+    color: '#16171A',
   },
   notedContainer: {
     alignItems: 'center',
@@ -119,20 +119,20 @@ const styles = StyleSheet.create({
   },
   notedText: {
     fontSize: 13,
-    color: '#6b7280',
+    color: '#8C8E92',
     fontStyle: 'italic',
   },
   microPromptContainer: {
     paddingVertical: 8,
     paddingHorizontal: 12,
-    backgroundColor: '#1a1a1a',
+    backgroundColor: '#F5F5F3',
     borderRadius: 8,
     borderLeftWidth: 2,
-    borderLeftColor: '#4b5563',
+    borderLeftColor: '#DDDDDA',
   },
   microPromptText: {
     fontSize: 12,
-    color: '#9ca3af',
+    color: '#6B6D76',
     lineHeight: 18,
   },
 });

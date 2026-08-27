@@ -18,6 +18,7 @@ interface ExplainerCardProps {
 export default function ExplainerCard({ content }: ExplainerCardProps) {
   const [showVideo, setShowVideo] = useState(false);
   const [selectedStep, setSelectedStep] = useState<number | null>(null);
+  const [showSteps, setShowSteps] = useState(false);
 
   const getYouTubeEmbedUrl = (url: string) => {
     if (!url) return '';
@@ -33,31 +34,54 @@ export default function ExplainerCard({ content }: ExplainerCardProps) {
       </View>
       
       <Text style={styles.question}>{content.question}</Text>
-      
-      <View style={styles.stepsContainer}>
-        {content.steps.map((step, index) => (
-          <TouchableOpacity
-            key={index}
-            style={[
-              styles.stepCard,
-              selectedStep === index && styles.stepCardSelected,
-            ]}
-            onPress={() => setSelectedStep(index === selectedStep ? null : index)}
-            activeOpacity={0.7}
-          >
-            <View style={styles.stepNumber}>
-              <Text style={styles.stepNumberText}>{index + 1}</Text>
-            </View>
-            <Text style={styles.stepText}>{step}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-      
-      <ReactionButtons 
-        reactions={['Makes Sense', 'Tell Me More', 'Unexpected']}
-        microPrompt="Which part surprised you?"
+
+      <TouchableOpacity
+        style={styles.seeHowRow}
+        onPress={() => setShowSteps(!showSteps)}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.seeHowText}>{showSteps ? 'Hide steps' : 'See how'}</Text>
+        <Ionicons
+          name={showSteps ? 'chevron-up' : 'chevron-down'}
+          size={16}
+          color="#5B5D63"
+        />
+      </TouchableOpacity>
+
+      {showSteps && (
+        <View style={styles.stepsContainer}>
+          {content.steps.map((step, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[
+                styles.stepCard,
+                selectedStep === index && styles.stepCardSelected,
+              ]}
+              onPress={() => setSelectedStep(index === selectedStep ? null : index)}
+              activeOpacity={0.7}
+            >
+              <View style={styles.stepNumber}>
+                <Text style={styles.stepNumberText}>{index + 1}</Text>
+              </View>
+              <Text style={styles.stepText}>{step}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
+
+      {content.interaction && (
+        <>
+          <View style={styles.divider} />
+          <Text style={styles.interaction}>{content.interaction}</Text>
+        </>
+      )}
+
+      <View style={styles.divider} />
+
+      <ReactionButtons
+        reactions={['Makes Sense', 'Noted', 'Unexpected']}
       />
-      
+
       {content.video_url && (
         <TouchableOpacity
           style={styles.videoButton}
@@ -89,47 +113,66 @@ export default function ExplainerCard({ content }: ExplainerCardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#141414',
-    borderRadius: 16,
-    padding: 20,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 22,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#1f1f1f',
+    borderColor: '#ECECE9',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 14,
   },
   cardType: {
-    fontSize: 13,
-    color: '#9ca3af',
-    marginLeft: 8,
+    fontSize: 15,
+    color: '#6B6D76',
+    marginLeft: 9,
     fontWeight: '600',
   },
   question: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '700',
-    color: '#f9fafb',
-    marginBottom: 16,
-    lineHeight: 26,
+    color: '#16171A',
+    marginBottom: 14,
+    lineHeight: 27,
+  },
+  seeHowRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  seeHowText: {
+    fontSize: 15,
+    color: '#5B5D63',
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#ECECE9',
+    marginVertical: 16,
+  },
+  interaction: {
+    fontSize: 15,
+    color: '#8C8E92',
+    fontStyle: 'italic',
   },
   stepsContainer: {
     gap: 12,
-    marginBottom: 16,
+    marginTop: 16,
   },
   stepCard: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     padding: 12,
-    backgroundColor: '#1a1a1a',
-    borderRadius: 10,
+    backgroundColor: '#F5F5F3',
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#262626',
+    borderColor: '#ECECE9',
   },
   stepCardSelected: {
     borderColor: '#10b981',
-    backgroundColor: '#10b98110',
+    backgroundColor: '#10b98114',
   },
   stepNumber: {
     width: 28,
@@ -148,7 +191,7 @@ const styles = StyleSheet.create({
   stepText: {
     flex: 1,
     fontSize: 14,
-    color: '#d1d5db',
+    color: '#3A3B3E',
     lineHeight: 20,
   },
   videoButton: {
@@ -158,7 +201,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     paddingVertical: 12,
     paddingHorizontal: 20,
-    backgroundColor: '#1f1f1f',
+    backgroundColor: '#F5F5F3',
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#6366f1',

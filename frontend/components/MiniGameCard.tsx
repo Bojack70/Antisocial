@@ -101,29 +101,29 @@ export default function MiniGameCard({ content }: MiniGameCardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#141414',
-    borderRadius: 16,
-    padding: 20,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 22,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#1f1f1f',
+    borderColor: '#ECECE9',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 14,
   },
   cardType: {
-    fontSize: 13,
-    color: '#9ca3af',
-    marginLeft: 8,
+    fontSize: 15,
+    color: '#6B6D76',
+    marginLeft: 9,
     fontWeight: '600',
   },
   prompt: {
-    fontSize: 18,
+    fontSize: 19,
     fontWeight: '700',
-    color: '#f9fafb',
-    marginBottom: 16,
+    color: '#16171A',
+    marginBottom: 18,
     lineHeight: 26,
   },
   optionsContainer: {
@@ -134,31 +134,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 14,
-    backgroundColor: '#1a1a1a',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#262626',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: '#DDDDDA',
   },
   optionCardSelected: {
     borderColor: '#ec4899',
   },
   optionCardCorrect: {
     borderColor: '#10b981',
-    backgroundColor: '#10b98110',
+    backgroundColor: '#10b98114',
   },
   optionCardWrong: {
     borderColor: '#ef4444',
-    backgroundColor: '#ef444410',
+    backgroundColor: '#ef444414',
   },
   optionText: {
     flex: 1,
     fontSize: 14,
-    color: '#d1d5db',
+    color: '#3A3B3E',
     lineHeight: 20,
   },
   optionTextBold: {
-    fontWeight: '600',
-    color: '#f9fafb',
+    fontWeight: '700',
+    color: '#16171A',
   },
   resultContainer: {
     marginTop: 16,
@@ -169,17 +169,17 @@ const styles = StyleSheet.create({
     borderLeftWidth: 3,
   },
   resultCorrect: {
-    backgroundColor: '#10b98110',
+    backgroundColor: '#10b98114',
     borderLeftColor: '#10b981',
   },
   resultWrong: {
-    backgroundColor: '#f59e0b10',
+    backgroundColor: '#f59e0b14',
     borderLeftColor: '#f59e0b',
   },
   resultText: {
     marginLeft: 8,
     fontSize: 14,
-    color: '#d1d5db',
+    color: '#3A3B3E',
     fontWeight: '600',
   },
 });
