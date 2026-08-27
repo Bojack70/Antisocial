@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'expo-router';
 import {
   View,
   ScrollView,
@@ -32,6 +33,7 @@ import { cards, colors, type } from '../lib/theme';
 import { addMinute, minutesUsedToday, DAILY_LIMIT_MINUTES } from '../lib/usage';
 import { hasSessionsLeftToday, consumeSession } from '../lib/quota';
 import { getSeenIds, markSeen } from '../lib/seen';
+import { isOnboardingComplete } from '../lib/onboarding';
 import { recordSession, recordLeftEarly, dueRecap, markRecapShown } from '../lib/weekLedger';
 import WeekRecapCard from '../components/WeekRecapCard';
 
@@ -125,6 +127,7 @@ interface ContentItem {
 }
 
 export default function Index() {
+  const router = useRouter();
   const [feed, setFeed] = useState<ContentItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -198,14 +201,25 @@ export default function Index() {
     if (didInit.current) return;
     didInit.current = true;
 
-    minutesUsedToday().then((used) => {
+    (async () => {
+      // A first visit goes to the opening screens before anything else — and
+      // specifically before fetchFeed(), which consumes one of the day's two
+      // sessions. Checking after the fetch would spend a session on a feed the
+      // visitor is about to be redirected away from and never sees.
+      // `loading` stays true through the redirect, so the feed never flashes.
+      if (!(await isOnboardingComplete())) {
+        router.replace('/onboarding');
+        return;
+      }
+
+      const used = await minutesUsedToday();
       if (used >= DAILY_LIMIT_MINUTES) {
         setClosed(pick(TIME_UP_SCREENS));
         setLoading(false);
         return;
       }
       fetchFeed();
-    });
+    })();
 
     // Track usage time every minute
     const interval = setInterval(async () => {

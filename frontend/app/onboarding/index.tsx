@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { resetUsage } from '../../lib/usage';
+import { completeOnboarding } from '../../lib/onboarding';
 import { Ionicons } from '@expo/vector-icons';
 
 const { width, height } = Dimensions.get('window');
@@ -65,7 +66,7 @@ export default function Onboarding() {
     } else {
       // Last screen - complete onboarding
       try {
-        await AsyncStorage.setItem('onboarding_complete', 'true');
+        await completeOnboarding();
         await AsyncStorage.setItem('daily_usage_start', new Date().toISOString());
         await resetUsage();
         
