@@ -25,7 +25,9 @@ import AlmostNothingCard from '../components/AlmostNothingCard';
 import QuietContradictionCard from '../components/QuietContradictionCard';
 import ShareableCard from '../components/ShareableCard';
 import GameCard from '../components/GameCard';
+import MissionCard from '../components/MissionCard';
 import { GAMES } from '../data/games';
+import { MISSIONS } from '../data/missions';
 import { cards, colors, type } from '../lib/theme';
 import { addMinute, minutesUsedToday, DAILY_LIMIT_MINUTES } from '../lib/usage';
 import { hasSessionsLeftToday, consumeSession } from '../lib/quota';
@@ -130,6 +132,7 @@ export default function Index() {
   const [closed, setClosed] = useState<ClosedScreen | null>(null);
   const [driftLeft, setDriftLeft] = useState(false);
   const lastGameId = useRef<string | null>(null);
+  const lastMissionId = useRef<string | null>(null);
   const fetchInFlight = useRef(false);
   const didInit = useRef(false);
 
@@ -165,6 +168,24 @@ export default function Index() {
     });
 
     return withGame;
+  };
+
+  // The Field Trip rides at the very end of the session — appended after
+  // the interruptions are placed, so nothing can splice in behind it. The
+  // last card before the museum closes is a reason to leave it.
+  const appendMissionCard = (items: ContentItem[]) => {
+    const candidates = MISSIONS.filter((m) => m.id !== lastMissionId.current);
+    const mission = candidates[Math.floor(Math.random() * candidates.length)];
+    lastMissionId.current = mission.id;
+
+    return [
+      ...items,
+      {
+        id: `mission-${mission.id}-${Date.now()}`,
+        type: 'mission',
+        mission,
+      },
+    ];
   };
 
   // Fetch feed on mount, unless today's boundary has already been reached.
@@ -250,6 +271,9 @@ export default function Index() {
            });
         });
 
+        // The exit ramp goes on last
+        sessionItems = appendMissionCard(sessionItems);
+
         setFeed(sessionItems);
         setError('');
         setClosed(null);
@@ -312,6 +336,8 @@ export default function Index() {
     switch (item.type) {
       case 'game':
         return <GameCard key={item.id} game={item.game} />;
+      case 'mission':
+        return <MissionCard key={item.id} mission={item.mission} />;
       case 'video':
         return <VideoCard key={item.id} content={item as any} />;
       case 'body_aware_interruption':
