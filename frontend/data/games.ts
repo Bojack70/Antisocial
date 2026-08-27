@@ -8,7 +8,6 @@ export interface GameDefinition {
   label: string;
   icon: React.ComponentProps<typeof Ionicons>['name'];
   color: string;
-  tint: string;
   title: string;
   description: string;
   cta: string;
@@ -25,7 +24,6 @@ export const GAMES: GameDefinition[] = [
     label: 'Game',
     icon: 'hourglass-outline',
     color: '#6366f1',
-    tint: '#EEF0FE',
     title: 'The Timeline',
     description:
       'Which came first? Chain correct answers into a streak. The year gaps shrink as you go.',
@@ -39,12 +37,24 @@ export const GAMES: GameDefinition[] = [
     label: 'Game',
     icon: 'dice-outline',
     color: '#ec4899',
-    tint: '#FDEFF6',
     title: 'Shortcuts & Rabbit Holes',
     description:
       'Race Time across the board. Shortcuts jump you ahead, rabbit holes pull you under — every one hides a fact.',
     cta: 'Roll the dice',
     statKey: 'board_wins',
     statLabel: (value) => `${value} win${value === 1 ? '' : 's'} against Time`,
+  },
+  {
+    id: 'bricks',
+    route: '/bricks',
+    label: 'Game',
+    icon: 'grid-outline',
+    color: '#0ea5e9',
+    title: 'Brick Breaker',
+    description:
+      'Steer the paddle, clear the wall. Where the ball hits the paddle decides where it goes next — and every cleared level hands you a fact.',
+    cta: 'Break some bricks',
+    statKey: 'bricks_best_score',
+    statLabel: (value) => `Best score ${value}`,
   },
 ];
