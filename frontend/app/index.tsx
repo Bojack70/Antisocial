@@ -28,6 +28,7 @@ import GameCard from '../components/GameCard';
 import { GAMES } from '../data/games';
 import { cards, colors, type } from '../lib/theme';
 import { addMinute, minutesUsedToday, DAILY_LIMIT_MINUTES } from '../lib/usage';
+import { hasSessionsLeftToday, consumeSession } from '../lib/quota';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
@@ -41,7 +42,29 @@ const BODY_AWARE_INTERRUPTIONS = [
   "Take a single, intentional breath."
 ];
 
-const BOUNDARY_MESSAGE = 'Daily time boundary reached. See you tomorrow.';
+// Terminal screens. The museum closes; there is deliberately no button that
+// reopens it. Copy is placeholder-grade until the voice pass.
+const CLOSED_SCREENS = {
+  caughtUp: {
+    icon: 'moon-outline',
+    title: 'The museum is closed for today.',
+    subtext: 'New exhibits tomorrow.',
+  },
+  timeUp: {
+    icon: 'moon-outline',
+    title: "That's enough for today.",
+    subtext: 'The museum reopens tomorrow.',
+  },
+  left: {
+    icon: 'walk-outline',
+    title: 'You chose to leave.',
+    subtext: 'Close the app to fully step away.',
+  },
+} as const;
+
+type ClosedScreen = (typeof CLOSED_SCREENS)[keyof typeof CLOSED_SCREENS];
+
+const FINAL_SESSION_MESSAGE = "That's everything for today. The museum reopens tomorrow.";
 
 const END_SESSION_CARDS = [
   "That’s enough input for now.",
@@ -63,7 +86,11 @@ export default function Index() {
   const [error, setError] = useState('');
   const [endSessionMessage, setEndSessionMessage] = useState('');
   const [sessionCompleted, setSessionCompleted] = useState(false);
+  const [closed, setClosed] = useState<ClosedScreen | null>(null);
+  const [driftLeft, setDriftLeft] = useState(false);
   const lastGameId = useRef<string | null>(null);
+  const fetchInFlight = useRef(false);
+  const didInit = useRef(false);
 
   // Generate body aware insertion indices (every 6-10 items)
   const generateInsertionIndices = (totalItems: number) => {
@@ -101,9 +128,14 @@ export default function Index() {
 
   // Fetch feed on mount, unless today's boundary has already been reached.
   useEffect(() => {
+    // Guard against double-invoked effects (StrictMode / Fast Refresh)
+    // consuming two sessions for one visit.
+    if (didInit.current) return;
+    didInit.current = true;
+
     minutesUsedToday().then((used) => {
       if (used >= DAILY_LIMIT_MINUTES) {
-        setError(BOUNDARY_MESSAGE);
+        setClosed(CLOSED_SCREENS.timeUp);
         setLoading(false);
         return;
       }
@@ -117,12 +149,12 @@ export default function Index() {
       // A session running past midnight gets its day back rather than
       // staying locked out until the app is restarted.
       if (rolledOver) {
-        setError((current) => (current === BOUNDARY_MESSAGE ? '' : current));
+        setClosed(null);
         return;
       }
 
       if (minutes >= DAILY_LIMIT_MINUTES) {
-        setError(BOUNDARY_MESSAGE);
+        setClosed(CLOSED_SCREENS.timeUp);
         setFeed([]);
       }
     }, 60000);
@@ -131,17 +163,37 @@ export default function Index() {
   }, []);
 
   const fetchFeed = async () => {
+    if (fetchInFlight.current) return;
+    fetchInFlight.current = true;
     try {
+      // The daily quota gates every path here — mount, drift, retry and
+      // refresh — so no button can serve a session the day no longer has.
+      if (!(await hasSessionsLeftToday())) {
+        setClosed(CLOSED_SCREENS.caughtUp);
+        setFeed([]);
+        setError('');
+        return;
+      }
+
       setSessionCompleted(false);
       // Determine session size (9-12 items as per PRD)
-      const sessionSize = Math.floor(Math.random() * 4) + 9; 
-      
+      const sessionSize = Math.floor(Math.random() * 4) + 9;
+
       const response = await fetch(`${BACKEND_URL}/api/feed?limit=${sessionSize}`);
       const data = await response.json();
-      
+
       if (data.success) {
         // We only want `sessionSize` number of items for this session
         let sessionItems = data.feed.slice(0, sessionSize);
+
+        // An empty fetch must not burn quota — show the empty state instead.
+        if (sessionItems.length === 0) {
+          setFeed([]);
+          setError('');
+          return;
+        }
+        await consumeSession();
+        setDriftLeft(await hasSessionsLeftToday());
 
         // Drop a game into the scroll as an ordinary card
         sessionItems = insertGameCard(sessionItems);
@@ -159,7 +211,8 @@ export default function Index() {
 
         setFeed(sessionItems);
         setError('');
-        
+        setClosed(null);
+
         setEndSessionMessage(END_SESSION_CARDS[Math.floor(Math.random() * END_SESSION_CARDS.length)]);
       } else {
         setError('Failed to load feed');
@@ -168,6 +221,7 @@ export default function Index() {
       console.error('Feed fetch error:', err);
       setError('Unable to connect to server');
     } finally {
+      fetchInFlight.current = false;
       setLoading(false);
       setRefreshing(false);
     }
@@ -248,6 +302,17 @@ export default function Index() {
     );
   }
 
+  if (closed) {
+    return (
+      <View style={styles.centerContainer}>
+        <StatusBar style="dark" />
+        <Ionicons name={closed.icon} size={40} color={colors.muted} />
+        <Text style={styles.closedTitle}>{closed.title}</Text>
+        <Text style={styles.closedSubtext}>{closed.subtext}</Text>
+      </View>
+    );
+  }
+
   if (error) {
     return (
       <View style={styles.centerContainer}>
@@ -278,12 +343,17 @@ export default function Index() {
         contentContainerStyle={styles.feedContainer}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor={colors.muted}
-            colors={[colors.muted]}
-          />
+          // Pull-to-refresh is a recovery gesture for the empty state only.
+          // On a loaded session it would be the infinite-refresh habit this
+          // feed exists to end (and would burn the day's drift by accident).
+          feed.length === 0 ? (
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={colors.muted}
+              colors={[colors.muted]}
+            />
+          ) : undefined
         }
         onScroll={handleEndScroll}
         scrollEventThrottle={400}
@@ -301,21 +371,28 @@ export default function Index() {
         {/* End of Session Card */}
         {feed.length > 0 && sessionCompleted && (
           <View style={styles.endSessionCard}>
-            <Text style={styles.endSessionText}>{endSessionMessage}</Text>
-            
-            <TouchableOpacity 
+            <Text style={styles.endSessionText}>
+              {driftLeft ? endSessionMessage : FINAL_SESSION_MESSAGE}
+            </Text>
+
+            <TouchableOpacity
               style={styles.leaveButton}
-              onPress={() => setError('You have intentionally left the session. Close the app to fully step away.')}
+              onPress={() => {
+                setClosed(CLOSED_SCREENS.left);
+                setFeed([]);
+              }}
             >
               <Text style={styles.leaveButtonText}>Leave</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity 
-              style={styles.driftButton}
-              onPress={fetchFeed}
-            >
-              <Text style={styles.driftButtonText}>Drift a little longer</Text>
-            </TouchableOpacity>
+            {driftLeft && (
+              <TouchableOpacity
+                style={styles.driftButton}
+                onPress={fetchFeed}
+              >
+                <Text style={styles.driftButtonText}>Drift a little longer</Text>
+              </TouchableOpacity>
+            )}
           </View>
         )}
         
@@ -401,6 +478,16 @@ const styles = StyleSheet.create({
   emptySubtext: {
     ...type.micro,
     marginTop: 8,
+  },
+  closedTitle: {
+    ...type.title,
+    marginTop: 16,
+    textAlign: 'center',
+  },
+  closedSubtext: {
+    ...type.micro,
+    marginTop: 8,
+    textAlign: 'center',
   },
   interruptionContainer: {
     paddingVertical: 44,
