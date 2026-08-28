@@ -732,52 +732,6 @@ async def get_content_by_type(content_type: str, limit: int = 10):
         logging.error(f"Content fetch error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@api_router.post("/admin/sync-wave2-content")
-async def sync_wave2_content():
-    """
-    TEMPORARY one-off (2026-08-28): apply the wave-2 content batches
-    (try_this skills, look_closer images) to this deployment's own
-    database. Same reason as the item-1 guess backfill: production
-    MONGO_URL is a Vercel sensitive env var, non-readable once created.
-    Takes no input, writes only the fixed authored data from the two
-    populate scripts, idempotent. REMOVE after the one successful call.
-    """
-    import uuid as _uuid
-    from datetime import datetime as _dt
-    from populate_try_this import SKILLS
-    from populate_look_closer import IMAGES
-
-    counts = {}
-    for skill in SKILLS:
-        doc = {**skill, "type": "try_this", "rarity": skill.get("rarity", "common")}
-        existing = await db.try_this_content.find_one({"title": skill["title"]}, {"id": 1})
-        if existing:
-            await db.try_this_content.update_one({"title": skill["title"]}, {"$set": doc})
-        else:
-            doc["id"] = str(_uuid.uuid4())
-            doc["created_at"] = _dt.utcnow()
-            await db.try_this_content.insert_one(doc)
-    counts["try_this"] = await db.try_this_content.count_documents({})
-
-    for item in IMAGES:
-        doc = {**item, "type": "look_closer", "prompt": "What is this?",
-               "rarity": item.get("rarity", "common")}
-        existing = await db.look_closer_content.find_one(
-            {"image_url": item["image_url"]}, {"id": 1}
-        )
-        if existing:
-            await db.look_closer_content.update_one(
-                {"image_url": item["image_url"]}, {"$set": doc}
-            )
-        else:
-            doc["id"] = str(_uuid.uuid4())
-            doc["created_at"] = _dt.utcnow()
-            await db.look_closer_content.insert_one(doc)
-    counts["look_closer"] = await db.look_closer_content.count_documents({})
-
-    return {"success": True, **counts}
-
-
 # Include the router in the main app
 app.include_router(api_router)
 
