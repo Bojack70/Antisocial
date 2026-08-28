@@ -5,8 +5,10 @@
 **Status: item 1 SHIPPED 2026-08-28** (commits 9105c3a, f5a4734, 5d585d8, 53f59b8 —
 incident progressive reveal, fast_weird guess-before-reveal + 19 authored guesses,
 guesses counter in the week ledger; verified headless 15/15). **Items 2–7 not built.**
-Prod caveat: the guess backfill has run against the local dev DB only — the Atlas run
-waits on content review of the 19 guesses (`backend/populate_fast_weird_guesses.py`).
+Prod backfill DONE 2026-08-28 (user-reviewed; applied via a temporary admin route since
+prod MONGO_URL is a Vercel sensitive env var — verified 19/48 via the public API, route
+removed in 6a7fc46). Note: card ids are NOT stable across local/Atlas — the backfill is
+keyed by headline for exactly this reason.
 Deviation from spec: number guesses use tap ranges, not a slider (no slider dep; RN-web
 slider input is a known trap). Merged from two independent brainstorms (Opus 5 + Fable 5)
 on the same question; user-confirmed target: **5–10 min per session, 2 sessions/day**
