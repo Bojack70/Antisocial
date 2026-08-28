@@ -48,7 +48,7 @@ export default function SessionChrome({
       </View>
 
       <Text style={styles.time}>
-        Reclaimed time · {minutesToday} min
+        Reclaimed Time: {minutesToday} min
       </Text>
 
       <View style={styles.pager}>
@@ -61,7 +61,7 @@ export default function SessionChrome({
           <Ionicons
             name="chevron-back"
             size={26}
-            color={index === 0 ? colors.line : colors.clay}
+            color={index === 0 ? colors.hairline : colors.clayDeep}
           />
         </TouchableOpacity>
 
@@ -83,7 +83,7 @@ export default function SessionChrome({
           <Ionicons
             name="chevron-forward"
             size={26}
-            color={index >= count - 1 ? colors.line : colors.clay}
+            color={index >= count - 1 ? colors.hairline : colors.clayDeep}
           />
         </TouchableOpacity>
       </View>
@@ -139,16 +139,18 @@ const styles = StyleSheet.create({
     gap: 7,
     alignItems: 'center',
   },
+  // Warm tan dots with a deep-clay active one — the reference's pager is
+  // copper on tan, not orange on grey.
   dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.line,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: colors.hairline,
   },
   dotOn: {
-    backgroundColor: colors.clay,
-    width: 7,
-    height: 7,
-    borderRadius: 3.5,
+    backgroundColor: colors.clayDeep,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
 });

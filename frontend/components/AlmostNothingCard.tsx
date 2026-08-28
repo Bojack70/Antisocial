@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
   // reference's.
   artFrame: {
     width: '100%',
-    aspectRatio: 1.12,
+    aspectRatio: 1.28,
     marginTop: 22,
     marginBottom: 22,
     borderRadius: 10,

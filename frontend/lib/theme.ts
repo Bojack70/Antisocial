@@ -12,15 +12,15 @@ import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 export const colors = {
   // The canvas. Never pure white — the whole point of the repaint is that
   // the app reads as paper rather than as a screen.
-  page: '#EFECE5',
+  page: '#F1EADC',
   ink: '#2D2C2A', // titles
   body: '#6B6A68', // body copy on light surfaces
   muted: '#9A9894', // labels, microtext, timestamps
   line: '#DDD8CC', // card borders, dividers
   hairline: '#CFC9BA', // pill borders
 
-  surface: '#F7F5F0', // the card sits a shade lighter than the page
-  surfaceTinted: '#E9E5DB',
+  surface: '#F8F4EA', // the card sits a shade lighter than the page
+  surfaceTinted: '#E8DFCB',
   surfaceDark: '#1C1B1A', // charcoal, not black — it still has to feel warm
   // The wellbeing card keeps its own tinted surface — it is the one card
   // that interrupts rather than informs, and the colour is the signal.
@@ -178,26 +178,29 @@ export const cards = StyleSheet.create({
 // line that matters, both centred. type.title stays left-aligned for every
 // card still on the old treatment.
 export const stageType = StyleSheet.create({
+  // The label line is the dominant one in the reference — bold serif, with
+  // the content line under it at near the same size but lighter.
   eyebrow: {
     fontFamily: fonts.serif,
-    fontSize: 17,
-    lineHeight: 24,
+    fontSize: 21,
+    lineHeight: 28,
     color: colors.ink,
     textAlign: 'center',
   } as TextStyle,
   headline: {
     fontFamily: fonts.serifRegular,
-    fontSize: 23,
-    lineHeight: 32,
+    fontSize: 20,
+    lineHeight: 28,
     color: colors.ink,
     textAlign: 'center',
   } as TextStyle,
   // Bigger and darker than the feed's body copy. On the staged card this is
   // the only prose on the screen, so it carries the card rather than
-  // supporting a headline above it.
+  // supporting a headline above it. Tight leading — the reference stacks
+  // its lines close.
   body: {
     fontSize: 17,
-    lineHeight: 28,
+    lineHeight: 24,
     color: colors.ink,
     textAlign: 'center',
   } as TextStyle,
@@ -207,13 +210,14 @@ export const stageType = StyleSheet.create({
 // the deck read as a deck rather than as one card at a time — the reference
 // shows a sliver of the next card on each side.
 export const rails = StyleSheet.create({
-  // Percentages, not fixed insets: the rails have to line up with the card,
-  // and the card is centred in whatever space the chrome and footer leave.
+  // The rails live inside a wrapper that is exactly the card's height, so
+  // these percentages are relative to the CARD — in the reference the
+  // neighbours peek slightly shorter than the card, centred on it.
   rail: {
     position: 'absolute',
-    top: '12%',
-    bottom: '25%',
-    width: 16,
+    top: '5%',
+    bottom: '5%',
+    width: 20,
     backgroundColor: colors.sage,
   },
   left: { left: 0, borderTopRightRadius: 8, borderBottomRightRadius: 8 },

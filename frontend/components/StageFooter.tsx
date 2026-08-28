@@ -28,7 +28,7 @@ export default function StageFooter({
       <View style={styles.pager}>
         <TouchableOpacity onPress={onPrev} disabled={index === 0} hitSlop={HIT}>
           <Ionicons name="chevron-back" size={26}
-            color={index === 0 ? colors.line : colors.clay} />
+            color={index === 0 ? colors.hairline : colors.clayDeep} />
         </TouchableOpacity>
 
         <View style={styles.dots}>
@@ -40,7 +40,7 @@ export default function StageFooter({
 
         <TouchableOpacity onPress={onNext} disabled={index >= count - 1} hitSlop={HIT}>
           <Ionicons name="chevron-forward" size={26}
-            color={index >= count - 1 ? colors.line : colors.clay} />
+            color={index >= count - 1 ? colors.hairline : colors.clayDeep} />
         </TouchableOpacity>
       </View>
 
@@ -64,8 +64,10 @@ const TONES = {
 } as const;
 
 const styles = StyleSheet.create({
+  // The reference's pill floats with clear parchment either side — wider
+  // margins than the feed's edge-to-edge buttons.
   wrap: {
-    paddingHorizontal: 26,
+    paddingHorizontal: 42,
     paddingTop: 14,
     paddingBottom: 10,
   },
@@ -82,16 +84,16 @@ const styles = StyleSheet.create({
     gap: 7,
   },
   dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.line,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: colors.hairline,
   },
   dotOn: {
-    width: 7,
-    height: 7,
-    borderRadius: 3.5,
-    backgroundColor: colors.clay,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: colors.clayDeep,
   },
   count: {
     fontSize: 13,

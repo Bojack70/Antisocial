@@ -609,12 +609,6 @@ export default function Index() {
               const staged = item.type === 'almost_nothing';
               return (
                 <View key={item.id} style={{ width, flex: 1 }}>
-                  {staged && (
-                    <>
-                      <View style={[rails.rail, rails.left]} pointerEvents="none" />
-                      <View style={[rails.rail, rails.right]} pointerEvents="none" />
-                    </>
-                  )}
                   {/* A ScrollView sizes to its content unless it is given a
                       definite height, so the staged page needs flex:1 on the
                       view itself — flexGrow on the content container alone
@@ -624,7 +618,18 @@ export default function Index() {
                     contentContainerStyle={staged ? styles.stageInner : styles.pageInner}
                     showsVerticalScrollIndicator={false}
                   >
-                    {renderContentCard(item, false)}
+                    {staged ? (
+                      // The rails wrap the card so they are exactly as tall
+                      // as it is — positioned by percentage of the card, the
+                      // way the reference's neighbours peek.
+                      <View style={styles.stageCardRow}>
+                        <View style={[rails.rail, rails.left]} pointerEvents="none" />
+                        <View style={[rails.rail, rails.right]} pointerEvents="none" />
+                        {renderContentCard(item, false)}
+                      </View>
+                    ) : (
+                      renderContentCard(item, false)
+                    )}
                   </ScrollView>
                   {staged && (
                     <StageFooter
@@ -717,14 +722,18 @@ const styles = StyleSheet.create({
   stageScroll: {
     flex: 1,
   },
-  // The card hugs its content now, so the page centres it in the space
-  // between the chrome and the footer instead of stretching it.
+  // Top-anchored, not centred: the reference tucks the card right under the
+  // pager dots, so any leftover height falls below the card rather than
+  // opening a gap above it.
   stageInner: {
     paddingHorizontal: 0,
-    paddingTop: 4,
+    paddingTop: 8,
     paddingBottom: 0,
     flexGrow: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
+  },
+  stageCardRow: {
+    width: '100%',
   },
   feedContainer: {
     paddingHorizontal: 16,
