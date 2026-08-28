@@ -2,9 +2,15 @@
 
 ## Session Depth Spec (2026-08-28) — get sessions from ~2 min to 5–10 min
 
-**Status: SPEC ONLY — nothing below is built yet.** Merged from two independent brainstorms
-(Opus 5 + Fable 5) on the same question; user-confirmed target: **5–10 min per session,
-2 sessions/day** (quota model unchanged). Raw unedited answers from both models:
+**Status: item 1 SHIPPED 2026-08-28** (commits 9105c3a, f5a4734, 5d585d8, 53f59b8 —
+incident progressive reveal, fast_weird guess-before-reveal + 19 authored guesses,
+guesses counter in the week ledger; verified headless 15/15). **Items 2–7 not built.**
+Prod caveat: the guess backfill has run against the local dev DB only — the Atlas run
+waits on content review of the 19 guesses (`backend/populate_fast_weird_guesses.py`).
+Deviation from spec: number guesses use tap ranges, not a slider (no slider dep; RN-web
+slider input is a known trap). Merged from two independent brainstorms (Opus 5 + Fable 5)
+on the same question; user-confirmed target: **5–10 min per session, 2 sessions/day**
+(quota model unchanged). Raw unedited answers from both models:
 `docs/session-depth-raw-brainstorms-2026-08-28.md`.
 
 ### Diagnosis (agreed by both models)
@@ -30,7 +36,7 @@ not full type coverage.
 
 ### Prioritized build order
 
-1. **Guess-before-reveal across the text inventory** — biggest dwell gain per unit of
+1. ✅ **Guess-before-reveal across the text inventory** — biggest dwell gain per unit of
    effort; pure presentation change, no new content. Generalize the existing Fact-or-Myth
    guess→reveal pattern: fast_weird → "guess the number" (slider, then reveal); incident →
    "what happened next?" (two options, then the real story, can chain 2–3 taps of
