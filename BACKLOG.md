@@ -38,6 +38,11 @@ not full type coverage.
 
 ### Prioritized build order
 
+**Working order (user-approved 2026-08-28):** item 5's *measurement half* was pulled
+forward and shipped with item 1 (audioPlays + gameRounds counters in the week ledger)
+so play-rate data accumulates before the item-5b listening-room decision. Remaining:
+2 → 3 (+7 riding along) → 4 → 5b (data-gated) → 6 (gated on 1-4 proving out).
+
 1. ✅ **Guess-before-reveal across the text inventory** — biggest dwell gain per unit of
    effort; pure presentation change, no new content. Generalize the existing Fact-or-Myth
    guess→reveal pattern: fast_weird → "guess the number" (slider, then reveal); incident →

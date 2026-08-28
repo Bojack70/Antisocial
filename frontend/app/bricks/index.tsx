@@ -16,6 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { TIMELINE_EVENTS, formatYear } from '../../data/timelineEvents';
 import { colors, type } from '../../lib/theme';
+import { recordGameRound } from '../../lib/weekLedger';
 import {
   advance,
   launchVelocity,
@@ -266,6 +267,7 @@ export default function BrickBreaker() {
         if (left === 0) {
           phaseRef.current = 'over';
           setPhase('over');
+          recordGameRound(); // depth action: a run played to its natural end
         } else {
           resetBall(w, h);
         }

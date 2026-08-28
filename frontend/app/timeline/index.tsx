@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { TIMELINE_EVENTS, TimelineEvent, formatYear } from '../../data/timelineEvents';
+import { recordGameRound } from '../../lib/weekLedger';
 import { colors, type } from '../../lib/theme';
 
 // Year gap between anchor and challenger shrinks as the streak grows.
@@ -98,6 +99,7 @@ export default function TimelineGame() {
       }
     } else {
       setPhase('gameover');
+      recordGameRound(); // depth action: a run played to its natural end
     }
   };
 

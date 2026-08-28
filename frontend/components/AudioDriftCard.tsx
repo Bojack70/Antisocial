@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, TouchableOpacity, Platform, Linking } from 'react-native';
 import Text from './AppText';
 import { Ionicons } from '@expo/vector-icons';
 import ReactionButtons from './ReactionButtons';
 import CardHeader from './CardHeader';
 import { cards, colors, type } from '../lib/theme';
+import { recordAudioPlay } from '../lib/weekLedger';
 
 interface AudioDriftCardProps {
   content: {
@@ -42,6 +43,17 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState((content.duration ?? 0) * 1000);
 
+  // Depth action: the first play press on this card, and only the first —
+  // pause/resume cycles are one listen, not several. This counter is what
+  // decides the spec's item-5 listening-room question, so it must mean
+  // "someone actually chose to listen", nothing looser.
+  const playRecorded = useRef(false);
+  const recordFirstPlay = () => {
+    if (playRecorded.current) return;
+    playRecorded.current = true;
+    recordAudioPlay();
+  };
+
   useEffect(() => {
     return () => {
       if (sound) sound.unloadAsync();
@@ -52,6 +64,8 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
     if (!audioUrl) return;
     try {
       const { Audio } = require('expo-av');
+
+      recordFirstPlay();
 
       if (sound) {
         if (isPlaying) {
@@ -95,6 +109,7 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
         <View style={styles.audioPlayerContainer}>
           <audio
             controls
+            onPlay={recordFirstPlay}
             src={audioUrl}
             style={{
               width: '100%',

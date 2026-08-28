@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { colors, type } from '../../lib/theme';
+import { recordGameRound } from '../../lib/weekLedger';
 
 const BOARD_SIZE = 36;
 const COLS = 6;
@@ -59,6 +60,7 @@ export default function BoardGame() {
   const finishGame = (who: 'you' | 'time') => {
     setWinner(who);
     setTurn('over');
+    recordGameRound(); // depth action: a run played to its natural end
     if (who === 'you') {
       const newWins = wins + 1;
       setWins(newWins);

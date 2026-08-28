@@ -13,10 +13,15 @@ export interface DayEntry {
   cards: number;
   missions: number;
   leftEarly: number;
-  // Depth action (session-depth spec): a guess committed on a card. A
-  // 4-minute session with two guesses beats 9 minutes of numb swiping,
-  // so this is the number the spec says to watch, not raw minutes.
+  // Depth actions (session-depth spec): a guess committed on a card, an
+  // audio actually played, a game run played to its natural end. A
+  // 4-minute session with two guesses and a played round beats 9 minutes
+  // of numb swiping, so these are the numbers the spec says to watch,
+  // not raw minutes. audioPlays exists BEFORE the listening-room decision
+  // (spec item 5) so that decision is made on data, not a hunch.
   guesses: number;
+  audioPlays: number;
+  gameRounds: number;
 }
 
 export interface WeekRecap {
@@ -28,6 +33,8 @@ export interface WeekRecap {
   missions: number;
   leftEarly: number;
   guesses: number;
+  audioPlays: number;
+  gameRounds: number;
 }
 
 const KEY = 'week_ledger';
@@ -66,9 +73,14 @@ async function readLedger(): Promise<DayEntry[]> {
           isCount(e.missions) &&
           isCount(e.leftEarly)
       )
-      // Entries written before guesses existed stay valid; they just
-      // read as zero rather than being dropped from the ledger.
-      .map((e) => ({ ...e, guesses: isCount(e.guesses) ? e.guesses : 0 }));
+      // Entries written before the depth-action fields existed stay valid;
+      // they just read as zero rather than being dropped from the ledger.
+      .map((e) => ({
+        ...e,
+        guesses: isCount(e.guesses) ? e.guesses : 0,
+        audioPlays: isCount(e.audioPlays) ? e.audioPlays : 0,
+        gameRounds: isCount(e.gameRounds) ? e.gameRounds : 0,
+      }));
   } catch {
     return [];
   }
@@ -82,7 +94,10 @@ async function record(
   const day = today(now);
   let entry = ledger.find((e) => e.date === day);
   if (!entry) {
-    entry = { date: day, sessions: 0, cards: 0, missions: 0, leftEarly: 0, guesses: 0 };
+    entry = {
+      date: day, sessions: 0, cards: 0, missions: 0, leftEarly: 0,
+      guesses: 0, audioPlays: 0, gameRounds: 0,
+    };
     ledger.push(entry);
   }
   entry.sessions += delta.sessions ?? 0;
@@ -90,6 +105,8 @@ async function record(
   entry.missions += delta.missions ?? 0;
   entry.leftEarly += delta.leftEarly ?? 0;
   entry.guesses += delta.guesses ?? 0;
+  entry.audioPlays += delta.audioPlays ?? 0;
+  entry.gameRounds += delta.gameRounds ?? 0;
 
   // YYYY-MM-DD compares correctly as a string
   const cutoff = today(addDays(now, -(KEEP_DAYS - 1)));
@@ -113,6 +130,14 @@ export const recordLeftEarly = (now = new Date()) =>
 /** The visitor committed to a guess on a card before its reveal. */
 export const recordGuess = (now = new Date()) => record({ guesses: 1 }, now);
 
+/** The visitor actually pressed play on an audio card (first play only). */
+export const recordAudioPlay = (now = new Date()) =>
+  record({ audioPlays: 1 }, now);
+
+/** A game run reached its natural end — not merely opened and abandoned. */
+export const recordGameRound = (now = new Date()) =>
+  record({ gameRounds: 1 }, now);
+
 /**
  * Recap of the last finished Monday–Sunday week, or null when that week
  * had fewer than two active days — a card of zeros helps nobody.
@@ -128,7 +153,9 @@ export async function lastWeekRecap(now = new Date()): Promise<WeekRecap | null>
   );
   if (visited.length < 2) return null;
 
-  const sum = (f: 'sessions' | 'cards' | 'missions' | 'leftEarly' | 'guesses') =>
+  const sum = (
+    f: 'sessions' | 'cards' | 'missions' | 'leftEarly' | 'guesses' | 'audioPlays' | 'gameRounds'
+  ) =>
     entries.reduce((acc, e) => acc + e[f], 0);
   return {
     weekStart: today(prevMonday),
@@ -139,6 +166,8 @@ export async function lastWeekRecap(now = new Date()): Promise<WeekRecap | null>
     missions: sum('missions'),
     leftEarly: sum('leftEarly'),
     guesses: sum('guesses'),
+    audioPlays: sum('audioPlays'),
+    gameRounds: sum('gameRounds'),
   };
 }
 
