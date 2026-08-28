@@ -625,7 +625,9 @@ export default function Index() {
                       <View style={styles.stageCardRow}>
                         <View style={[rails.rail, rails.left]} pointerEvents="none" />
                         <View style={[rails.rail, rails.right]} pointerEvents="none" />
-                        {renderContentCard(item, false)}
+                        {/* fill, or the ShareableCard wrapper is content-
+                            sized and the card can't stretch to the footer */}
+                        {renderContentCard(item, true)}
                       </View>
                     ) : (
                       renderContentCard(item, false)
@@ -732,8 +734,11 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'flex-start',
   },
+  // Grows so the card inside it can reach down to the footer; the rails
+  // stay percentage-pinned to whatever height the card ends up with.
   stageCardRow: {
     width: '100%',
+    flexGrow: 1,
   },
   feedContainer: {
     paddingHorizontal: 16,

@@ -155,8 +155,12 @@ export const cards = StyleSheet.create({
   stage: {
     // Sized from the reference: the card is about 78% of the screen width,
     // and that inset is what opens the gap to the peeking neighbours. It
-    // hugs its content rather than filling, so the picture keeps its shape.
+    // fills the height between the chrome and the footer — the reference
+    // leaves no floating gap — with the illustration absorbing the slack
+    // and anything beyond its cap becoming breathing room around the text.
     alignSelf: 'stretch',
+    flexGrow: 1,
+    justifyContent: 'center',
     marginHorizontal: 30,
     borderRadius: 18,
     paddingHorizontal: 22,

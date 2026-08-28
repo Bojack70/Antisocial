@@ -38,12 +38,15 @@ export default function AlmostNothingCard({ content }: AlmostNothingCardProps) {
 }
 
 const styles = StyleSheet.create({
-  // Fixed shape, not flex. Letting it absorb the leftover height turned a
-  // landscape illustration into a portrait one twice the size of the
-  // reference's.
+  // Bounded flex: the frame soaks up whatever height the card has spare, so
+  // the card can meet the footer without a hole under it — but the cap keeps
+  // the illustration from going full-portrait at 2x the reference's size,
+  // which is what un-capped flex did the first time.
   artFrame: {
     width: '100%',
-    aspectRatio: 1.28,
+    flexGrow: 1,
+    minHeight: 240,
+    maxHeight: 400,
     marginTop: 22,
     marginBottom: 22,
     borderRadius: 10,
