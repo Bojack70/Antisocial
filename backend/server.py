@@ -28,11 +28,22 @@ app = FastAPI()
 api_router = APIRouter(prefix="/api")
 
 # Content Type Models
+class NumberGuess(BaseModel):
+    # Guess-before-reveal for fast_weird cards (session-depth spec, item 1).
+    # The prompt asks for a number the facts contain but the headline does
+    # not give away; committing to a range before reading is what makes the
+    # fact stick. The card without this field renders exactly as before.
+    prompt: str
+    options: List[str]  # 3-4 tappable ranges; answer must be one of them
+    answer: str
+    reveal: Optional[str] = None  # one extra line after the reveal, optional
+
 class FastWeirdContent(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     type: Literal["fast_weird"] = "fast_weird"
     headline: str
     facts: List[str]
+    guess: Optional[NumberGuess] = None
     rarity: Literal["common", "uncommon", "rare"] = "common"
     tags: List[str] = []
     created_at: datetime = Field(default_factory=datetime.utcnow)
