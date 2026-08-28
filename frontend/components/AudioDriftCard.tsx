@@ -4,7 +4,7 @@ import Text from './AppText';
 import { Ionicons } from '@expo/vector-icons';
 import ReactionButtons from './ReactionButtons';
 import CardHeader from './CardHeader';
-import { cards, colors, type } from '../lib/theme';
+import { cards, colors, type, accents } from '../lib/theme';
 import { recordAudioPlay } from '../lib/weekLedger';
 
 interface AudioDriftCardProps {
@@ -183,7 +183,7 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
 
   return (
     <View style={cards.dark}>
-      <CardHeader icon="headset-outline" color="#06b6d4" label="Audio Drift" tone="dark" />
+      <CardHeader icon="headset-outline" color={accents.onDark} label="Audio Drift" tone="dark" />
 
       <Text style={styles.title}>{content.title}</Text>
       {renderCredit()}

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import Text from './AppText';
 import CardHeader from './CardHeader';
-import { cards, colors, type } from '../lib/theme';
+import { cards, colors, type, accents } from '../lib/theme';
 import { MissionDefinition } from '../data/missions';
 import { recordMissionDone } from '../lib/missions';
 
@@ -24,7 +24,7 @@ export default function MissionCard({ mission }: MissionCardProps) {
 
   return (
     <View style={cards.mint}>
-      <CardHeader icon="compass-outline" color="#3F9A6C" label="Field Trip" />
+      <CardHeader icon="compass-outline" color={accents.calm} label="Field Trip" />
 
       <Text style={styles.text}>{mission.text}</Text>
 

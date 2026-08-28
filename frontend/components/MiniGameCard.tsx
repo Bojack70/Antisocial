@@ -4,7 +4,7 @@ import Text from './AppText';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import CardHeader from './CardHeader';
-import { cards, colors, type } from '../lib/theme';
+import { cards, colors, type, accents } from '../lib/theme';
 import { recordGuess } from '../lib/weekLedger';
 
 interface MiniGameCardProps {
@@ -43,7 +43,7 @@ export default function MiniGameCard({ content }: MiniGameCardProps) {
 
   return (
     <View style={cards.white}>
-      <CardHeader icon="game-controller-outline" color="#ec4899" label={gameTypeLabel} />
+      <CardHeader icon="game-controller-outline" color={accents.play} label={gameTypeLabel} />
 
       <Text style={styles.prompt}>{content.prompt}</Text>
       

@@ -23,9 +23,15 @@ const ITALIC = 'Inter_400Regular_Italic';
 
 export default function AppText({ style, ...rest }: TextProps) {
   const flat = StyleSheet.flatten(style) as TextStyle | undefined;
-  const fontFamily = flat?.fontStyle === 'italic'
-    ? ITALIC
-    : UPRIGHT[String(flat?.fontWeight ?? '400')] ?? UPRIGHT['400'];
+  // A style that names its own family — the Merriweather titles in
+  // lib/theme.ts — has already picked its face, so the Inter lookup below
+  // must not overwrite it. Everything else still gets weight-to-family
+  // translation for free.
+  const fontFamily = flat?.fontFamily
+    ? flat.fontFamily
+    : flat?.fontStyle === 'italic'
+      ? ITALIC
+      : UPRIGHT[String(flat?.fontWeight ?? '400')] ?? UPRIGHT['400'];
 
   // Weight and slant now live in the family, so they are cleared here —
   // left in place, the browser would synthesise a second layer of bold or

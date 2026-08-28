@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
 import ReactionButtons from './ReactionButtons';
 import CardHeader from './CardHeader';
-import { cards, colors, type } from '../lib/theme';
+import { cards, colors, type, accents } from '../lib/theme';
 
 interface ExplainerCardProps {
   content: {
@@ -31,7 +31,7 @@ export default function ExplainerCard({ content }: ExplainerCardProps) {
 
   return (
     <View style={cards.white}>
-      <CardHeader icon="bulb-outline" color="#10b981" label="How Does This Work?" />
+      <CardHeader icon="bulb-outline" color={accents.curiosity} label="How Does This Work?" />
 
       <Text style={styles.question}>{content.question}</Text>
 

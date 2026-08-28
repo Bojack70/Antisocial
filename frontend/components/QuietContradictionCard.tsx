@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import Text from './AppText';
 import ReactionButtons from './ReactionButtons';
 import CardHeader from './CardHeader';
-import { cards, colors, type } from '../lib/theme';
+import { cards, colors, type, accents } from '../lib/theme';
 
 interface QuietContradictionCardProps {
   content: {
@@ -18,7 +18,7 @@ export default function QuietContradictionCard({ content }: QuietContradictionCa
 
   return (
     <View style={cards.tinted}>
-      <CardHeader icon="contrast-outline" color="#64748b" label="Quiet Contradiction" />
+      <CardHeader icon="contrast-outline" color={accents.curiosity} label="Quiet Contradiction" />
 
       <Text style={styles.statementText}>{content.statement1}</Text>
 

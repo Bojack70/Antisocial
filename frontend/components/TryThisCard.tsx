@@ -3,7 +3,7 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import Text from './AppText';
 import { Ionicons } from '@expo/vector-icons';
 import CardHeader from './CardHeader';
-import { cards, colors, type } from '../lib/theme';
+import { cards, colors, type, accents } from '../lib/theme';
 import { recordSkillDone } from '../lib/weekLedger';
 
 interface TryThisCardProps {
@@ -35,7 +35,7 @@ export default function TryThisCard({ content }: TryThisCardProps) {
 
   return (
     <View style={cards.white}>
-      <CardHeader icon="hand-left-outline" color="#e11d48" label="Try This" />
+      <CardHeader icon="hand-left-outline" color={accents.calm} label="Try This" />
 
       <Text style={styles.title}>{content.title}</Text>
       <Text style={styles.hook}>{content.hook}</Text>

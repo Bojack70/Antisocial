@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
 import ReactionButtons from './ReactionButtons';
 import CardHeader from './CardHeader';
-import { cards, colors, type } from '../lib/theme';
+import { cards, colors, type, accents } from '../lib/theme';
 
 const { width } = Dimensions.get('window');
 
@@ -104,7 +104,7 @@ export default function VideoCard({ content }: VideoCardProps) {
     <View style={cards.white} ref={cardRef}>
       <CardHeader
         icon="videocam-outline"
-        color="#f43f5e"
+        color={accents.curiosity}
         label="Short Explainer"
         badge={
           content.duration ? (

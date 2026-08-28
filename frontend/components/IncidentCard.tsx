@@ -4,7 +4,7 @@ import Text from './AppText';
 import { Ionicons } from '@expo/vector-icons';
 import ReactionButtons from './ReactionButtons';
 import CardHeader from './CardHeader';
-import { cards, colors, type } from '../lib/theme';
+import { cards, colors, type, accents } from '../lib/theme';
 
 interface IncidentCardProps {
   content: {
@@ -28,7 +28,7 @@ export default function IncidentCard({ content }: IncidentCardProps) {
 
   return (
     <View style={cards.dark}>
-      <CardHeader icon="newspaper-outline" color="#f59e0b" label="Quietly Fascinating" tone="dark" />
+      <CardHeader icon="newspaper-outline" color={accents.curiosity} label="Quietly Fascinating" tone="dark" />
 
       <Text style={styles.hook}>{content.hook}</Text>
 

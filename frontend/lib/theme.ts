@@ -1,32 +1,69 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 
 // One type scale and one palette for the whole feed, so a card can't
-// quietly invent its own 17.5px or its own grey. Ported from the Drift
-// reference build: a neutral zinc palette, nothing heavier than weight
-// 500, and card type signalled by surface rather than by colour.
+// quietly invent its own 17.5px or its own grey.
+//
+// Repainted for the paper build: warm parchment instead of white, clay and
+// sage instead of zinc, and a serif for titles. The token NAMES below are
+// unchanged from the Drift build on purpose — twenty-four files import
+// them, and remapping values rather than names means every card picks up
+// the new look without being touched.
 
 export const colors = {
-  page: '#FFFFFF',
-  ink: '#18181B', // titles
-  body: '#52525B', // body copy on light surfaces
-  muted: '#A1A1AA', // labels, microtext, timestamps
-  line: '#F4F4F5', // card borders, dividers
-  hairline: '#E4E4E7', // pill borders
+  // The canvas. Never pure white — the whole point of the repaint is that
+  // the app reads as paper rather than as a screen.
+  page: '#EFECE5',
+  ink: '#2D2C2A', // titles
+  body: '#6B6A68', // body copy on light surfaces
+  muted: '#9A9894', // labels, microtext, timestamps
+  line: '#DDD8CC', // card borders, dividers
+  hairline: '#CFC9BA', // pill borders
 
-  surface: '#FFFFFF',
-  surfaceTinted: '#FAFAFA',
-  surfaceDark: '#18181B',
-  // The wellbeing card keeps its own mint surface — it is the one card
+  surface: '#F7F5F0', // the card sits a shade lighter than the page
+  surfaceTinted: '#E9E5DB',
+  surfaceDark: '#1C1B1A', // charcoal, not black — it still has to feel warm
+  // The wellbeing card keeps its own tinted surface — it is the one card
   // that interrupts rather than informs, and the colour is the signal.
-  surfaceMint: '#E9F6EE',
-  mintLine: '#D8EEDF',
+  // Sage now, to sit inside the palette instead of beside it.
+  surfaceMint: '#E3EADF',
+  mintLine: '#CBD8C4',
 
   // On the dark surface the roles shift: body copy lightens to what is
-  // "muted" on white, and panels sit just above the card.
-  darkBody: '#A1A1AA',
-  darkPanel: 'rgba(39, 39, 42, 0.5)',
-  darkPill: '#27272A',
-  darkLine: '#3F3F46',
+  // "muted" on paper, and panels sit just above the card.
+  darkBody: '#A5A29B',
+  darkPanel: 'rgba(45, 44, 42, 0.5)',
+  darkPill: '#2A2826',
+  darkLine: '#454039',
+
+  // Accents. Clay carries actions and card-type markers, sage carries
+  // completion and calm, ochre is for highlights only — it is the loudest
+  // of the three and the easiest to overuse.
+  clay: '#C27B5E',
+  clayDeep: '#A8664C',
+  sage: '#8BA087',
+  sageDeep: '#6E8269',
+  ochre: '#D9AD6A',
+} as const;
+
+// Card-type accents. The old build gave each of the sixteen card types its
+// own hue, which a three-colour palette cannot do — and does not need to,
+// because the surface already tells the types apart (see `cards` below).
+// So the accent now carries what KIND of thing the card asks of you, and
+// the icon beside it carries which one.
+export const accents = {
+  curiosity: colors.clay, // facts, explainers, video — things to read
+  calm: colors.sage, // the body cards, and anything asking you to move
+  play: colors.ochre, // games
+  personal: colors.sageDeep, // notebook, guestbook, the weekly recap
+  onDark: colors.ochre, // the one accent with enough lift on charcoal
+} as const;
+
+// Merriweather for titles, Inter for everything else. Body copy stays in
+// Inter deliberately: Merriweather is wide, and at 14px on a phone it costs
+// roughly a fifth of the words per line for no gain in a card this short.
+export const fonts = {
+  serif: 'Merriweather_700Bold',
+  serifRegular: 'Merriweather_400Regular',
 } as const;
 
 export const type = StyleSheet.create({
@@ -40,17 +77,19 @@ export const type = StyleSheet.create({
     textTransform: 'uppercase',
     color: colors.muted,
   } as TextStyle,
+  // Titles are the one place the serif appears. AppText reads fontFamily
+  // straight through, so setting it here is enough.
   title: {
-    fontSize: 20,
-    fontWeight: '500',
-    lineHeight: 28,
+    fontFamily: fonts.serif,
+    fontSize: 19,
+    lineHeight: 27,
     color: colors.ink,
   } as TextStyle,
   titleOnDark: {
-    fontSize: 20,
-    fontWeight: '500',
-    lineHeight: 28,
-    color: '#FFFFFF',
+    fontFamily: fonts.serif,
+    fontSize: 19,
+    lineHeight: 27,
+    color: '#F2EFE8',
   } as TextStyle,
   body: {
     fontSize: 14,
@@ -74,12 +113,12 @@ export const type = StyleSheet.create({
 });
 
 const cardBase: ViewStyle = {
-  borderRadius: 16,
+  borderRadius: 18,
   padding: 24,
   marginBottom: 16,
 };
 
-// Three surfaces. White is the default, tinted is for the quieter card
+// Three surfaces. Paper is the default, tinted is for the quieter card
 // types, dark is for the narrative ones — the alternation down the feed
 // is what stops twelve cards reading as one wall.
 export const cards = StyleSheet.create({
@@ -88,11 +127,13 @@ export const cards = StyleSheet.create({
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.line,
-    shadowColor: '#000000',
-    shadowOpacity: 0.04,
-    shadowRadius: 2,
-    shadowOffset: { width: 0, height: 1 },
-    elevation: 1,
+    // Grounding rather than floating: a wide, very soft shadow, so the card
+    // reads as resting on the page instead of hovering above it.
+    shadowColor: '#2D2C2A',
+    shadowOpacity: 0.06,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2,
   },
   tinted: {
     ...cardBase,

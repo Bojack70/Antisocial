@@ -7,9 +7,12 @@ import { Inter_500Medium } from '@expo-google-fonts/inter/500Medium';
 import { Inter_600SemiBold } from '@expo-google-fonts/inter/600SemiBold';
 import { Inter_700Bold } from '@expo-google-fonts/inter/700Bold';
 import { Inter_400Regular_Italic } from '@expo-google-fonts/inter/400Regular_Italic';
+import { Merriweather_400Regular } from '@expo-google-fonts/merriweather/400Regular';
+import { Merriweather_700Bold } from '@expo-google-fonts/merriweather/700Bold';
 
 // Imported one weight at a time on purpose: the package's root index pulls
-// in all 18 Inter files, which Metro would then bundle.
+// in all 18 Inter files, which Metro would then bundle. Merriweather is
+// held to two faces for the same reason — it only ever sets titles.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -19,6 +22,8 @@ export default function RootLayout() {
     Inter_600SemiBold,
     Inter_700Bold,
     Inter_400Regular_Italic,
+    Merriweather_400Regular,
+    Merriweather_700Bold,
   });
 
   useEffect(() => {

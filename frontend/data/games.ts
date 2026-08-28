@@ -29,7 +29,7 @@ export const GAMES: GameDefinition[] = [
     route: '/timeline',
     label: 'Game',
     icon: 'hourglass-outline',
-    color: '#6366f1',
+    color: '#D9AD6A',
     title: 'The Timeline',
     description:
       'Which came first? Chain correct answers into a streak. The year gaps shrink as you go.',
@@ -45,7 +45,7 @@ export const GAMES: GameDefinition[] = [
     route: '/board',
     label: 'Game',
     icon: 'dice-outline',
-    color: '#ec4899',
+    color: '#C27B5E',
     title: 'Shortcuts & Rabbit Holes',
     description:
       'Race Time across the board. Shortcuts jump you ahead, rabbit holes pull you under — every one hides a fact.',
@@ -61,7 +61,7 @@ export const GAMES: GameDefinition[] = [
     route: '/bricks',
     label: 'Game',
     icon: 'grid-outline',
-    color: '#0ea5e9',
+    color: '#8BA087',
     title: 'Brick Breaker',
     description:
       'Steer the paddle, clear the wall. Where the ball hits the paddle decides where it goes next — and every cleared level hands you a fact.',

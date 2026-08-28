@@ -4,7 +4,7 @@ import Text from './AppText';
 import { Ionicons } from '@expo/vector-icons';
 import ReactionButtons from './ReactionButtons';
 import CardHeader from './CardHeader';
-import { cards, colors, type } from '../lib/theme';
+import { cards, colors, type, accents } from '../lib/theme';
 import { recordGuess } from '../lib/weekLedger';
 
 interface NumberGuess {
@@ -49,7 +49,7 @@ export default function FastWeirdCard({ content }: FastWeirdCardProps) {
     <View style={cards.white}>
       <CardHeader
         icon="flash-outline"
-        color="#6366f1"
+        color={accents.curiosity}
         label="Wait... What?"
         badge={
           content.rarity && content.rarity !== 'common' ? (

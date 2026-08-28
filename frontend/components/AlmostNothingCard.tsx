@@ -3,7 +3,8 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import Text from './AppText';
 import ReactionButtons from './ReactionButtons';
 import CardHeader from './CardHeader';
-import { cards, type } from '../lib/theme';
+import CardArt from './CardArt';
+import { cards, type, accents } from '../lib/theme';
 
 interface AlmostNothingCardProps {
   content: {
@@ -24,8 +25,12 @@ export default function AlmostNothingCard({ content }: AlmostNothingCardProps) {
 
   return (
     <View style={cards.mint}>
-      <CardHeader icon="sunny-outline" color="#3F9A6C" label="Gentle Reminder" />
+      <CardHeader icon="sunny-outline" color={accents.calm} label="Gentle Reminder" />
       <Text style={styles.text}>{firstLine}</Text>
+      {/* Placeholder vector until the generated set lands — see CardArt. */}
+      <View style={styles.art}>
+        <CardArt name="window" />
+      </View>
       {rest.length > 0 && !unfolded && (
         <TouchableOpacity
           style={styles.unfoldRow}
@@ -42,6 +47,9 @@ export default function AlmostNothingCard({ content }: AlmostNothingCardProps) {
 }
 
 const styles = StyleSheet.create({
+  art: {
+    marginTop: 16,
+  },
   text: {
     ...type.title,
   },

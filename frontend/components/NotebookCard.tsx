@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import Text from './AppText';
 import CardHeader from './CardHeader';
-import { cards, colors, type } from '../lib/theme';
+import { cards, colors, type, accents } from '../lib/theme';
 import { writeInNotebook } from '../lib/notebook';
 
 interface NotebookCardProps {
@@ -28,7 +28,7 @@ export default function NotebookCard({ promptId, prompt }: NotebookCardProps) {
 
   return (
     <View style={cards.white}>
-      <CardHeader icon="create-outline" color="#0e7490" label="The Notebook" />
+      <CardHeader icon="create-outline" color={accents.personal} label="The Notebook" />
 
       <Text style={styles.prompt}>{prompt}</Text>
 

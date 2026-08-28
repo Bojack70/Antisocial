@@ -4,7 +4,7 @@ import Text from './AppText';
 import { Ionicons } from '@expo/vector-icons';
 import ReactionButtons from './ReactionButtons';
 import CardHeader from './CardHeader';
-import { cards, colors, type } from '../lib/theme';
+import { cards, colors, type, accents } from '../lib/theme';
 
 // This card carries no visual. The question is the content, and any image
 // above it quietly suggests a mood — which works against the card's own
@@ -28,7 +28,7 @@ export default function PonderCard({ content }: PonderCardProps) {
 
   return (
     <View style={cards.white}>
-      <CardHeader icon="infinite-outline" color="#8b5cf6" label="Ponder & Play" />
+      <CardHeader icon="infinite-outline" color={accents.curiosity} label="Ponder & Play" />
 
       <Text style={styles.question}>{content.question}</Text>
 

@@ -5,7 +5,7 @@ import Text from './AppText';
 import { Ionicons } from '@expo/vector-icons';
 import ReactionButtons from './ReactionButtons';
 import CardHeader from './CardHeader';
-import { cards, colors, type } from '../lib/theme';
+import { cards, colors, type, accents } from '../lib/theme';
 import { recordGuess } from '../lib/weekLedger';
 
 interface LookCloserCardProps {
@@ -39,7 +39,7 @@ export default function LookCloserCard({ content }: LookCloserCardProps) {
 
   return (
     <View style={cards.white}>
-      <CardHeader icon="eye-outline" color="#4f46e5" label="Look Closer" />
+      <CardHeader icon="eye-outline" color={accents.curiosity} label="Look Closer" />
 
       {!degraded && (
         <Image

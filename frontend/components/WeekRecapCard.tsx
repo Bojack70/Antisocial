@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Text from './AppText';
 import CardHeader from './CardHeader';
-import { cards, colors, type } from '../lib/theme';
+import { cards, colors, type, accents } from '../lib/theme';
 import { WeekRecap } from '../lib/weekLedger';
 import { entryBetween, NotebookEntry } from '../lib/notebook';
 
@@ -63,7 +63,7 @@ export default function WeekRecapCard({ recap }: WeekRecapCardProps) {
     <View style={cards.dark}>
       <CardHeader
         icon="stats-chart-outline"
-        color="#14b8a6"
+        color={accents.personal}
         label="The Week in Review"
         tone="dark"
       />

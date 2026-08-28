@@ -22,7 +22,7 @@ export default function Root({ children }: PropsWithChildren) {
         <meta name="description" content="A museum of curiosity in your pocket" />
 
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#F7F7F5" />
+        <meta name="theme-color" content="#EFECE5" />
 
         {/* iOS ignores the manifest for these three, so they are repeated
             here — without them, Add to Home Screen opens a Safari tab
@@ -47,7 +47,7 @@ export default function Root({ children }: PropsWithChildren) {
 
 const backgroundStyle = `
 body {
-  background-color: #F7F7F5;
+  background-color: #EFECE5;
   overscroll-behavior-y: none;
 }
 `;

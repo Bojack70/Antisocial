@@ -3,7 +3,7 @@ import { View, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import Text from './AppText';
 import { Ionicons } from '@expo/vector-icons';
 import CardHeader from './CardHeader';
-import { cards, colors, type } from '../lib/theme';
+import { cards, colors, type, accents } from '../lib/theme';
 import { signGuestbook } from '../lib/guestbook';
 
 export interface GuestbookCardItem {
@@ -47,7 +47,7 @@ export default function GuestbookCard({ items }: GuestbookCardProps) {
 
   return (
     <View style={cards.tinted}>
-      <CardHeader icon="book-outline" color="#b45309" label="The Guestbook" />
+      <CardHeader icon="book-outline" color={accents.personal} label="The Guestbook" />
 
       <Text style={styles.title}>
         Which of today’s cards would you actually retell?

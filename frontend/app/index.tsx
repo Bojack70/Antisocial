@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Image,
   RefreshControl,
+  useWindowDimensions,
 } from 'react-native';
 import Text from '../components/AppText';
 import { StatusBar } from 'expo-status-bar';
@@ -43,6 +44,8 @@ import { getSeenIds, markSeen } from '../lib/seen';
 import { isOnboardingComplete } from '../lib/onboarding';
 import { recordSession, recordLeftEarly, dueRecap, markRecapShown } from '../lib/weekLedger';
 import WeekRecapCard from '../components/WeekRecapCard';
+import SessionChrome from '../components/SessionChrome';
+import { sessionsUsedToday, MAX_SESSIONS_PER_DAY } from '../lib/quota';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
@@ -144,6 +147,26 @@ export default function Index() {
   const [sessionCompleted, setSessionCompleted] = useState(false);
   const [closed, setClosed] = useState<ClosedScreen | null>(null);
   const [driftLeft, setDriftLeft] = useState(false);
+  // Swipe build: the feed is a horizontal pager, so "where am I" is a page
+  // index rather than a scroll offset, and the chrome above it reads from
+  // the same number as the deck.
+  const [page, setPage] = useState(0);
+  const [sessionNumber, setSessionNumber] = useState(1);
+  const [minutesToday, setMinutesToday] = useState(0);
+  const pagerRef = useRef<ScrollView>(null);
+  const { width } = useWindowDimensions();
+
+  // The chrome's numbers come from the same stores the quota already uses,
+  // so the header can't drift from what the app actually enforces.
+  useEffect(() => {
+    let alive = true;
+    Promise.all([sessionsUsedToday(), minutesUsedToday()]).then(([used, mins]) => {
+      if (!alive) return;
+      setSessionNumber(Math.min(Math.max(used, 1), MAX_SESSIONS_PER_DAY));
+      setMinutesToday(mins);
+    }).catch(() => {});
+    return () => { alive = false; };
+  }, [feed.length]);
   const lastGameId = useRef<string | null>(null);
   const lastMissionId = useRef<string | null>(null);
   const fetchInFlight = useRef(false);
@@ -475,14 +498,22 @@ export default function Index() {
     }
   };
 
-  const handleEndScroll = (event: any) => {
-    const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
-    const paddingToBottom = 100;
-    if (layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom) {
-      if (!sessionCompleted) {
-        setSessionCompleted(true);
-      }
-    }
+  // Reaching the last page is what ends the session now. On the vertical
+  // build this was "scrolled to the bottom of a long list"; the swipe deck
+  // has no bottom, so the final page is the boundary instead.
+  const pageCount = feed.length + 1;
+
+  const goToPage = (i: number) => {
+    const next = Math.max(0, Math.min(i, pageCount - 1));
+    pagerRef.current?.scrollTo({ x: next * width, animated: true });
+    setPage(next);
+    if (next >= pageCount - 1 && !sessionCompleted) setSessionCompleted(true);
+  };
+
+  const handlePageSettle = (event: any) => {
+    const i = Math.round(event.nativeEvent.contentOffset.x / width);
+    if (i !== page) setPage(i);
+    if (i >= pageCount - 1 && !sessionCompleted) setSessionCompleted(true);
   };
 
   if (loading) {
@@ -521,80 +552,98 @@ export default function Index() {
     <SafeAreaView style={styles.container} edges={['top']}>
       <StatusBar style="dark" />
       
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerContent}>
-          <Text style={styles.headerTitle}>Modern Weirdness</Text>
-          <Text style={styles.headerSubtitle}>A museum of curiosity in your pocket</Text>
-        </View>
-      </View>
-
-      {/* Feed */}
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.feedContainer}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          // Pull-to-refresh is a recovery gesture for the empty state only.
-          // On a loaded session it would be the infinite-refresh habit this
-          // feed exists to end (and would burn the day's drift by accident).
-          feed.length === 0 ? (
+      {feed.length === 0 ? (
+        <ScrollView
+          contentContainerStyle={styles.feedContainer}
+          refreshControl={
+            // Pull-to-refresh is a recovery gesture for the empty state
+            // only. On a loaded session it would be the infinite-refresh
+            // habit this feed exists to end.
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
               tintColor={colors.muted}
               colors={[colors.muted]}
             />
-          ) : undefined
-        }
-        onScroll={handleEndScroll}
-        scrollEventThrottle={400}
-      >
-        {feed.length === 0 ? (
+          }
+        >
           <View style={styles.emptyState}>
             <Ionicons name="telescope-outline" size={40} color={colors.muted} />
             <Text style={styles.emptyText}>The rooms are empty.</Text>
             <Text style={styles.emptySubtext}>Pull down to check again.</Text>
           </View>
-        ) : (
-          feed.map((item) => renderContentCard(item))
-        )}
-        
-        {/* End of Session Card */}
-        {feed.length > 0 && sessionCompleted && (
-          <View style={styles.endSessionCard}>
-            <Text style={styles.endSessionText}>
-              {driftLeft ? endSessionMessage : finalSessionMessage}
-            </Text>
+        </ScrollView>
+      ) : (
+        <>
+          <SessionChrome
+            sessionNumber={sessionNumber}
+            totalSessions={MAX_SESSIONS_PER_DAY}
+            minutesToday={minutesToday}
+            index={page}
+            count={pageCount}
+            onPrev={() => goToPage(page - 1)}
+            onNext={() => goToPage(page + 1)}
+          />
 
-            <TouchableOpacity
-              style={styles.leaveButton}
-              onPress={() => {
-                // Leaving with a drift still available is the early exit
-                // worth counting; leaving at the final card is just the
-                // museum closing.
-                if (driftLeft) recordLeftEarly();
-                setClosed(pick(LEFT_SCREENS));
-                setFeed([]);
-              }}
-            >
-              <Text style={styles.leaveButtonText}>Leave</Text>
-            </TouchableOpacity>
+          {/* One card per page. The deck scrolls sideways; a card taller
+              than the screen scrolls up and down inside its own page, so
+              a long incident never forces the deck to grow. */}
+          <ScrollView
+            ref={pagerRef}
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            onMomentumScrollEnd={handlePageSettle}
+            scrollEventThrottle={16}
+            style={styles.pager}
+          >
+            {feed.map((item) => (
+              <View key={item.id} style={{ width, flex: 1 }}>
+                <ScrollView
+                  contentContainerStyle={styles.pageInner}
+                  showsVerticalScrollIndicator={false}
+                >
+                  {renderContentCard(item)}
+                </ScrollView>
+              </View>
+            ))}
 
-            {driftLeft && (
-              <TouchableOpacity
-                style={styles.driftButton}
-                onPress={fetchFeed}
+            {/* End of session — the last page rather than a trailing card */}
+            <View style={{ width, flex: 1 }}>
+              <ScrollView
+                contentContainerStyle={styles.pageInner}
+                showsVerticalScrollIndicator={false}
               >
-                <Text style={styles.driftButtonText}>Drift a little longer</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        )}
-        
-        {/* Footer padding for scroll spacing */}
-        <View style={styles.footerSpacing} />
-      </ScrollView>
+                <View style={styles.endSessionCard}>
+                  <Text style={styles.endSessionText}>
+                    {driftLeft ? endSessionMessage : finalSessionMessage}
+                  </Text>
+
+                  <TouchableOpacity
+                    style={styles.leaveButton}
+                    onPress={() => {
+                      // Leaving with a drift still available is the early
+                      // exit worth counting; leaving at the final card is
+                      // just the museum closing.
+                      if (driftLeft) recordLeftEarly();
+                      setClosed(pick(LEFT_SCREENS));
+                      setFeed([]);
+                    }}
+                  >
+                    <Text style={styles.leaveButtonText}>Leave</Text>
+                  </TouchableOpacity>
+
+                  {driftLeft && (
+                    <TouchableOpacity style={styles.driftButton} onPress={fetchFeed}>
+                      <Text style={styles.driftButtonText}>Drift a little longer</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </ScrollView>
+            </View>
+          </ScrollView>
+        </>
+      )}
     </SafeAreaView>
   );
 }
@@ -611,31 +660,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 24,
   },
-  header: {
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    backgroundColor: colors.surfaceTinted,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.line,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  headerContent: {
+  pager: {
     flex: 1,
-    alignItems: 'center',
   },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '500',
-    color: colors.ink,
-    letterSpacing: -0.45,
-  },
-  headerSubtitle: {
-    ...type.micro,
-    marginTop: 5,
-  },
-  scrollView: {
-    flex: 1,
+  // Each page carries the card's own margin, so the deck itself needs no
+  // padding — a page has to be exactly one screen wide for paging to snap.
+  // Top-aligned, not centred: card heights vary a lot across types, and
+  // centring makes each one sit at a different height, so the card appears
+  // to jump as you swipe. Anchored to the top, only the bottom edge moves.
+  pageInner: {
+    paddingHorizontal: 16,
+    paddingTop: 4,
+    paddingBottom: 40,
+    flexGrow: 1,
+    justifyContent: 'flex-start',
   },
   feedContainer: {
     paddingHorizontal: 16,
@@ -701,8 +739,7 @@ const styles = StyleSheet.create({
   endSessionCard: {
     ...cards.white,
     padding: 32,
-    marginTop: 16,
-    marginBottom: 48,
+    marginBottom: 0,
     alignItems: 'center',
   },
   endSessionText: {
@@ -710,35 +747,35 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 32,
   },
+  // Primary action, per the Tailwind spec: solid ink, rounded-xl, py-3,
+  // medium weight. No high-contrast hover — it grounds the action.
   leaveButton: {
     backgroundColor: colors.ink,
     paddingVertical: 13,
     paddingHorizontal: 32,
-    borderRadius: 10,
+    borderRadius: 12,
     width: '100%',
     alignItems: 'center',
     marginBottom: 12,
   },
   leaveButtonText: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '500',
-    color: '#FFFFFF',
+    color: colors.surface,
   },
+  // Secondary: quiet outline, the same shape as the reflection tags.
   driftButton: {
     paddingVertical: 13,
     paddingHorizontal: 32,
-    borderRadius: 10,
+    borderRadius: 12,
     width: '100%',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: colors.hairline,
   },
   driftButtonText: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '400',
     color: colors.body,
-  },
-  footerSpacing: {
-    height: 80,
   },
 });
