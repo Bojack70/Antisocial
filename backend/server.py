@@ -546,7 +546,61 @@ class FeedRequest(BaseModel):
     seen: List[str] = Field(default_factory=list)
 
 
-async def build_feed(seen=None):
+def compose_session(feed, limit):
+    """
+    Arrange the slate so the first `limit` cards — the ones the client will
+    actually show — carry the session's anchors (spec item 4):
+
+    - open weird: a fast_weird hook leads when one exists
+    - one interactive-guess anchor (Fact-or-Myth, or a fast_weird carrying
+      a guess) lands somewhere in the first half
+    - one listenable/watchable anchor (audio or video) lands in the back
+      third, near the end but before the Field Trip the client appends
+
+    The playable anchor is the game card the client splices in itself, so
+    a full session carries three anchors. Placement inside each window is
+    random and any missing pool is skipped, not faked — the rule bends
+    before it lies. Everything past `limit` keeps its shuffled order.
+    """
+    limit = max(1, min(limit, len(feed)))
+    pool = list(feed)
+
+    def take(pred):
+        for i, item in enumerate(pool):
+            if pred(item):
+                return pool.pop(i)
+        return None
+
+    def is_listenable(item):
+        return item.get("type") in ("audio_drift", "video")
+
+    def is_guess(item):
+        return item.get("type") == "mini_game" or (
+            item.get("type") == "fast_weird" and item.get("guess")
+        )
+
+    hook = take(lambda item: item.get("type") == "fast_weird" and not item.get("guess"))
+    guess_anchor = take(is_guess)
+    listen_anchor = take(is_listenable)
+
+    anchors = [a for a in (hook, guess_anchor, listen_anchor) if a]
+    session = pool[: limit - len(anchors)]
+    del pool[: limit - len(anchors)]
+
+    if hook:
+        session.insert(0, hook)
+    if guess_anchor:
+        lo = 1 if hook else 0
+        hi = max(lo + 1, len(session) // 2)
+        session.insert(random.randint(lo, hi), guess_anchor)
+    if listen_anchor:
+        lo = min(len(session), max(1, (2 * len(session)) // 3))
+        session.insert(random.randint(lo, len(session)), listen_anchor)
+
+    return session + pool
+
+
+async def build_feed(seen=None, limit=12):
     """Assemble one mixed slate, preferring content this visitor hasn't seen."""
     seen = seen or []
     feed = []
@@ -571,8 +625,10 @@ async def build_feed(seen=None):
 
         feed.extend(items)
 
-    # Shuffle feed to mix content types
+    # Shuffle feed to mix content types, then compose the visible prefix
+    # so the session opens weird and carries its anchors (spec item 4).
     random.shuffle(feed)
+    feed = compose_session(feed, limit)
 
     # Clean MongoDB _id field
     for item in feed:
@@ -591,7 +647,7 @@ async def build_feed(seen=None):
 async def get_feed(limit: int = 35):
     """Mixed feed with no exclusions — kept so older clients keep working."""
     try:
-        return await build_feed()
+        return await build_feed(limit=limit)
     except Exception as e:
         logging.error(f"Feed generation error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -607,7 +663,7 @@ async def post_feed(request: FeedRequest):
     a URL.
     """
     try:
-        return await build_feed(request.seen)
+        return await build_feed(request.seen, request.limit)
     except Exception as e:
         logging.error(f"Feed generation error: {e}")
         raise HTTPException(status_code=500, detail=str(e))

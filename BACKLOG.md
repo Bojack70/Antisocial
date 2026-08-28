@@ -39,9 +39,11 @@ not full type coverage.
 ### Prioritized build order
 
 **Working order (user-approved 2026-08-28):** item 5's *measurement half* was pulled
-forward and shipped with item 1 (audioPlays + gameRounds counters in the week ledger)
-so play-rate data accumulates before the item-5b listening-room decision. Remaining:
-2 → 3 (+7 riding along) → 4 → 5b (data-gated) → 6 (gated on 1-4 proving out).
+forward and shipped with item 1 (audioPlays + gameRounds + retells counters in the week
+ledger) so data accumulates before the item-5b decision. Items 1, 2, 3, 4 and 7 all
+shipped 2026-08-28. **Remaining: 5b listening room (gated on audioPlays staying ~zero
+over the coming weeks) → 6 exhibits (gated on 1-4 proving out against the ~2-min
+session baseline).** Nothing left to build until the data speaks.
 
 1. ✅ **Guess-before-reveal across the text inventory** — biggest dwell gain per unit of
    effort; pure presentation change, no new content. Generalize the existing Fact-or-Myth
@@ -59,7 +61,7 @@ so play-rate data accumulates before the item-5b listening-room decision. Remain
    deepens recall, feeds Week in Review, and produces **per-card retell-test telemetry**
    (the content quality bar turned into data). Variant to test later: a 3-question exit
    quiz about this session's cards (changes how people read the whole session).
-4. **Slate composition: 2–3 guaranteed anchors** (backend + `app/index.tsx` wiring) —
+4. ✅ **Slate composition: 2–3 guaranteed anchors** (2026-08-28, backend `compose_session`) —
    composer rule per the reshaped verdict above, plus an intentional session arc: open
    weird (hook) → interactive → long read → game mid-slate → audio near the end → Field
    Trip stays the LAST card. Vary rhythm session-to-session; don't make it a fixed
