@@ -27,6 +27,8 @@ export interface DayEntry {
   retells: number;
   // Notebook entries: lines actually written on a writing card.
   writes: number;
+  // Try This cards taken to their "I did it" — a skill actually attempted.
+  skillsDone: number;
 }
 
 export interface WeekRecap {
@@ -42,6 +44,7 @@ export interface WeekRecap {
   gameRounds: number;
   retells: number;
   writes: number;
+  skillsDone: number;
 }
 
 const KEY = 'week_ledger';
@@ -89,6 +92,7 @@ async function readLedger(): Promise<DayEntry[]> {
         gameRounds: isCount(e.gameRounds) ? e.gameRounds : 0,
         retells: isCount(e.retells) ? e.retells : 0,
         writes: isCount(e.writes) ? e.writes : 0,
+        skillsDone: isCount(e.skillsDone) ? e.skillsDone : 0,
       }));
   } catch {
     return [];
@@ -106,6 +110,7 @@ async function record(
     entry = {
       date: day, sessions: 0, cards: 0, missions: 0, leftEarly: 0,
       guesses: 0, audioPlays: 0, gameRounds: 0, retells: 0, writes: 0,
+      skillsDone: 0,
     };
     ledger.push(entry);
   }
@@ -118,6 +123,7 @@ async function record(
   entry.gameRounds += delta.gameRounds ?? 0;
   entry.retells += delta.retells ?? 0;
   entry.writes += delta.writes ?? 0;
+  entry.skillsDone += delta.skillsDone ?? 0;
 
   // YYYY-MM-DD compares correctly as a string
   const cutoff = today(addDays(now, -(KEEP_DAYS - 1)));
@@ -155,6 +161,10 @@ export const recordRetell = (now = new Date()) => record({ retells: 1 }, now);
 /** The visitor wrote something on a writing card. */
 export const recordWrite = (now = new Date()) => record({ writes: 1 }, now);
 
+/** A Try This card was taken to its "I did it". */
+export const recordSkillDone = (now = new Date()) =>
+  record({ skillsDone: 1 }, now);
+
 /**
  * Recap of the last finished Monday–Sunday week, or null when that week
  * had fewer than two active days — a card of zeros helps nobody.
@@ -171,7 +181,7 @@ export async function lastWeekRecap(now = new Date()): Promise<WeekRecap | null>
   if (visited.length < 2) return null;
 
   const sum = (
-    f: 'sessions' | 'cards' | 'missions' | 'leftEarly' | 'guesses' | 'audioPlays' | 'gameRounds' | 'retells' | 'writes'
+    f: 'sessions' | 'cards' | 'missions' | 'leftEarly' | 'guesses' | 'audioPlays' | 'gameRounds' | 'retells' | 'writes' | 'skillsDone'
   ) =>
     entries.reduce((acc, e) => acc + e[f], 0);
   return {
@@ -187,6 +197,7 @@ export async function lastWeekRecap(now = new Date()): Promise<WeekRecap | null>
     gameRounds: sum('gameRounds'),
     retells: sum('retells'),
     writes: sum('writes'),
+    skillsDone: sum('skillsDone'),
   };
 }
 

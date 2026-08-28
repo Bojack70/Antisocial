@@ -148,6 +148,23 @@ class QuietContradictionContent(BaseModel):
     tags: List[str] = []
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
+class TryThisContent(BaseModel):
+    # Wave 2, item 2: a real skill learnable in two or three minutes, taught
+    # step-per-tap. Rules the batch follows: solo (no second person), only
+    # common objects, verifiably doable from the written steps alone, and
+    # never a comeback hook — the card ends when the hands have done it.
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    type: Literal["try_this"] = "try_this"
+    title: str
+    hook: str  # one line on why this is worth two minutes
+    needs: Optional[str] = None  # "A coin." — omitted means bare hands
+    steps: List[str]
+    why: Optional[str] = None  # the mechanism, revealed at the end
+    duration: Optional[int] = None  # honest estimate, seconds
+    rarity: Literal["common", "uncommon", "rare"] = "common"
+    tags: List[str] = []
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
 class UserPreference(BaseModel):
     user_id: str
     preference_type: str
@@ -457,7 +474,7 @@ VIDEO_PREFERRED_MAX_SEC = 180
 # Content types whose items are real third-party media. There is nothing to
 # invent here: a generated video is a YouTube URL that doesn't exist, which
 # is how the old feed accumulated permanent "Video coming soon" cards.
-NO_AI_FALLBACK = {"video"}
+NO_AI_FALLBACK = {"video", "try_this"}
 
 
 async def sample_videos(db, count, seen=None):
@@ -538,6 +555,7 @@ FEED_RATIOS = {
     "video": 3,
     "almost_nothing": 2,
     "quiet_contradiction": 2,
+    "try_this": 2,
 }
 
 
