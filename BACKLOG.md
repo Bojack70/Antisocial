@@ -71,17 +71,61 @@ session baseline).** Nothing left to build until the data speaks.
    "listening room" presentation (ambient visual, visible duration "90 seconds", one-tap
    play) — the museum bench, not an attachment.
 6. **Multi-card topic "exhibits"** — serialize the best explainers into 3–4 card chains
+   (build as horizontal tap-to-advance flashcards, not vertical scroll — vertical walls
+   of text fire doomscroll muscle memory; includes the curated "one page from the
+   archive" public-domain reading variant)
    (setup → complication → payoff), one exhibit per session. Highest content cost; do
    once 1–4 prove out. Cliffhangers stay INSIDE a session — cross-session cliffhangers
    are a dark pattern for this brand.
 7. ✅ **Staged reveal on ponder / almost_nothing** (2026-08-28, shipped with item 3) — tap to unfold the second line;
    5–10s per card, compounds across the session. Small, do opportunistically.
 
+### Wave 2 — new card types (scoped 2026-08-28, user-approved order)
+
+Origin: user ideas for the 2-3 minute session problem, synthesized with an external
+agent's input. Note: building 2 and 3 before the measurement window closes makes the
+before/after baseline comparison fuzzier — accepted knowingly; per-card depth actions
+still measure cleanly.
+
+1. **The writing card (Notebook)** — one specific, slightly provocative prompt per
+   session, mid-slate; 2-3 typed lines; silently skippable, untimed, local-only.
+   Prompts: ~24 hand-authored in `data/writingPrompts.ts` (missions pattern), rotation
+   via AsyncStorage recency exclusion. Store: `lib/notebook.ts` mirroring guestbook
+   (28-day entries, sessionKey replace-not-duplicate). Ledger: `writes` counter.
+   Week in Review quotes the latest entry back ("you wrote this on Tuesday").
+   This is the spec's parked "typed ponder answers" item, un-parked: its stated
+   blocker (an input pattern) shipped with the guestbook. Brain-dump = one prompt
+   variant, no timer.
+2. **"Try This" micro-skill card** — a real 2-3 minute skill (coin vanish, number
+   trick, Möbius cut) taught step-per-tap via staged reveal; "I did it" ->
+   `skillsDone` counter; ends with a deadpan close, never a comeback hook. Content:
+   15-20 hand-authored, verifiably-doable skills needing only common objects, in a
+   new backend `try_this_content` collection (slate ratio ~2, on the no-AI list).
+3. **"Look closer" photo-guess card** — one striking public-domain photograph,
+   "What is this?" with three options before any caption, then the reveal + 1-2 fact
+   lines + credit. Content: 12-15 curated PD/CC0 images (NASA / LoC / Wikimedia PD),
+   every URL and license click-verified; hotlinked with attribution and a graceful
+   image-failure fallback rather than bundled. Backend `look_closer_content`
+   (ratio 1-2). Reuses the guess interaction and the existing `guesses` counter, and
+   joins `compose_session`'s interactive-guess anchor class.
+
+Prod DB sync for 2-3: same temporary idempotent admin-route pattern as the item-1
+guess backfill (prod MONGO_URL is a Vercel sensitive env var), one deploy cycle,
+removed after the call.
+
+**Rejected from the external agent's input, on the record:** unskippable/slow-forced
+media and mandatory timers (hard-NO: forced dwell), the growing "visual mural"
+(collection streak in disguise), community vote reveals (antisocial by design; also a
+variable reward), and leave-and-come-back physical quests (Field Trips already exist
+and treat departure as success — no return loop). Their good ideas kept: specific
+provocative writing prompts; horizontal tap-pagination noted below for item 6's
+exhibits; authored post-choice counterpoints as a possible ponder variant.
+
 ### Parked (raised, deliberately not scheduled)
 - **Paged feed** (one card at a time, tap/swipe to advance, no scroll) — the deepest
   structural fix for skimming, but touches the core feed UI; revisit if 1–4 underdeliver.
-- **Ponder cards accept a typed one-line answer**, shown back in Week in Review ("you
-  wrote this on Tuesday") — good idea, needs the guestbook input pattern to exist first.
+- ~~Ponder cards accept a typed one-line answer~~ — un-parked into Wave 2 item 1
+  (the guestbook input pattern it was waiting on shipped 2026-08-28).
 
 ### Hard NO list (both models, brand-load-bearing)
 - No more cards per session, no third session — volume is the enemy's axis.
