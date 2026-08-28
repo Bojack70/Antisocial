@@ -60,6 +60,15 @@ export default function WeekRecapCard({ recap }: WeekRecapCardProps) {
       </View>
 
       <Text style={styles.voiceLine}>{voiceLine}</Text>
+
+      {/* The guestbook feeding back: how many cards passed the retell test. */}
+      {recap.retells > 0 && (
+        <Text style={styles.voiceLine}>
+          {recap.retells === 1
+            ? 'One card was worth retelling. You signed for it.'
+            : `${recap.retells} cards were worth retelling. You signed for them.`}
+        </Text>
+      )}
     </View>
   );
 }

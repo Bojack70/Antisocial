@@ -21,13 +21,29 @@ interface PonderCardProps {
 
 export default function PonderCard({ content }: PonderCardProps) {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
+  // Staged reveal (spec item 7): the question stands alone first. A few
+  // seconds of actually pondering before the options appear is the card
+  // doing its job; the options arrive when asked for.
+  const [showOptions, setShowOptions] = useState(false);
 
   return (
     <View style={cards.white}>
       <CardHeader icon="infinite-outline" color="#8b5cf6" label="Ponder & Play" />
 
       <Text style={styles.question}>{content.question}</Text>
-      
+
+      {!showOptions && (
+        <TouchableOpacity
+          style={styles.revealRow}
+          onPress={() => setShowOptions(true)}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.revealText}>See the options</Text>
+          <Ionicons name="chevron-down" size={15} color={colors.muted} />
+        </TouchableOpacity>
+      )}
+
+      {showOptions && (
       <View style={styles.optionsContainer}>
         {content.options.map((option, index) => (
           <TouchableOpacity
@@ -53,7 +69,8 @@ export default function PonderCard({ content }: PonderCardProps) {
           </TouchableOpacity>
         ))}
       </View>
-      
+      )}
+
       {selectedOption !== null && (
         <View style={styles.responseContainer}>
           <Text style={styles.responseText}>No right answer. Just you thinking.</Text>
@@ -72,6 +89,15 @@ const styles = StyleSheet.create({
   question: {
     ...type.title,
     marginBottom: 16,
+  },
+  revealRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 12,
+  },
+  revealText: {
+    ...type.body,
   },
   optionsContainer: {
     flexDirection: 'row',

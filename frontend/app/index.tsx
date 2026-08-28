@@ -27,6 +27,7 @@ import AlmostNothingCard from '../components/AlmostNothingCard';
 import QuietContradictionCard from '../components/QuietContradictionCard';
 import ShareableCard from '../components/ShareableCard';
 import GameCard from '../components/GameCard';
+import GuestbookCard from '../components/GuestbookCard';
 import MissionCard from '../components/MissionCard';
 import { GAMES } from '../data/games';
 import { MISSIONS } from '../data/missions';
@@ -142,6 +143,24 @@ export default function Index() {
   const lastMissionId = useRef<string | null>(null);
   const fetchInFlight = useRef(false);
   const didInit = useRef(false);
+
+  // What a card would be called if you retold it — the label the
+  // guestbook shows. Types with nothing quotable return null and stay
+  // out of the guestbook list.
+  const cardTitle = (item: ContentItem): string | null => {
+    switch (item.type) {
+      case 'fast_weird': return item.headline ?? null;
+      case 'explainer':
+      case 'ponder': return item.question ?? null;
+      case 'incident': return item.hook ?? null;
+      case 'mini_game': return item.prompt ?? null;
+      case 'audio_drift':
+      case 'video': return item.title ?? null;
+      case 'almost_nothing': return (item.text ?? '').trim().split('\n')[0] || null;
+      case 'quiet_contradiction': return item.statement1 ?? null;
+      default: return null;
+    }
+  };
 
   // Generate body aware insertion indices (every 6-10 items)
   const generateInsertionIndices = (totalItems: number) => {
@@ -296,6 +315,12 @@ export default function Index() {
         await recordSession(sessionItems.length);
         setDriftLeft(await hasSessionsLeftToday());
 
+        // The guestbook needs the session's content cards before games
+        // and interruptions are spliced among them.
+        const guestbookItems = sessionItems
+          .map((i: ContentItem) => ({ id: i.id, type: i.type, title: cardTitle(i) }))
+          .filter((i: any): i is { id: string; type: string; title: string } => !!i.title);
+
         // Drop a game into the scroll as the session's playable anchor
         sessionItems = await insertGameCard(sessionItems);
 
@@ -309,6 +334,16 @@ export default function Index() {
              text: randomInterruption
            });
         });
+
+        // The guestbook closes the session, just ahead of the exit ramp:
+        // name the one card you'd actually retell.
+        if (guestbookItems.length > 0) {
+          sessionItems.push({
+            id: `guestbook-${Date.now()}`,
+            type: 'guestbook',
+            items: guestbookItems,
+          });
+        }
 
         // The exit ramp goes on last
         sessionItems = appendMissionCard(sessionItems);
@@ -387,6 +422,8 @@ export default function Index() {
     switch (item.type) {
       case 'game':
         return <GameCard key={item.id} game={item.game} anchor={!!item.anchor} />;
+      case 'guestbook':
+        return <GuestbookCard key={item.id} items={item.items} />;
       case 'mission':
         return <MissionCard key={item.id} mission={item.mission} />;
       case 'week_recap':

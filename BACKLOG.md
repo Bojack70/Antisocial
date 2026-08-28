@@ -54,7 +54,7 @@ so play-rate data accumulates before the item-5b listening-room decision. Remain
    anchor with a defined arc and a natural END (museum-consistent): "3 rounds of
    Timeline", "one life of Brick Breaker", a par score. Rotate which of the three games
    anchors each session. A completed round is 2–4 min on its own.
-3. **Guestbook closing card** — before the Field Trip card: "Which of today's cards would
+3. ✅ **Guestbook closing card** (2026-08-28) — before the Field Trip card: "Which of today's cards would
    you actually retell? Tap it." Optional one-line note. Extends the session honestly,
    deepens recall, feeds Week in Review, and produces **per-card retell-test telemetry**
    (the content quality bar turned into data). Variant to test later: a 3-question exit
@@ -72,7 +72,7 @@ so play-rate data accumulates before the item-5b listening-room decision. Remain
    (setup → complication → payoff), one exhibit per session. Highest content cost; do
    once 1–4 prove out. Cliffhangers stay INSIDE a session — cross-session cliffhangers
    are a dark pattern for this brand.
-7. **Staged reveal on ponder / almost_nothing** — tap/hold to unfold the second line;
+7. ✅ **Staged reveal on ponder / almost_nothing** (2026-08-28, shipped with item 3) — tap to unfold the second line;
    5–10s per card, compounds across the session. Small, do opportunistically.
 
 ### Parked (raised, deliberately not scheduled)
