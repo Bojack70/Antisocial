@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import ReactionButtons from './ReactionButtons';
 import CardHeader from './CardHeader';
 import { cards, colors, type } from '../lib/theme';
+import { recordGuess } from '../lib/weekLedger';
 
 interface NumberGuess {
   prompt: string;
@@ -78,7 +79,11 @@ export default function FastWeirdCard({ content }: FastWeirdCardProps) {
                     isCorrectOption && styles.optionCardCorrect,
                     isWrongSelection && styles.optionCardWrong,
                   ]}
-                  onPress={() => !answered && setSelected(option)}
+                  onPress={() => {
+                    if (answered) return;
+                    setSelected(option);
+                    recordGuess(); // depth action; fire-and-forget
+                  }}
                   disabled={answered}
                   activeOpacity={0.7}
                 >

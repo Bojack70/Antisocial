@@ -13,6 +13,10 @@ export interface DayEntry {
   cards: number;
   missions: number;
   leftEarly: number;
+  // Depth action (session-depth spec): a guess committed on a card. A
+  // 4-minute session with two guesses beats 9 minutes of numb swiping,
+  // so this is the number the spec says to watch, not raw minutes.
+  guesses: number;
 }
 
 export interface WeekRecap {
@@ -23,6 +27,7 @@ export interface WeekRecap {
   cards: number;
   missions: number;
   leftEarly: number;
+  guesses: number;
 }
 
 const KEY = 'week_ledger';
@@ -52,14 +57,18 @@ async function readLedger(): Promise<DayEntry[]> {
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
-    return parsed.filter(
-      (e): e is DayEntry =>
-        typeof e?.date === 'string' &&
-        isCount(e.sessions) &&
-        isCount(e.cards) &&
-        isCount(e.missions) &&
-        isCount(e.leftEarly)
-    );
+    return parsed
+      .filter(
+        (e): e is DayEntry =>
+          typeof e?.date === 'string' &&
+          isCount(e.sessions) &&
+          isCount(e.cards) &&
+          isCount(e.missions) &&
+          isCount(e.leftEarly)
+      )
+      // Entries written before guesses existed stay valid; they just
+      // read as zero rather than being dropped from the ledger.
+      .map((e) => ({ ...e, guesses: isCount(e.guesses) ? e.guesses : 0 }));
   } catch {
     return [];
   }
@@ -73,13 +82,14 @@ async function record(
   const day = today(now);
   let entry = ledger.find((e) => e.date === day);
   if (!entry) {
-    entry = { date: day, sessions: 0, cards: 0, missions: 0, leftEarly: 0 };
+    entry = { date: day, sessions: 0, cards: 0, missions: 0, leftEarly: 0, guesses: 0 };
     ledger.push(entry);
   }
   entry.sessions += delta.sessions ?? 0;
   entry.cards += delta.cards ?? 0;
   entry.missions += delta.missions ?? 0;
   entry.leftEarly += delta.leftEarly ?? 0;
+  entry.guesses += delta.guesses ?? 0;
 
   // YYYY-MM-DD compares correctly as a string
   const cutoff = today(addDays(now, -(KEEP_DAYS - 1)));
@@ -100,6 +110,9 @@ export const recordMission = (now = new Date()) => record({ missions: 1 }, now);
 export const recordLeftEarly = (now = new Date()) =>
   record({ leftEarly: 1 }, now);
 
+/** The visitor committed to a guess on a card before its reveal. */
+export const recordGuess = (now = new Date()) => record({ guesses: 1 }, now);
+
 /**
  * Recap of the last finished Monday–Sunday week, or null when that week
  * had fewer than two active days — a card of zeros helps nobody.
@@ -115,7 +128,7 @@ export async function lastWeekRecap(now = new Date()): Promise<WeekRecap | null>
   );
   if (visited.length < 2) return null;
 
-  const sum = (f: 'sessions' | 'cards' | 'missions' | 'leftEarly') =>
+  const sum = (f: 'sessions' | 'cards' | 'missions' | 'leftEarly' | 'guesses') =>
     entries.reduce((acc, e) => acc + e[f], 0);
   return {
     weekStart: today(prevMonday),
@@ -125,6 +138,7 @@ export async function lastWeekRecap(now = new Date()): Promise<WeekRecap | null>
     cards: sum('cards'),
     missions: sum('missions'),
     leftEarly: sum('leftEarly'),
+    guesses: sum('guesses'),
   };
 }
 

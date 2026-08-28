@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import CardHeader from './CardHeader';
 import { cards, colors, type } from '../lib/theme';
+import { recordGuess } from '../lib/weekLedger';
 
 interface MiniGameCardProps {
   content: {
@@ -28,6 +29,7 @@ export default function MiniGameCard({ content }: MiniGameCardProps) {
   const handleSelect = (option: string) => {
     setSelectedOption(option);
     setShowResult(true);
+    recordGuess(); // depth action; fire-and-forget, the UI never waits on it
   };
 
   const isCorrect = selectedOption === content.correct_answer;
