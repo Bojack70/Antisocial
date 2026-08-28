@@ -45,6 +45,7 @@ import { isOnboardingComplete } from '../lib/onboarding';
 import { recordSession, recordLeftEarly, dueRecap, markRecapShown } from '../lib/weekLedger';
 import WeekRecapCard from '../components/WeekRecapCard';
 import SessionChrome from '../components/SessionChrome';
+import StageFooter from '../components/StageFooter';
 import { sessionsUsedToday, MAX_SESSIONS_PER_DAY } from '../lib/quota';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
@@ -455,11 +456,11 @@ export default function Index() {
     }
   };
 
-  const renderContentCard = (item: ContentItem) => {
+  const renderContentCard = (item: ContentItem, fill = false) => {
     const shareable = shareableCardFor(item);
     if (shareable) {
       return (
-        <ShareableCard key={item.id} shareName={`modern-weirdness-${item.type}`}>
+        <ShareableCard key={item.id} shareName={`modern-weirdness-${item.type}`} fill={fill}>
           {shareable}
         </ShareableCard>
       );
@@ -596,17 +597,43 @@ export default function Index() {
             onMomentumScrollEnd={handlePageSettle}
             scrollEventThrottle={16}
             style={styles.pager}
+            // Without this the row of pages is only as tall as its tallest
+            // child, so a page's flex:1 has no height to divide and the
+            // staged card stops short of the footer.
+            contentContainerStyle={styles.pagerContent}
           >
-            {feed.map((item) => (
-              <View key={item.id} style={{ width, flex: 1 }}>
-                <ScrollView
-                  contentContainerStyle={styles.pageInner}
-                  showsVerticalScrollIndicator={false}
-                >
-                  {renderContentCard(item)}
-                </ScrollView>
-              </View>
-            ))}
+            {feed.map((item, i) => {
+              // TRIAL: only the Gentle Reminder card is on the mockup
+              // treatment — full-height card plus the bottom pager and
+              // pill action. Everything else keeps the current layout.
+              const staged = item.type === 'almost_nothing';
+              return (
+                <View key={item.id} style={{ width, flex: 1 }}>
+                  {/* A ScrollView sizes to its content unless it is given a
+                      definite height, so the staged page needs flex:1 on the
+                      view itself — flexGrow on the content container alone
+                      leaves the card short of the footer. */}
+                  <ScrollView
+                    style={staged ? styles.stageScroll : undefined}
+                    contentContainerStyle={staged ? styles.stageInner : styles.pageInner}
+                    showsVerticalScrollIndicator={false}
+                  >
+                    {renderContentCard(item, staged)}
+                  </ScrollView>
+                  {staged && (
+                    <StageFooter
+                      index={i}
+                      count={pageCount}
+                      onPrev={() => goToPage(i - 1)}
+                      onNext={() => goToPage(i + 1)}
+                      label="Done"
+                      tone="sage"
+                      onPress={() => goToPage(i + 1)}
+                    />
+                  )}
+                </View>
+              );
+            })}
 
             {/* End of session — the last page rather than a trailing card */}
             <View style={{ width, flex: 1 }}>
@@ -663,6 +690,10 @@ const styles = StyleSheet.create({
   pager: {
     flex: 1,
   },
+  pagerContent: {
+    flexGrow: 1,
+    alignItems: 'stretch',
+  },
   // Each page carries the card's own margin, so the deck itself needs no
   // padding — a page has to be exactly one screen wide for paging to snap.
   // Top-aligned, not centred: card heights vary a lot across types, and
@@ -674,6 +705,17 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
     flexGrow: 1,
     justifyContent: 'flex-start',
+  },
+  // TRIAL: no bottom padding and no growth cap — the staged card takes the
+  // full height between the chrome and the footer, so nothing is left over.
+  stageScroll: {
+    flex: 1,
+  },
+  stageInner: {
+    paddingHorizontal: 16,
+    paddingTop: 4,
+    paddingBottom: 0,
+    flexGrow: 1,
   },
   feedContainer: {
     paddingHorizontal: 16,

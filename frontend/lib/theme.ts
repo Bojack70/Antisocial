@@ -151,4 +151,50 @@ export const cards = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.mintLine,
   },
+  // TRIAL — the swipe-mockup treatment, on one card type only.
+  // flex:1 is the difference between a card that hugs its text (leaving
+  // two-thirds of the page empty) and one that fills its page the way the
+  // reference does. Kept as its own variant until we like it.
+  stage: {
+    flex: 1,
+    borderRadius: 18,
+    paddingHorizontal: 26,
+    paddingTop: 30,
+    paddingBottom: 26,
+    marginBottom: 0,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.line,
+    shadowColor: '#2D2C2A',
+    shadowOpacity: 0.06,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2,
+  },
+});
+
+// TRIAL — the mockup's centred serif titles: a small label line, then the
+// line that matters, both centred. type.title stays left-aligned for every
+// card still on the old treatment.
+export const stageType = StyleSheet.create({
+  eyebrow: {
+    fontFamily: fonts.serif,
+    fontSize: 17,
+    lineHeight: 24,
+    color: colors.ink,
+    textAlign: 'center',
+  } as TextStyle,
+  headline: {
+    fontFamily: fonts.serifRegular,
+    fontSize: 23,
+    lineHeight: 32,
+    color: colors.ink,
+    textAlign: 'center',
+  } as TextStyle,
+  body: {
+    fontSize: 15,
+    lineHeight: 26,
+    color: colors.body,
+    textAlign: 'center',
+  } as TextStyle,
 });

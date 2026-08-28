@@ -11,9 +11,14 @@ export const ShareContext = createContext<(() => void) | null>(null);
 interface ShareableCardProps {
   children: React.ReactNode;
   shareName?: string;
+  // Staged cards fill their page. Without this the wrapper is content-sized
+  // (flex: 0 0 auto), so a card with flex:1 inside it cannot stretch and
+  // stops short of the footer — measured at 463px inside a 688px slot.
+  // Never applied while capturing, where the frame is deliberately fixed.
+  fill?: boolean;
 }
 
-export default function ShareableCard({ children, shareName }: ShareableCardProps) {
+export default function ShareableCard({ children, shareName, fill }: ShareableCardProps) {
   const ref = useRef<View>(null);
   const [capturing, setCapturing] = useState(false);
 
@@ -32,7 +37,11 @@ export default function ShareableCard({ children, shareName }: ShareableCardProp
 
   return (
     <ShareContext.Provider value={capturing ? null : onShare}>
-      <View ref={ref} collapsable={false} style={capturing ? styles.captureFrame : undefined}>
+      <View
+        ref={ref}
+        collapsable={false}
+        style={capturing ? styles.captureFrame : fill ? styles.fill : undefined}
+      >
         {children}
         {capturing && (
           <View style={styles.brandRow}>
@@ -45,6 +54,9 @@ export default function ShareableCard({ children, shareName }: ShareableCardProp
 }
 
 const styles = StyleSheet.create({
+  fill: {
+    flex: 1,
+  },
   captureFrame: {
     backgroundColor: '#FAFAFA',
     padding: 14,
