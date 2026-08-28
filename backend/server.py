@@ -639,6 +639,39 @@ async def get_content_by_type(content_type: str, limit: int = 10):
         logging.error(f"Content fetch error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.post("/admin/backfill-guesses")
+async def backfill_guesses():
+    """
+    TEMPORARY one-off (2026-08-28): apply the 19 authored fast_weird guesses
+    from populate_fast_weird_guesses.py to this deployment's own database.
+
+    Exists because the production MONGO_URL is a Vercel *sensitive* env var —
+    non-readable once created — so the backfill cannot run from a laptop.
+    Takes no input and writes only the fixed, reviewed data from the populate
+    script, so calling it twice (or by a stranger) changes nothing.
+    REMOVE after the one successful call.
+    """
+    from populate_fast_weird_guesses import GUESSES
+
+    applied, missing = 0, []
+    for id_prefix, guess in GUESSES.items():
+        doc = await db.fast_weird_content.find_one(
+            {"id": {"$regex": f"^{id_prefix}"}}, {"id": 1}
+        )
+        if not doc:
+            missing.append(id_prefix)
+            continue
+        await db.fast_weird_content.update_one(
+            {"id": doc["id"]}, {"$set": {"guess": guess}}
+        )
+        applied += 1
+
+    total = await db.fast_weird_content.count_documents({})
+    with_guess = await db.fast_weird_content.count_documents({"guess": {"$exists": True}})
+    return {"success": True, "applied": applied, "missing": missing,
+            "with_guess": with_guess, "total": total}
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
