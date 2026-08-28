@@ -4,7 +4,8 @@
 
 **Status: SPEC ONLY — nothing below is built yet.** Merged from two independent brainstorms
 (Opus 5 + Fable 5) on the same question; user-confirmed target: **5–10 min per session,
-2 sessions/day** (quota model unchanged).
+2 sessions/day** (quota model unchanged). Raw unedited answers from both models:
+`docs/session-depth-raw-brainstorms-2026-08-28.md`.
 
 ### Diagnosis (agreed by both models)
 A session serves 9–12 cards; most inventory is read-and-swipe text worth 10–20s each →
