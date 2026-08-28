@@ -80,7 +80,7 @@ session baseline).** Nothing left to build until the data speaks.
 7. ✅ **Staged reveal on ponder / almost_nothing** (2026-08-28, shipped with item 3) — tap to unfold the second line;
    5–10s per card, compounds across the session. Small, do opportunistically.
 
-### Wave 2 — new card types (scoped 2026-08-28, user-approved order)
+### Wave 2 — new card types (scoped AND SHIPPED 2026-08-28, all three live in prod)
 
 Origin: user ideas for the 2-3 minute session problem, synthesized with an external
 agent's input. Note: building 2 and 3 before the measurement window closes makes the
@@ -109,9 +109,9 @@ still measure cleanly.
    (ratio 1-2). Reuses the guess interaction and the existing `guesses` counter, and
    joins `compose_session`'s interactive-guess anchor class.
 
-Prod DB sync for 2-3: same temporary idempotent admin-route pattern as the item-1
-guess backfill (prod MONGO_URL is a Vercel sensitive env var), one deploy cycle,
-removed after the call.
+Prod DB sync for 2-3: DONE 2026-08-28 via the temp admin-route pattern (added
+ab983db, removed 204d70b) — prod verified serving 16 try_this + 10 look_closer.
+Commits: notebook b8e71d9, try_this 9decec8, look_closer ff6bc26.
 
 **Rejected from the external agent's input, on the record:** unskippable/slow-forced
 media and mandatory timers (hard-NO: forced dwell), the growing "visual mural"
