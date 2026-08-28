@@ -13,7 +13,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { TIMELINE_EVENTS, formatYear } from '../../data/timelineEvents';
 import { colors, type } from '../../lib/theme';
 import { recordGameRound } from '../../lib/weekLedger';
@@ -40,12 +40,18 @@ type Phase = 'ready' | 'playing' | 'cleared' | 'over';
 
 export default function BrickBreaker() {
   const router = useRouter();
+  // Anchor mode (spec item 2): arrived from the session's anchor card.
+  // The arc is ONE life — a bounded run with a natural end — and the end
+  // panel treats leaving as the primary action. The Game Room's own door
+  // keeps the full three lives.
+  const anchorMode = useLocalSearchParams<{ anchor?: string }>().anchor === '1';
+  const startLives = anchorMode ? 1 : START_LIVES;
   const [size, setSize] = useState({ w: 0, h: 0 });
   const [bricks, setBricks] = useState<Brick[]>([]);
   const [phase, setPhase] = useState<Phase>('ready');
   const [score, setScore] = useState(0);
   const [best, setBest] = useState(0);
-  const [lives, setLives] = useState(START_LIVES);
+  const [lives, setLives] = useState(startLives);
   const [level, setLevel] = useState(1);
   const [fact, setFact] = useState<string | null>(null);
 
@@ -58,7 +64,7 @@ export default function BrickBreaker() {
   // so anything its handlers touch has to be a ref, not state.
   const sizeRef = useRef({ w: 0, h: 0 });
   const paddleWRef = useRef(0);
-  const livesRef = useRef(START_LIVES);
+  const livesRef = useRef(startLives);
   const bricksRef = useRef<Brick[]>([]);
   const phaseRef = useRef<Phase>('ready');
   const speedRef = useRef(0);
@@ -308,8 +314,8 @@ export default function BrickBreaker() {
     bricksRef.current = built;
     setBricks(built);
     setScore(0);
-    livesRef.current = START_LIVES;
-    setLives(START_LIVES);
+    livesRef.current = startLives;
+    setLives(startLives);
     setLevel(1);
     setFact(null);
     speedRef.current = Math.max(0.26, size.h * 0.001);
@@ -337,7 +343,7 @@ export default function BrickBreaker() {
         <View style={styles.statusRow}>
           <Text style={styles.statusText}>
             {'●'.repeat(lives)}
-            <Text style={styles.livesSpent}>{'●'.repeat(START_LIVES - lives)}</Text>
+            <Text style={styles.livesSpent}>{'●'.repeat(startLives - lives)}</Text>
           </Text>
           <Text style={styles.statusText}>Best {best}</Text>
         </View>
@@ -404,15 +410,23 @@ export default function BrickBreaker() {
             <Text style={styles.panelStats}>
               Score {score} · Best {Math.max(best, score)}
             </Text>
-            <TouchableOpacity style={styles.primaryButton} onPress={restart} activeOpacity={0.8}>
-              <Text style={styles.primaryButtonText}>Run it back</Text>
+            <TouchableOpacity
+              style={styles.primaryButton}
+              onPress={anchorMode ? () => router.back() : restart}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.primaryButtonText}>
+                {anchorMode ? 'Back to the museum' : 'Run it back'}
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.ghostButton}
-              onPress={() => router.back()}
+              onPress={anchorMode ? restart : () => router.back()}
               activeOpacity={0.7}
             >
-              <Text style={styles.ghostButtonText}>Back to the game room</Text>
+              <Text style={styles.ghostButtonText}>
+                {anchorMode ? 'Run it back' : 'Back to the game room'}
+              </Text>
             </TouchableOpacity>
           </View>
         )}

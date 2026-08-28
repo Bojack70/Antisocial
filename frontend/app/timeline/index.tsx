@@ -11,7 +11,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { TIMELINE_EVENTS, TimelineEvent, formatYear } from '../../data/timelineEvents';
 import { recordGameRound } from '../../lib/weekLedger';
 import { colors, type } from '../../lib/theme';
@@ -30,6 +30,10 @@ export default function TimelineGame() {
   const router = useRouter();
   const [anchor, setAnchor] = useState<TimelineEvent | null>(null);
   const [challenger, setChallenger] = useState<TimelineEvent | null>(null);
+  // Anchor mode (spec item 2): arrived from the session's anchor card.
+  // Same game, but the end panel treats leaving as the primary action —
+  // the arc was one run, and the run ended.
+  const anchorMode = useLocalSearchParams<{ anchor?: string }>().anchor === '1';
   const [phase, setPhase] = useState<Phase>('playing');
   const [choice, setChoice] = useState<'before' | 'after' | null>(null);
   const [streak, setStreak] = useState(0);
@@ -235,15 +239,27 @@ export default function TimelineGame() {
             <Text style={styles.gameoverStats}>
               Streak {streak} · Best {best}
             </Text>
-            <TouchableOpacity style={styles.nextButton} onPress={startRun} activeOpacity={0.8}>
-              <Text style={styles.nextButtonText}>Run it back</Text>
+            <TouchableOpacity
+              style={styles.nextButton}
+              onPress={anchorMode ? () => router.back() : startRun}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.nextButtonText}>
+                {anchorMode ? 'Back to the museum' : 'Run it back'}
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.ghostButton} onPress={shareRun} activeOpacity={0.7}>
               <Ionicons name="share-outline" size={13} color={colors.body} />
               <Text style={styles.ghostButtonText}>Challenge a friend</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.ghostButton} onPress={() => router.back()} activeOpacity={0.7}>
-              <Text style={styles.ghostButtonText}>Back to the museum</Text>
+            <TouchableOpacity
+              style={styles.ghostButton}
+              onPress={anchorMode ? startRun : () => router.back()}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.ghostButtonText}>
+                {anchorMode ? 'Run it back' : 'Back to the museum'}
+              </Text>
             </TouchableOpacity>
           </View>
         )}

@@ -13,6 +13,7 @@ import Text from '../components/AppText';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Import components
 import FastWeirdCard from '../components/FastWeirdCard';
@@ -154,13 +155,22 @@ export default function Index() {
   };
 
   // One game rides in the feed like any other card, dropped a few items
-  // down the scroll — a surprise, not a fixture. Never the same game twice
-  // in a row, so a refresh always offers something different.
-  const insertGameCard = (items: ContentItem[]) => {
-    const candidates = GAMES.filter((g) => g.id !== lastGameId.current);
+  // down the scroll — the session's playable ANCHOR (spec item 2), framed
+  // as a bounded arc with a natural end. Never the same game twice in a
+  // row; the last anchor is persisted so the rotation survives app
+  // restarts instead of resetting with the in-memory ref.
+  const insertGameCard = async (items: ContentItem[]) => {
+    let lastId = lastGameId.current;
+    try {
+      lastId = (await AsyncStorage.getItem('last_anchor_game')) ?? lastId;
+    } catch {
+      // Unreadable flag: fall back to the in-memory ref.
+    }
+    const candidates = GAMES.filter((g) => g.id !== lastId);
     const pool = candidates.length > 0 ? candidates : GAMES;
     const game = pool[Math.floor(Math.random() * pool.length)];
     lastGameId.current = game.id;
+    AsyncStorage.setItem('last_anchor_game', game.id).catch(() => {});
 
     const withGame = [...items];
     const index = Math.min(
@@ -171,6 +181,7 @@ export default function Index() {
       id: `game-${game.id}-${Date.now()}`,
       type: 'game',
       game,
+      anchor: true,
     });
 
     return withGame;
@@ -285,8 +296,8 @@ export default function Index() {
         await recordSession(sessionItems.length);
         setDriftLeft(await hasSessionsLeftToday());
 
-        // Drop a game into the scroll as an ordinary card
-        sessionItems = insertGameCard(sessionItems);
+        // Drop a game into the scroll as the session's playable anchor
+        sessionItems = await insertGameCard(sessionItems);
 
         // Insert Body-Aware interruptions
         const indices = generateInsertionIndices(sessionItems.length);
@@ -375,7 +386,7 @@ export default function Index() {
     }
     switch (item.type) {
       case 'game':
-        return <GameCard key={item.id} game={item.game} />;
+        return <GameCard key={item.id} game={item.game} anchor={!!item.anchor} />;
       case 'mission':
         return <MissionCard key={item.id} mission={item.mission} />;
       case 'week_recap':

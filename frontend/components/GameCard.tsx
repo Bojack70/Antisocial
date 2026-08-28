@@ -10,12 +10,16 @@ import { GameDefinition } from '../data/games';
 
 interface GameCardProps {
   game: GameDefinition;
+  // Session anchor (spec item 2): the invitation names a bounded arc with
+  // a natural end, and the game opens in anchor mode — where the end panel
+  // treats leaving as the primary action, museum-style.
+  anchor?: boolean;
 }
 
 // A game as an ordinary feed card: same anatomy as every other card, so a
 // game arrives in the scroll the way a fact does rather than hiding behind
 // a button in the header.
-export default function GameCard({ game }: GameCardProps) {
+export default function GameCard({ game, anchor = false }: GameCardProps) {
   const router = useRouter();
   const [stat, setStat] = useState<number>(0);
 
@@ -34,14 +38,18 @@ export default function GameCard({ game }: GameCardProps) {
       <CardHeader icon={game.icon} color={game.color} label={game.label} />
 
       <Text style={styles.title}>{game.title}</Text>
-      <Text style={styles.description}>{game.description}</Text>
+      <Text style={styles.description}>
+        {anchor ? game.arcDescription : game.description}
+      </Text>
 
       <TouchableOpacity
         style={styles.cta}
-        onPress={() => router.push(game.route as any)}
+        onPress={() =>
+          router.push((anchor ? `${game.route}?anchor=1` : game.route) as any)
+        }
         activeOpacity={0.8}
       >
-        <Text style={styles.ctaText}>{game.cta}</Text>
+        <Text style={styles.ctaText}>{anchor ? game.arcCta : game.cta}</Text>
         <Ionicons name="arrow-forward" size={13} color="#FFFFFF" />
       </TouchableOpacity>
 

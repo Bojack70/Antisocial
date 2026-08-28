@@ -5,7 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { colors, type } from '../../lib/theme';
 import { recordGameRound } from '../../lib/weekLedger';
 
@@ -30,6 +30,9 @@ type Turn = 'player' | 'rival' | 'over';
 
 export default function BoardGame() {
   const router = useRouter();
+  // Anchor mode (spec item 2): arrived from the session's anchor card.
+  // One race was the arc; when it ends, leaving is the primary action.
+  const anchorMode = useLocalSearchParams<{ anchor?: string }>().anchor === '1';
   const [playerPos, setPlayerPos] = useState(0);
   const [rivalPos, setRivalPos] = useState(0);
   const [turn, setTurn] = useState<Turn>('player');
@@ -219,15 +222,23 @@ export default function BoardGame() {
             <Text style={styles.gameoverTitle}>
               {winner === 'you' ? 'You beat Time.' : 'Time wins this one.'}
             </Text>
-            <TouchableOpacity style={styles.rollButton} onPress={resetGame} activeOpacity={0.8}>
-              <Text style={styles.rollButtonText}>Run it back</Text>
+            <TouchableOpacity
+              style={styles.rollButton}
+              onPress={anchorMode ? () => router.back() : resetGame}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.rollButtonText}>
+                {anchorMode ? 'Back to the museum' : 'Run it back'}
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.ghostButton}
-              onPress={() => router.back()}
+              onPress={anchorMode ? resetGame : () => router.back()}
               activeOpacity={0.7}
             >
-              <Text style={styles.ghostButtonText}>Back to the game room</Text>
+              <Text style={styles.ghostButtonText}>
+                {anchorMode ? 'Run it back' : 'Back to the game room'}
+              </Text>
             </TouchableOpacity>
           </View>
         )}

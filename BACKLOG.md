@@ -50,7 +50,7 @@ so play-rate data accumulates before the item-5b listening-room decision. Remain
    progressive reveal); explainer → opens with the question, not the answer. Prediction
    triples dwell AND is the retell test made mechanical — committing to a guess is what
    makes the fact stick.
-2. **Games as bounded session anchors** — promote the playable game card from garnish to
+2. ✅ **Games as bounded session anchors** (2026-08-28) — promote the playable game card from garnish to
    anchor with a defined arc and a natural END (museum-consistent): "3 rounds of
    Timeline", "one life of Brick Breaker", a par score. Rotate which of the three games
    anchors each session. A completed round is 2–4 min on its own.
