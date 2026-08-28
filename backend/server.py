@@ -653,17 +653,17 @@ async def backfill_guesses():
     """
     from populate_fast_weird_guesses import GUESSES
 
+    # Keyed by headline: ids are not stable across databases — the local
+    # collection was re-seeded after the Atlas migration, so most of these
+    # cards carry different UUIDs in prod. Headlines are the stable identity.
     applied, missing = 0, []
-    for id_prefix, guess in GUESSES.items():
-        doc = await db.fast_weird_content.find_one(
-            {"id": {"$regex": f"^{id_prefix}"}}, {"id": 1}
+    for headline, guess in GUESSES.items():
+        result = await db.fast_weird_content.update_one(
+            {"headline": headline}, {"$set": {"guess": guess}}
         )
-        if not doc:
-            missing.append(id_prefix)
+        if result.matched_count == 0:
+            missing.append(headline[:50])
             continue
-        await db.fast_weird_content.update_one(
-            {"id": doc["id"]}, {"$set": {"guess": guess}}
-        )
         applied += 1
 
     total = await db.fast_weird_content.count_documents({})
