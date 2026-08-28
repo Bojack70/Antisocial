@@ -165,6 +165,24 @@ class TryThisContent(BaseModel):
     tags: List[str] = []
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
+class LookCloserContent(BaseModel):
+    # Wave 2, item 3: one striking public-domain photograph, a guess about
+    # what it shows, then the reveal. Every image URL and licence is
+    # click-verified at populate time; the card degrades gracefully when
+    # an image fails to load. Counts as an interactive-guess anchor.
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    type: Literal["look_closer"] = "look_closer"
+    image_url: str
+    prompt: str = "What is this?"
+    options: List[str]
+    answer: str
+    facts: List[str] = []  # 1-2 lines after the reveal
+    credit: str
+    source_link: Optional[str] = None
+    rarity: Literal["common", "uncommon", "rare"] = "common"
+    tags: List[str] = []
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
 class UserPreference(BaseModel):
     user_id: str
     preference_type: str
@@ -474,7 +492,7 @@ VIDEO_PREFERRED_MAX_SEC = 180
 # Content types whose items are real third-party media. There is nothing to
 # invent here: a generated video is a YouTube URL that doesn't exist, which
 # is how the old feed accumulated permanent "Video coming soon" cards.
-NO_AI_FALLBACK = {"video", "try_this"}
+NO_AI_FALLBACK = {"video", "try_this", "look_closer"}
 
 
 async def sample_videos(db, count, seen=None):
@@ -556,6 +574,7 @@ FEED_RATIOS = {
     "almost_nothing": 2,
     "quiet_contradiction": 2,
     "try_this": 2,
+    "look_closer": 2,
 }
 
 
@@ -593,7 +612,7 @@ def compose_session(feed, limit):
         return item.get("type") in ("audio_drift", "video")
 
     def is_guess(item):
-        return item.get("type") == "mini_game" or (
+        return item.get("type") in ("mini_game", "look_closer") or (
             item.get("type") == "fast_weird" and item.get("guess")
         )
 

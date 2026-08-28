@@ -30,6 +30,7 @@ import GameCard from '../components/GameCard';
 import GuestbookCard from '../components/GuestbookCard';
 import NotebookCard from '../components/NotebookCard';
 import TryThisCard from '../components/TryThisCard';
+import LookCloserCard from '../components/LookCloserCard';
 import MissionCard from '../components/MissionCard';
 import { GAMES } from '../data/games';
 import { WRITING_PROMPTS } from '../data/writingPrompts';
@@ -162,6 +163,7 @@ export default function Index() {
       case 'video': return item.title ?? null;
       case 'almost_nothing': return (item.text ?? '').trim().split('\n')[0] || null;
       case 'try_this': return item.title ?? null;
+      case 'look_closer': return item.answer ?? null;
       case 'quiet_contradiction': return item.statement1 ?? null;
       default: return null;
     }
@@ -444,6 +446,8 @@ export default function Index() {
         return <GameCard key={item.id} game={item.game} anchor={!!item.anchor} />;
       case 'try_this':
         return <TryThisCard key={item.id} content={item as any} />;
+      case 'look_closer':
+        return <LookCloserCard key={item.id} content={item as any} />;
       case 'notebook':
         return (
           <NotebookCard key={item.id} promptId={item.promptId} prompt={item.prompt} />
