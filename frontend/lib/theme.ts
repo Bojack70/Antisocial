@@ -58,12 +58,13 @@ export const accents = {
   onDark: colors.ochre, // the one accent with enough lift on charcoal
 } as const;
 
-// Merriweather for titles, Inter for everything else. Body copy stays in
-// Inter deliberately: Merriweather is wide, and at 14px on a phone it costs
-// roughly a fifth of the words per line for no gain in a card this short.
+// Lora for titles, Open Sans for everything else — matched to the swipe
+// reference 2026-08-28 (Merriweather read too wide and slabby against it,
+// Inter too cool and geometric). Body copy stays sans deliberately: a serif
+// at 14px on a phone costs words per line for no gain in a card this short.
 export const fonts = {
-  serif: 'Merriweather_700Bold',
-  serifRegular: 'Merriweather_400Regular',
+  serif: 'Lora_700Bold',
+  serifRegular: 'Lora_400Regular',
 } as const;
 
 export const type = StyleSheet.create({

@@ -2,28 +2,32 @@ import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
-import { Inter_400Regular } from '@expo-google-fonts/inter/400Regular';
-import { Inter_500Medium } from '@expo-google-fonts/inter/500Medium';
-import { Inter_600SemiBold } from '@expo-google-fonts/inter/600SemiBold';
-import { Inter_700Bold } from '@expo-google-fonts/inter/700Bold';
-import { Inter_400Regular_Italic } from '@expo-google-fonts/inter/400Regular_Italic';
-import { Merriweather_400Regular } from '@expo-google-fonts/merriweather/400Regular';
-import { Merriweather_700Bold } from '@expo-google-fonts/merriweather/700Bold';
+import { OpenSans_400Regular } from '@expo-google-fonts/open-sans/400Regular';
+import { OpenSans_500Medium } from '@expo-google-fonts/open-sans/500Medium';
+import { OpenSans_600SemiBold } from '@expo-google-fonts/open-sans/600SemiBold';
+import { OpenSans_700Bold } from '@expo-google-fonts/open-sans/700Bold';
+import { OpenSans_400Regular_Italic } from '@expo-google-fonts/open-sans/400Regular_Italic';
+import { Lora_400Regular } from '@expo-google-fonts/lora/400Regular';
+import { Lora_700Bold } from '@expo-google-fonts/lora/700Bold';
 
-// Imported one weight at a time on purpose: the package's root index pulls
-// in all 18 Inter files, which Metro would then bundle. Merriweather is
-// held to two faces for the same reason — it only ever sets titles.
+// Imported one weight at a time on purpose: a package's root index pulls
+// in every weight file, which Metro would then bundle. Lora is held to two
+// faces for the same reason — it only ever sets titles.
+//
+// Lora + Open Sans replaced Merriweather + Inter 2026-08-28 to match the
+// swipe reference: its serif is narrower and higher-contrast than
+// Merriweather, its sans warmer and more humanist than Inter.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_600SemiBold,
-    Inter_700Bold,
-    Inter_400Regular_Italic,
-    Merriweather_400Regular,
-    Merriweather_700Bold,
+    OpenSans_400Regular,
+    OpenSans_500Medium,
+    OpenSans_600SemiBold,
+    OpenSans_700Bold,
+    OpenSans_400Regular_Italic,
+    Lora_400Regular,
+    Lora_700Bold,
   });
 
   useEffect(() => {
