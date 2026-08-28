@@ -38,16 +38,16 @@ export default function AlmostNothingCard({ content }: AlmostNothingCardProps) {
 }
 
 const styles = StyleSheet.create({
-  // flex:1 here is what absorbs the leftover height, so the title sits at
-  // the top and the body at the bottom with the picture stretching between
-  // them — rather than the card growing a gap under fixed-height content.
+  // Fixed shape, not flex. Letting it absorb the leftover height turned a
+  // landscape illustration into a portrait one twice the size of the
+  // reference's.
   artFrame: {
-    flex: 1,
-    marginTop: 20,
+    width: '100%',
+    aspectRatio: 1.12,
+    marginTop: 22,
     marginBottom: 22,
     borderRadius: 10,
     overflow: 'hidden',
-    minHeight: 180,
   },
   art: {
     width: '100%',

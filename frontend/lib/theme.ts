@@ -152,15 +152,16 @@ export const cards = StyleSheet.create({
     borderColor: colors.mintLine,
   },
   // TRIAL — the swipe-mockup treatment, on one card type only.
-  // flex:1 is the difference between a card that hugs its text (leaving
-  // two-thirds of the page empty) and one that fills its page the way the
-  // reference does. Kept as its own variant until we like it.
   stage: {
-    flex: 1,
+    // Sized from the reference: the card is about 78% of the screen width,
+    // and that inset is what opens the gap to the peeking neighbours. It
+    // hugs its content rather than filling, so the picture keeps its shape.
+    alignSelf: 'stretch',
+    marginHorizontal: 30,
     borderRadius: 18,
-    paddingHorizontal: 26,
-    paddingTop: 30,
-    paddingBottom: 26,
+    paddingHorizontal: 22,
+    paddingTop: 32,
+    paddingBottom: 30,
     marginBottom: 0,
     backgroundColor: colors.surface,
     borderWidth: 1,
@@ -206,11 +207,13 @@ export const stageType = StyleSheet.create({
 // the deck read as a deck rather than as one card at a time — the reference
 // shows a sliver of the next card on each side.
 export const rails = StyleSheet.create({
+  // Percentages, not fixed insets: the rails have to line up with the card,
+  // and the card is centred in whatever space the chrome and footer leave.
   rail: {
     position: 'absolute',
-    top: 34,
-    bottom: 34,
-    width: 13,
+    top: '12%',
+    bottom: '25%',
+    width: 16,
     backgroundColor: colors.sage,
   },
   left: { left: 0, borderTopRightRadius: 8, borderBottomRightRadius: 8 },

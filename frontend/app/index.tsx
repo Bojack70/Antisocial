@@ -624,7 +624,7 @@ export default function Index() {
                     contentContainerStyle={staged ? styles.stageInner : styles.pageInner}
                     showsVerticalScrollIndicator={false}
                   >
-                    {renderContentCard(item, staged)}
+                    {renderContentCard(item, false)}
                   </ScrollView>
                   {staged && (
                     <StageFooter
@@ -717,11 +717,14 @@ const styles = StyleSheet.create({
   stageScroll: {
     flex: 1,
   },
+  // The card hugs its content now, so the page centres it in the space
+  // between the chrome and the footer instead of stretching it.
   stageInner: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 0,
     paddingTop: 4,
     paddingBottom: 0,
     flexGrow: 1,
+    justifyContent: 'center',
   },
   feedContainer: {
     paddingHorizontal: 16,

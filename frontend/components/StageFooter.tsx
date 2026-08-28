@@ -65,7 +65,7 @@ const TONES = {
 
 const styles = StyleSheet.create({
   wrap: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 26,
     paddingTop: 14,
     paddingBottom: 10,
   },
