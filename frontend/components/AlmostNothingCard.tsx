@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import React from 'react';
+import { View, StyleSheet, Image } from 'react-native';
 import Text from './AppText';
-import ReactionButtons from './ReactionButtons';
-import CardArt from './CardArt';
-import { cards, stageType, colors } from '../lib/theme';
+import { cards, stageType } from '../lib/theme';
 
 interface AlmostNothingCardProps {
   content: {
@@ -11,72 +9,48 @@ interface AlmostNothingCardProps {
   };
 }
 
-// TRIAL CARD — the only card on the swipe-mockup treatment so far.
+// Built to the swipe reference, and the only card on that treatment so far.
 //
-// What changed against the rest of the feed: the card fills its page rather
-// than hugging its text, the uppercase eyebrow is replaced by the mockup's
-// two-line centred serif title, and everything inside is centred. The
-// action that used to be a row of reaction pills is now the bottom-anchored
-// pill button the reference has.
+// Against the rest of the feed: no uppercase eyebrow and no reaction pills —
+// the reference has neither, and the action now lives in the footer button.
+// The illustration takes whatever height is left between the title and the
+// body, so the card fills its page on a tall screen without a hole in it.
 export default function AlmostNothingCard({ content }: AlmostNothingCardProps) {
-  const reactions = ['Let It Pass', 'Noted', 'Stayed With Me'];
-
-  // First line is the nudge; the rest makes it land. Staged reveal: the
-  // rest waits behind a quiet tap, so the first line gets a beat to itself.
   const [firstLine, ...restLines] = content.text.split('\n');
   const rest = restLines.join('\n').trim();
-  const [unfolded, setUnfolded] = useState(false);
 
   return (
     <View style={cards.stage}>
       <Text style={stageType.eyebrow}>Gentle Reminder:</Text>
       <Text style={stageType.headline}>{firstLine}</Text>
 
-      <View style={styles.art}>
-        <CardArt name="window" />
+      <View style={styles.artFrame}>
+        <Image
+          source={require('../assets/art/pause-woman.png')}
+          style={styles.art}
+          resizeMode="cover"
+        />
       </View>
 
-      {rest.length > 0 && !unfolded && (
-        <TouchableOpacity
-          style={styles.unfoldRow}
-          onPress={() => setUnfolded(true)}
-          activeOpacity={0.7}
-        >
-          <Text style={styles.unfoldText}>· · ·</Text>
-        </TouchableOpacity>
-      )}
-      {rest.length > 0 && unfolded && <Text style={stageType.body}>{rest}</Text>}
-
-      {/* The spacer is what pins the reactions to the bottom of the card
-          however tall the text above happens to be. */}
-      <View style={styles.spacer} />
-
-      <View style={styles.reactions}>
-        <ReactionButtons reactions={reactions} />
-      </View>
+      {rest.length > 0 && <Text style={stageType.body}>{rest}</Text>}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  art: {
-    marginTop: 22,
-    marginBottom: 20,
-  },
-  spacer: {
+  // flex:1 here is what absorbs the leftover height, so the title sits at
+  // the top and the body at the bottom with the picture stretching between
+  // them — rather than the card growing a gap under fixed-height content.
+  artFrame: {
     flex: 1,
-    minHeight: 8,
+    marginTop: 20,
+    marginBottom: 22,
+    borderRadius: 10,
+    overflow: 'hidden',
+    minHeight: 180,
   },
-  reactions: {
-    alignItems: 'center',
-  },
-  unfoldRow: {
-    paddingVertical: 6,
-    alignItems: 'center',
-  },
-  unfoldText: {
-    fontSize: 15,
-    letterSpacing: 5,
-    color: colors.sage,
+  art: {
+    width: '100%',
+    height: '100%',
   },
 });

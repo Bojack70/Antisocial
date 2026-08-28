@@ -37,7 +37,7 @@ import { GAMES } from '../data/games';
 import { WRITING_PROMPTS } from '../data/writingPrompts';
 import { pickPrompt } from '../lib/notebook';
 import { MISSIONS } from '../data/missions';
-import { cards, colors, type } from '../lib/theme';
+import { cards, colors, type, rails } from '../lib/theme';
 import { addMinute, minutesUsedToday, DAILY_LIMIT_MINUTES } from '../lib/usage';
 import { hasSessionsLeftToday, consumeSession } from '../lib/quota';
 import { getSeenIds, markSeen } from '../lib/seen';
@@ -609,6 +609,12 @@ export default function Index() {
               const staged = item.type === 'almost_nothing';
               return (
                 <View key={item.id} style={{ width, flex: 1 }}>
+                  {staged && (
+                    <>
+                      <View style={[rails.rail, rails.left]} pointerEvents="none" />
+                      <View style={[rails.rail, rails.right]} pointerEvents="none" />
+                    </>
+                  )}
                   {/* A ScrollView sizes to its content unless it is given a
                       definite height, so the staged page needs flex:1 on the
                       view itself — flexGrow on the content container alone

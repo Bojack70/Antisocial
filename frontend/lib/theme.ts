@@ -191,10 +191,28 @@ export const stageType = StyleSheet.create({
     color: colors.ink,
     textAlign: 'center',
   } as TextStyle,
+  // Bigger and darker than the feed's body copy. On the staged card this is
+  // the only prose on the screen, so it carries the card rather than
+  // supporting a headline above it.
   body: {
-    fontSize: 15,
-    lineHeight: 26,
-    color: colors.body,
+    fontSize: 17,
+    lineHeight: 28,
+    color: colors.ink,
     textAlign: 'center',
   } as TextStyle,
+});
+
+// The neighbouring cards, showing at the screen edges. They are what makes
+// the deck read as a deck rather than as one card at a time — the reference
+// shows a sliver of the next card on each side.
+export const rails = StyleSheet.create({
+  rail: {
+    position: 'absolute',
+    top: 34,
+    bottom: 34,
+    width: 13,
+    backgroundColor: colors.sage,
+  },
+  left: { left: 0, borderTopRightRadius: 8, borderBottomRightRadius: 8 },
+  right: { right: 0, borderTopLeftRadius: 8, borderBottomLeftRadius: 8 },
 });

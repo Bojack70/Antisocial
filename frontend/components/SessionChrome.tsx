@@ -60,7 +60,7 @@ export default function SessionChrome({
         >
           <Ionicons
             name="chevron-back"
-            size={20}
+            size={26}
             color={index === 0 ? colors.line : colors.clay}
           />
         </TouchableOpacity>
@@ -82,7 +82,7 @@ export default function SessionChrome({
         >
           <Ionicons
             name="chevron-forward"
-            size={20}
+            size={26}
             color={index >= count - 1 ? colors.line : colors.clay}
           />
         </TouchableOpacity>
@@ -100,30 +100,30 @@ const styles = StyleSheet.create({
   },
   wordmark: {
     fontFamily: fonts.serif,
-    fontSize: 21,
+    fontSize: 26,
     color: colors.ink,
     letterSpacing: -0.2,
   },
   session: {
-    fontSize: 12.5,
+    fontSize: 15,
     color: colors.body,
     marginTop: 7,
   },
   track: {
     width: '100%',
-    height: 5,
-    borderRadius: 3,
+    height: 9,
+    borderRadius: 5,
     backgroundColor: colors.surfaceTinted,
     marginTop: 10,
     overflow: 'hidden',
   },
   fill: {
     height: '100%',
-    borderRadius: 3,
+    borderRadius: 5,
     backgroundColor: colors.sage,
   },
   time: {
-    fontSize: 11,
+    fontSize: 13,
     color: colors.muted,
     marginTop: 7,
   },

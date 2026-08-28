@@ -27,7 +27,7 @@ export default function StageFooter({
     <View style={styles.wrap}>
       <View style={styles.pager}>
         <TouchableOpacity onPress={onPrev} disabled={index === 0} hitSlop={HIT}>
-          <Ionicons name="chevron-back" size={19}
+          <Ionicons name="chevron-back" size={26}
             color={index === 0 ? colors.line : colors.clay} />
         </TouchableOpacity>
 
@@ -39,7 +39,7 @@ export default function StageFooter({
         </View>
 
         <TouchableOpacity onPress={onNext} disabled={index >= count - 1} hitSlop={HIT}>
-          <Ionicons name="chevron-forward" size={19}
+          <Ionicons name="chevron-forward" size={26}
             color={index >= count - 1 ? colors.line : colors.clay} />
         </TouchableOpacity>
       </View>
@@ -58,7 +58,7 @@ export default function StageFooter({
 const HIT = { top: 12, bottom: 12, left: 12, right: 12 };
 
 const TONES = {
-  sage: { box: { backgroundColor: colors.sage }, text: { color: '#1C1B1A' } },
+  sage: { box: { backgroundColor: colors.sage }, text: { color: '#FFFFFF' } },
   clay: { box: { backgroundColor: colors.clay }, text: { color: '#FAF8F4' } },
   ink: { box: { backgroundColor: colors.ink }, text: { color: colors.surface } },
 } as const;
@@ -94,20 +94,20 @@ const styles = StyleSheet.create({
     backgroundColor: colors.clay,
   },
   count: {
-    fontSize: 11,
+    fontSize: 13,
     color: colors.muted,
     marginLeft: 8,
   },
   // The reference's action is a full-width lozenge, not a rounded
   // rectangle — the radius is half the height.
   cta: {
-    height: 52,
-    borderRadius: 26,
+    height: 58,
+    borderRadius: 29,
     alignItems: 'center',
     justifyContent: 'center',
   },
   ctaText: {
-    fontSize: 15,
+    fontSize: 19,
     fontWeight: '500',
   },
 });
