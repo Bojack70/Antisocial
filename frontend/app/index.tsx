@@ -28,8 +28,11 @@ import QuietContradictionCard from '../components/QuietContradictionCard';
 import ShareableCard from '../components/ShareableCard';
 import GameCard from '../components/GameCard';
 import GuestbookCard from '../components/GuestbookCard';
+import NotebookCard from '../components/NotebookCard';
 import MissionCard from '../components/MissionCard';
 import { GAMES } from '../data/games';
+import { WRITING_PROMPTS } from '../data/writingPrompts';
+import { pickPrompt } from '../lib/notebook';
 import { MISSIONS } from '../data/missions';
 import { cards, colors, type } from '../lib/theme';
 import { addMinute, minutesUsedToday, DAILY_LIMIT_MINUTES } from '../lib/usage';
@@ -324,6 +327,21 @@ export default function Index() {
         // Drop a game into the scroll as the session's playable anchor
         sessionItems = await insertGameCard(sessionItems);
 
+        // One writing card rides mid-slate: a specific prompt, two or
+        // three lines, kept locally. Prompt rotation avoids repeats
+        // within about a week of sessions.
+        const writingPrompt = await pickPrompt(WRITING_PROMPTS);
+        sessionItems.splice(
+          Math.min(Math.floor(Math.random() * 3) + 5, sessionItems.length), // 5, 6 or 7
+          0,
+          {
+            id: `notebook-${writingPrompt.id}-${Date.now()}`,
+            type: 'notebook',
+            promptId: writingPrompt.id,
+            prompt: writingPrompt.prompt,
+          }
+        );
+
         // Insert Body-Aware interruptions
         const indices = generateInsertionIndices(sessionItems.length);
         indices.reverse().forEach((index: number) => {
@@ -422,6 +440,10 @@ export default function Index() {
     switch (item.type) {
       case 'game':
         return <GameCard key={item.id} game={item.game} anchor={!!item.anchor} />;
+      case 'notebook':
+        return (
+          <NotebookCard key={item.id} promptId={item.promptId} prompt={item.prompt} />
+        );
       case 'guestbook':
         return <GuestbookCard key={item.id} items={item.items} />;
       case 'mission':
