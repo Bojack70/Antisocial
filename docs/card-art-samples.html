@@ -1,0 +1,638 @@
+<title>Antisocial Card Art</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+  /* ---- Tokens: light (bare :root = complete palette) ---- */
+  :root {
+    --paper:        #EFECE5;
+    --paper-light:  #F7F5F0;
+    --paper-sunk:   #E5E1D8;
+    --ink:          #2D2C2A;
+    --ink-light:    #6B6A68;
+    --ink-faint:    #9A9894;
+    --rule:         rgba(45, 44, 42, 0.14);
+    --rule-soft:    rgba(45, 44, 42, 0.07);
+    --clay:         #C27B5E;
+    --sage:         #8BA087;
+    --ochre:        #D9AD6A;
+    --shadow-soft:  0 4px 20px -2px rgba(45, 44, 42, 0.09);
+    --shadow-lift:  0 10px 34px -6px rgba(45, 44, 42, 0.16);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:        #151413;
+      --paper-light:  #1C1B1A;
+      --paper-sunk:   #262423;
+      --ink:          #E8E6E1;
+      --ink-light:    #A5A29B;
+      --ink-faint:    #6E6B65;
+      --rule:         rgba(232, 230, 225, 0.16);
+      --rule-soft:    rgba(232, 230, 225, 0.08);
+      --clay:         #D08F70;
+      --sage:         #9DB199;
+      --ochre:        #E0BA7E;
+      --shadow-soft:  0 4px 20px -2px rgba(0, 0, 0, 0.5);
+      --shadow-lift:  0 10px 34px -6px rgba(0, 0, 0, 0.6);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:        #151413;
+    --paper-light:  #1C1B1A;
+    --paper-sunk:   #262423;
+    --ink:          #E8E6E1;
+    --ink-light:    #A5A29B;
+    --ink-faint:    #6E6B65;
+    --rule:         rgba(232, 230, 225, 0.16);
+    --rule-soft:    rgba(232, 230, 225, 0.08);
+    --clay:         #D08F70;
+    --sage:         #9DB199;
+    --ochre:        #E0BA7E;
+    --shadow-soft:  0 4px 20px -2px rgba(0, 0, 0, 0.5);
+    --shadow-lift:  0 10px 34px -6px rgba(0, 0, 0, 0.6);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: Inter, system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 28px 100px;
+  }
+
+  /* ---- Masthead ---- */
+  .masthead { display: flex; flex-direction: column; gap: 14px; padding-bottom: 30px; border-bottom: 1px solid var(--rule); }
+  .kicker {
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--clay);
+  }
+  h1 {
+    font-family: Merriweather, Georgia, serif;
+    font-weight: 700; font-size: clamp(30px, 4.6vw, 44px);
+    line-height: 1.16; letter-spacing: -0.01em; margin: 0; text-wrap: balance;
+  }
+  .standfirst {
+    font-family: Merriweather, Georgia, serif;
+    font-size: 16px; line-height: 1.75; color: var(--ink-light);
+    max-width: 62ch; margin: 0;
+  }
+
+  /* ---- How to read ---- */
+  .primer {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(216px, 1fr));
+    gap: 1px; background: var(--rule); border: 1px solid var(--rule);
+    border-radius: 14px; overflow: hidden; margin-top: 34px;
+  }
+  .primer div { background: var(--paper-light); padding: 18px 20px; display: flex; flex-direction: column; gap: 6px; }
+  .primer dt { font-size: 10.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-faint); }
+  .primer dd { margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--ink); }
+
+  /* ---- Specimen rows ---- */
+  .specimen {
+    display: grid; grid-template-columns: minmax(0, 1.32fr) minmax(0, 1fr);
+    gap: 40px; align-items: start;
+    padding: 46px 0; border-bottom: 1px solid var(--rule-soft);
+  }
+  @media (max-width: 840px) { .specimen { grid-template-columns: 1fr; gap: 30px; } }
+
+  .plate {
+    background: var(--paper-light); border: 1px solid var(--rule);
+    border-radius: 18px; padding: 16px; box-shadow: var(--shadow-soft);
+  }
+  .plate svg { display: block; width: 100%; height: auto; border-radius: 10px; }
+
+  .plate-meta { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: baseline; margin-top: 14px; padding: 0 4px 2px; }
+  .plate-name { font-family: Merriweather, Georgia, serif; font-weight: 700; font-size: 17px; }
+  .plate-tech {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px; color: var(--ink-faint); margin-left: auto;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .verdict { margin-top: 20px; display: flex; flex-direction: column; gap: 12px; }
+  .rating { display: inline-flex; align-items: center; gap: 9px; }
+  .dots { display: inline-flex; gap: 4px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--rule); }
+  .dot.on { background: var(--sage); }
+  .dot.warn { background: var(--ochre); }
+  .dot.risk { background: var(--clay); }
+  .rating span {
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--ink-faint);
+  }
+  .verdict p { margin: 0; font-size: 14px; line-height: 1.68; color: var(--ink-light); max-width: 54ch; }
+  .verdict strong { color: var(--ink); font-weight: 600; }
+
+  /* ---- Mock card (true app scale) ---- */
+  .in-situ { display: flex; flex-direction: column; gap: 12px; }
+  .in-situ > .label {
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--ink-faint);
+  }
+  .card {
+    width: 100%; max-width: 340px;
+    background: var(--paper-light); border: 1px solid var(--rule);
+    border-radius: 16px; padding: 22px; box-shadow: var(--shadow-soft);
+  }
+  .card-eyebrow { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .card-eyebrow svg { width: 15px; height: 15px; flex: none; }
+  .card-eyebrow b {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--clay);
+  }
+  .card-eyebrow i { margin-left: auto; font-style: normal; font-size: 10.5px; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+  .card h3 {
+    font-family: Merriweather, Georgia, serif; font-weight: 700;
+    font-size: 19px; line-height: 1.32; margin: 0 0 14px; text-wrap: balance;
+  }
+  .card-art { border-radius: 12px; overflow: hidden; margin-bottom: 14px; }
+  .card-art svg { display: block; width: 100%; height: auto; }
+  .card p { margin: 0 0 16px; font-size: 14px; line-height: 1.65; color: var(--ink-light); }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tags button {
+    font-family: inherit; font-size: 12.5px; color: var(--ink);
+    padding: 6px 13px; border-radius: 9px;
+    border: 1px solid var(--rule); background: transparent; cursor: pointer;
+    transition: background 160ms ease, transform 160ms ease;
+  }
+  .tags button:hover { background: var(--rule-soft); }
+  .tags button:active { transform: scale(0.96); }
+  .tags button:focus-visible { outline: 2px solid var(--clay); outline-offset: 2px; }
+  .cta {
+    width: 100%; font-family: inherit; font-size: 14px; font-weight: 500;
+    color: var(--paper-light); background: var(--ink);
+    border: 0; border-radius: 11px; padding: 12px; cursor: pointer;
+    transition: transform 160ms ease, opacity 160ms ease;
+  }
+  .cta.sage { background: var(--sage); color: #1C1B1A; }
+  .cta.clay { background: var(--clay); color: #FAF8F4; }
+  .cta:hover { opacity: 0.92; }
+  .cta:active { transform: scale(0.98); }
+  .cta:focus-visible { outline: 2px solid var(--clay); outline-offset: 2px; }
+
+  /* ---- Closing ---- */
+  .closing { margin-top: 54px; padding: 34px; border-radius: 18px; background: var(--paper-light); border: 1px solid var(--rule); }
+  .closing h2 { font-family: Merriweather, Georgia, serif; font-size: 23px; margin: 0 0 8px; font-weight: 700; }
+  .closing > p { margin: 0 0 26px; color: var(--ink-light); max-width: 60ch; font-size: 14.5px; }
+  .asks { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; }
+  .ask { background: var(--paper-light); padding: 17px 20px; display: grid; grid-template-columns: 26px 1fr; gap: 14px; align-items: start; }
+  .ask b { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--clay); padding-top: 2px; }
+  .ask p { margin: 0; font-size: 14px; line-height: 1.65; }
+  .ask p em { color: var(--ink-light); font-style: normal; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+
+<!-- ============ SPRITE: each illustration authored once ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+
+  <!-- 1 · DIGITAL BREAK — profile figure, eyes closed -->
+  <symbol id="art-break" viewBox="0 0 400 300">
+    <rect width="400" height="300" fill="#EDE7DA"/>
+    <circle cx="312" cy="70" r="34" fill="#D9AD6A" opacity="0.42"/>
+    <circle cx="312" cy="70" r="20" fill="#D9AD6A" opacity="0.38"/>
+    <path d="M0 198C54 172 108 180 154 196c46 16 96-8 146-18 38-8 72 4 100-2v126H0Z" fill="#A9B9A2"/>
+    <path d="M0 236C68 212 130 226 190 240c60 14 130-8 210-14v74H0Z" fill="#8BA087"/>
+    <g fill="#6E8269">
+      <rect x="46" y="176" width="7" height="60" rx="3"/>
+      <ellipse cx="49" cy="166" rx="30" ry="26"/>
+      <rect x="98" y="192" width="6" height="48" rx="3"/>
+      <ellipse cx="101" cy="184" rx="22" ry="19"/>
+      <rect x="336" y="184" width="7" height="56" rx="3"/>
+      <ellipse cx="339" cy="174" rx="26" ry="22"/>
+    </g>
+    <!-- hair, back mass -->
+    <path d="M198 78c36 0 50 26 46 56-4 30-8 52-4 82 3 21-4 36-19 42-9-19-11-44-13-64-30-2-48-24-48-60 0-38 14-56 38-56Z" fill="#3E3630"/>
+    <!-- coat -->
+    <path d="M198 182c-30 4-49 22-55 118h116c-5-96-24-114-53-118Z" fill="#C27B5E"/>
+    <path d="M182 184c8 18 24 18 32 0-6 46-26 46-32 0Z" fill="#F5F1E9"/>
+    <path d="M143 300c1-46 6-78 14-98-3 34-4 66-3 98Z" fill="#A8664C"/>
+    <!-- neck -->
+    <path d="M184 152h26v34h-26z" fill="#B78F6C"/>
+    <!-- head, facing right -->
+    <path d="M198 88c21 0 35 15 35 34 0 7-2 11-1 14 2 3 9 11 10 14 1 4-2 6-6 6h-6c0 8-2 15-7 20-6 5-15 7-25 6-19-2-31-18-32-41-2-29 11-53 32-53Z" fill="#C9A288"/>
+    <!-- fringe -->
+    <path d="M198 82c19 0 34 13 36 34-8-15-20-23-37-23-15 0-26 8-31 23-1-20 11-34 32-34Z" fill="#4A4038"/>
+    <!-- closed eye + brow -->
+    <path d="M208 128c4-4 11-4 15 0" stroke="#3E3630" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    <path d="M206 117c5-4 13-4 18-1" stroke="#3E3630" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.65"/>
+    <circle cx="207" cy="146" r="7" fill="#C27B5E" opacity="0.22"/>
+    <path d="M225 160c3 2 6 2 9-1" stroke="#8A6A52" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- breeze -->
+    <g stroke="#F5F1E9" stroke-width="2.6" fill="none" stroke-linecap="round" opacity="0.75">
+      <path d="M256 106c10-6 20-2 18 6-1 6-9 6-10 0"/>
+      <path d="M262 128c14-7 26-2 24 7"/>
+    </g>
+    <!-- foreground leaves -->
+    <g fill="#5E7159">
+      <path d="M0 300c14-40 44-62 78-64-16 26-38 48-62 64Z"/>
+      <path d="M400 300c-18-34-46-52-76-54 14 24 34 42 56 54Z"/>
+      <path d="M330 262c16-10 24-26 22-42-14 10-22 26-22 42Z"/>
+    </g>
+  </symbol>
+
+  <!-- 2 · LOOK FAR AWAY — window, sill, distance -->
+  <symbol id="art-window" viewBox="0 0 400 300">
+    <rect width="400" height="300" fill="#E5E0D5"/>
+    <rect x="58" y="24" width="284" height="220" rx="10" fill="#F2EDE2"/>
+    <rect x="70" y="36" width="260" height="196" rx="5" fill="#CFDCE4"/>
+    <path d="M70 36h260v76c-42-8-82 4-124 12s-90 6-136-10Z" fill="#DCE6EA"/>
+    <circle cx="268" cy="80" r="21" fill="#D9AD6A" opacity="0.55"/>
+    <path d="M70 158c46-24 88-16 128 2 38 17 84 6 132-10v82H70Z" fill="#A9B9A2"/>
+    <path d="M70 190c52-18 96-8 140 8 36 13 78 4 120-8v42H70Z" fill="#8BA087"/>
+    <g fill="#6E8269">
+      <rect x="112" y="150" width="5" height="42" rx="2.5"/>
+      <ellipse cx="114" cy="144" rx="19" ry="16"/>
+      <rect x="286" y="158" width="5" height="36" rx="2.5"/>
+      <ellipse cx="288" cy="152" rx="15" ry="13"/>
+    </g>
+    <g stroke="#5E7159" stroke-width="2.4" fill="none" stroke-linecap="round" opacity="0.8">
+      <path d="M186 74c5-5 11-5 15 0"/>
+      <path d="M206 66c4-4 9-4 13 0"/>
+    </g>
+    <!-- mullions -->
+    <g fill="#F2EDE2">
+      <rect x="195" y="36" width="10" height="196"/>
+      <rect x="70" y="128" width="260" height="10"/>
+    </g>
+    <rect x="58" y="24" width="284" height="220" rx="10" fill="none" stroke="#C9BFAC" stroke-width="7"/>
+    <!-- sill -->
+    <rect x="40" y="244" width="320" height="15" rx="5" fill="#C9BFAC"/>
+    <!-- plant -->
+    <path d="M242 244h40l-6 34a8 8 0 0 1-8 7h-12a8 8 0 0 1-8-7Z" fill="#C27B5E"/>
+    <g fill="#6E8269">
+      <path d="M262 244c-4-22-18-32-34-32 4 20 18 30 34 32Z"/>
+      <path d="M264 244c2-24 14-38 32-40-2 22-14 36-32 40Z"/>
+      <path d="M263 244c-1-16 4-30 12-38 2 16-3 29-12 38Z" fill="#8BA087"/>
+    </g>
+  </symbol>
+
+  <!-- 3 · SIMPLE MAGIC — fanned deck -->
+  <symbol id="art-cards" viewBox="0 0 400 300">
+    <rect width="400" height="300" fill="#E9E3D6"/>
+    <ellipse cx="200" cy="238" rx="150" ry="26" fill="#2D2C2A" opacity="0.07"/>
+    <g stroke="#C9BFAC" stroke-width="2">
+      <g transform="rotate(-30 200 236)"><rect x="164" y="112" width="72" height="104" rx="9" fill="#F7F5F0"/><rect x="172" y="120" width="56" height="88" rx="5" fill="#C27B5E" opacity="0.85"/></g>
+      <g transform="rotate(-18 200 236)"><rect x="164" y="106" width="72" height="104" rx="9" fill="#F7F5F0"/><rect x="172" y="114" width="56" height="88" rx="5" fill="#C27B5E" opacity="0.85"/></g>
+      <g transform="rotate(-6 200 236)"><rect x="164" y="102" width="72" height="104" rx="9" fill="#F7F5F0"/><rect x="172" y="110" width="56" height="88" rx="5" fill="#C27B5E" opacity="0.85"/></g>
+      <g transform="rotate(6 200 236)"><rect x="164" y="102" width="72" height="104" rx="9" fill="#F7F5F0"/><rect x="172" y="110" width="56" height="88" rx="5" fill="#C27B5E" opacity="0.85"/></g>
+      <g transform="rotate(18 200 236)"><rect x="164" y="106" width="72" height="104" rx="9" fill="#F7F5F0"/><rect x="172" y="114" width="56" height="88" rx="5" fill="#C27B5E" opacity="0.85"/></g>
+    </g>
+    <!-- lifted face card -->
+    <g transform="rotate(9 214 96)">
+      <rect x="176" y="34" width="78" height="112" rx="10" fill="#FAF8F4" stroke="#C9BFAC" stroke-width="2"/>
+      <path d="M215 66c7-11 24-7 24 6 0 12-16 22-24 30-8-8-24-18-24-30 0-13 17-17 24-6Z" fill="#C27B5E"/>
+      <rect x="186" y="44" width="12" height="3" rx="1.5" fill="#C9BFAC"/>
+      <rect x="232" y="133" width="12" height="3" rx="1.5" fill="#C9BFAC"/>
+    </g>
+    <!-- sparkle -->
+    <g fill="#D9AD6A">
+      <path d="M296 74c2 12 6 16 18 18-12 2-16 6-18 18-2-12-6-16-18-18 12-2 16-6 18-18Z"/>
+      <path d="M120 60c1 7 4 10 11 11-7 1-10 4-11 11-1-7-4-10-11-11 7-1 10-4 11-11Z" opacity="0.75"/>
+    </g>
+  </symbol>
+
+  <!-- 4 · THE NOTEBOOK — open book, pencil -->
+  <symbol id="art-notebook" viewBox="0 0 400 300">
+    <rect width="400" height="300" fill="#E5E0D5"/>
+    <ellipse cx="200" cy="244" rx="146" ry="22" fill="#2D2C2A" opacity="0.07"/>
+    <path d="M52 92c46-14 92-14 144 8v134c-52-22-98-22-144-8Z" fill="#8BA087"/>
+    <path d="M348 92c-46-14-92-14-144 8v134c52-22 98-22 144-8Z" fill="#7C9179"/>
+    <path d="M64 100c42-12 82-11 128 8v118c-46-19-86-20-128-8Z" fill="#FAF8F4"/>
+    <path d="M336 100c-42-12-82-11-128 8v118c46-19 86-20 128-8Z" fill="#F4F0E6"/>
+    <g stroke="#C9BFAC" stroke-width="3" stroke-linecap="round">
+      <path d="M80 128c34-8 66-6 100 8"/><path d="M80 150c34-8 66-6 100 8"/><path d="M80 172c26-6 50-5 76 5"/>
+      <path d="M320 128c-34-8-66-6-100 8"/><path d="M320 150c-34-8-66-6-100 8"/><path d="M320 172c-26-6-50-5-76 5"/>
+    </g>
+    <g stroke="#C27B5E" stroke-width="3" stroke-linecap="round" opacity="0.9">
+      <path d="M80 194c22-5 42-4 62 4"/>
+      <path d="M320 194c-18-4-34-3-50 3"/>
+    </g>
+    <rect x="196" y="96" width="8" height="140" rx="4" fill="#6E8269"/>
+    <!-- pencil -->
+    <g transform="rotate(-24 262 228)">
+      <rect x="196" y="220" width="132" height="15" rx="3" fill="#D9AD6A"/>
+      <rect x="196" y="220" width="132" height="6" rx="3" fill="#E3BE83"/>
+      <path d="M328 220l24 7.5-24 7.5Z" fill="#E8DCC4"/>
+      <path d="M345 225.5l7 2-7 2Z" fill="#3E3630"/>
+      <rect x="182" y="220" width="16" height="15" fill="#C27B5E"/>
+    </g>
+  </symbol>
+
+  <!-- 5 · FIELD TRIP — figure from behind, street -->
+  <symbol id="art-street" viewBox="0 0 400 300">
+    <rect width="400" height="300" fill="#E7E1D4"/>
+    <path d="M0 0h400v150H0Z" fill="#DCE4E6"/>
+    <circle cx="80" cy="52" r="26" fill="#D9AD6A" opacity="0.45"/>
+    <!-- buildings -->
+    <g>
+      <rect x="12" y="82" width="76" height="112" fill="#C4B9A6"/>
+      <rect x="96" y="52" width="62" height="142" fill="#B3A791"/>
+      <rect x="166" y="96" width="54" height="98" fill="#CDC2AF"/>
+      <rect x="286" y="66" width="70" height="128" fill="#B3A791"/>
+      <rect x="360" y="104" width="34" height="90" fill="#C4B9A6"/>
+    </g>
+    <g fill="#8FA4AE" opacity="0.85">
+      <rect x="26" y="98" width="14" height="18" rx="2"/><rect x="50" y="98" width="14" height="18" rx="2"/>
+      <rect x="26" y="130" width="14" height="18" rx="2"/><rect x="50" y="130" width="14" height="18" rx="2"/>
+      <rect x="110" y="70" width="14" height="18" rx="2"/><rect x="132" y="70" width="14" height="18" rx="2"/>
+      <rect x="110" y="102" width="14" height="18" rx="2"/><rect x="132" y="102" width="14" height="18" rx="2"/>
+      <rect x="110" y="134" width="14" height="18" rx="2"/><rect x="132" y="134" width="14" height="18" rx="2"/>
+      <rect x="300" y="84" width="16" height="20" rx="2"/><rect x="326" y="84" width="16" height="20" rx="2"/>
+      <rect x="300" y="120" width="16" height="20" rx="2"/><rect x="326" y="120" width="16" height="20" rx="2"/>
+    </g>
+    <!-- mural on the near wall -->
+    <rect x="166" y="96" width="54" height="98" fill="none"/>
+    <path d="M176 176c6-30 20-46 36-48-4 28-16 44-36 48Z" fill="#8BA087"/>
+    <circle cx="206" cy="118" r="12" fill="#C27B5E"/>
+    <!-- street + kerb -->
+    <path d="M0 194h400v106H0Z" fill="#CFC5B2"/>
+    <path d="M0 210h400v90H0Z" fill="#BFB4A0"/>
+    <g stroke="#E7E1D4" stroke-width="5" stroke-linecap="round" opacity="0.7">
+      <path d="M40 262h44"/><path d="M132 262h44"/><path d="M224 262h44"/><path d="M316 262h44"/>
+    </g>
+    <!-- tree -->
+    <g><rect x="242" y="140" width="8" height="58" rx="4" fill="#6E5A46"/><ellipse cx="246" cy="130" rx="34" ry="30" fill="#7C9179"/><ellipse cx="228" cy="142" rx="20" ry="17" fill="#8BA087"/></g>
+    <!-- figure, from behind -->
+    <g>
+      <ellipse cx="120" cy="290" rx="34" ry="9" fill="#2D2C2A" opacity="0.12"/>
+      <path d="M120 186c-19 3-30 15-33 44-2 20-2 40 0 56h66c2-16 2-36 0-56-3-29-14-41-33-44Z" fill="#C27B5E"/>
+      <path d="M92 216c-6 16-8 34-7 50l10 2c-2-18-2-35-3-52Z" fill="#A8664C"/>
+      <path d="M148 216c6 16 8 34 7 50l-10 2c2-18 2-35 3-52Z" fill="#A8664C"/>
+      <path d="M110 286h9v14h-9Zm12 0h9v14h-9Z" fill="#3E3630"/>
+      <path d="M110 176h20v14h-20Z" fill="#B78F6C"/>
+      <ellipse cx="120" cy="158" rx="24" ry="26" fill="#C9A288"/>
+      <path d="M120 130c17 0 26 12 26 28 0 12-3 22-8 28 2-14-1-26-6-30-8-6-20-6-26 0-5 4-8 16-6 30-5-6-8-16-8-28 0-16 9-28 28-28Z" fill="#3E3630"/>
+      <path d="M96 174c-4 14-4 28-1 40l8-3c-3-12-4-25-7-37Z" fill="#3E3630"/>
+      <path d="M144 174c4 14 4 28 1 40l-8-3c3-12 4-25 7-37Z" fill="#3E3630"/>
+    </g>
+  </symbol>
+
+  <!-- 6 · DAILY READ — books and a cup -->
+  <symbol id="art-read" viewBox="0 0 400 300">
+    <rect width="400" height="300" fill="#E9E3D6"/>
+    <ellipse cx="200" cy="252" rx="152" ry="24" fill="#2D2C2A" opacity="0.07"/>
+    <!-- stack -->
+    <g>
+      <rect x="76" y="222" width="196" height="26" rx="5" fill="#8BA087"/>
+      <rect x="76" y="222" width="196" height="8" rx="4" fill="#9DB199"/>
+      <rect x="84" y="230" width="180" height="10" fill="#F4F0E6"/>
+      <rect x="88" y="196" width="176" height="26" rx="5" fill="#C27B5E"/>
+      <rect x="88" y="196" width="176" height="8" rx="4" fill="#D08F70"/>
+      <rect x="96" y="204" width="160" height="10" fill="#F7F5F0"/>
+      <rect x="70" y="170" width="188" height="26" rx="5" fill="#D9AD6A"/>
+      <rect x="70" y="170" width="188" height="8" rx="4" fill="#E3BE83"/>
+      <rect x="78" y="178" width="172" height="10" fill="#FAF8F4"/>
+    </g>
+    <!-- standing open book -->
+    <g>
+      <path d="M118 168c26-10 52-9 76 7v-72c-24-16-50-17-76-7Z" fill="#FAF8F4" stroke="#C9BFAC" stroke-width="2"/>
+      <path d="M270 168c-26-10-52-9-76 7v-72c24-16 50-17 76-7Z" fill="#F4F0E6" stroke="#C9BFAC" stroke-width="2"/>
+      <g stroke="#C9BFAC" stroke-width="2.6" stroke-linecap="round">
+        <path d="M130 114c20-6 38-5 54 6"/><path d="M130 130c20-6 38-5 54 6"/><path d="M130 146c16-5 30-4 44 4"/>
+        <path d="M258 114c-20-6-38-5-54 6"/><path d="M258 130c-20-6-38-5-54 6"/><path d="M258 146c-16-5-30-4-44 4"/>
+      </g>
+      <rect x="191" y="96" width="6" height="80" rx="3" fill="#C9BFAC"/>
+    </g>
+    <!-- cup -->
+    <g>
+      <path d="M292 176h58l-6 56a12 12 0 0 1-12 11h-22a12 12 0 0 1-12-11Z" fill="#F7F5F0" stroke="#C9BFAC" stroke-width="2"/>
+      <path d="M296 190h50l-1 12h-48Z" fill="#8B6F5A"/>
+      <path d="M350 190c16-2 24 6 22 18-2 11-13 15-25 13" fill="none" stroke="#C9BFAC" stroke-width="6" stroke-linecap="round"/>
+      <g stroke="#C9BFAC" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.9">
+        <path d="M310 162c-6-8 6-14 0-22"/><path d="M328 162c-6-8 6-14 0-22"/>
+      </g>
+    </g>
+    <g fill="#D9AD6A" opacity="0.6"><circle cx="66" cy="66" r="9"/><circle cx="344" cy="86" r="6"/></g>
+  </symbol>
+</svg>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="kicker">Illustration test · Antisocial</div>
+    <h1>Can hand-drawn SVG carry the card art?</h1>
+    <p class="standfirst">Six pieces in the paper-and-clay palette, drawn as vector paths rather than generated as images. Two of them put a human figure on the page, because that's the part I said I'd do worst — judge that claim yourself rather than take it on trust.</p>
+  </header>
+
+  <dl class="primer">
+    <div><dt>What you're seeing</dt><dd>Every illustration is SVG geometry — no PNG, no external file, nothing fetched at runtime.</dd></div>
+    <div><dt>Why it matters</dt><dd>Colours are palette tokens, so the art recolours with the theme instead of being fixed at export.</dd></div>
+    <div><dt>How to judge</dt><dd>Large plate on the left for the drawing; a true-scale card on the right for how it actually lands.</dd></div>
+    <div><dt>Honest ratings</dt><dd>Green dots mean I'd ship it. Amber means passable. Clay means I'd argue against it.</dd></div>
+  </dl>
+
+  <!-- 1 -->
+  <section class="specimen">
+    <div>
+      <div class="plate"><svg viewBox="0 0 400 300"><use href="#art-break"/></svg></div>
+      <div class="plate-meta">
+        <span class="plate-name">Digital Break</span>
+        <span class="plate-tech">figure · profile · 1.9 KB</span>
+      </div>
+      <div class="verdict">
+        <div class="rating">
+          <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot warn"></i><i class="dot"></i><i class="dot"></i></span>
+          <span>The hard case</span>
+        </div>
+        <p>This is the closest match to your reference, and the one I'd push back on. The landscape behind her is fine — hills, light, leaves all sit right. <strong>The face is where it thins out.</strong> A profile in flat vector needs the nose, lip and chin to read in about five path segments, and mine reads as a mask rather than a person. Compare it against the Gemini render and you'll see the gap immediately: hers has soft shading through the cheek and hair, mine is one flat tone.</p>
+        <p>My read: <strong>keep the scene, lose the face.</strong> Piece 5 below shows the alternative.</p>
+      </div>
+    </div>
+    <div class="in-situ">
+      <div class="label">At card scale</div>
+      <article class="card">
+        <div class="card-eyebrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--clay)"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></svg>
+          <b>Gentle Reminder</b><i>60 sec</i>
+        </div>
+        <h3>Close your eyes and count ten slow breaths.</h3>
+        <div class="card-art"><svg viewBox="0 0 400 300"><use href="#art-break"/></svg></div>
+        <p>Nothing to read, nothing to answer. Put the phone face down until you lose count.</p>
+        <div class="tags"><button>Let It Pass</button><button>Noted</button><button>Stayed With Me</button></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section class="specimen">
+    <div>
+      <div class="plate"><svg viewBox="0 0 400 300"><use href="#art-window"/></svg></div>
+      <div class="plate-meta">
+        <span class="plate-name">Look At Something Far Away</span>
+        <span class="plate-tech">scene · no figure · 2.2 KB</span>
+      </div>
+      <div class="verdict">
+        <div class="rating">
+          <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i></span>
+          <span>Ship it</span>
+        </div>
+        <p>This is what flat vector is actually for. Every element is a shape a rectangle or an arc can describe honestly — frame, mullions, sill, hills — so nothing is straining to look like something it can't. <strong>It also does a job the text can't:</strong> the card says "look at something far away" and the drawing supplies the distance, which is the whole point of the exercise.</p>
+        <p>This one already has a home — it's the existing mint <em>Gentle Reminder</em> card in your feed.</p>
+      </div>
+    </div>
+    <div class="in-situ">
+      <div class="label">At card scale</div>
+      <article class="card">
+        <div class="card-eyebrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--sage)"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/></svg>
+          <b>Gentle Reminder</b><i>20 sec</i>
+        </div>
+        <h3>Look at something far away.</h3>
+        <div class="card-art"><svg viewBox="0 0 400 300"><use href="#art-window"/></svg></div>
+        <p>Twenty seconds at twenty feet. Your eyes have been holding one distance for hours.</p>
+        <div class="tags"><button>Let It Pass</button><button>Noted</button><button>Stayed With Me</button></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section class="specimen">
+    <div>
+      <div class="plate"><svg viewBox="0 0 400 300"><use href="#art-cards"/></svg></div>
+      <div class="plate-meta">
+        <span class="plate-name">Simple Magic</span>
+        <span class="plate-tech">object · rotated group · 1.6 KB</span>
+      </div>
+      <div class="verdict">
+        <div class="rating">
+          <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot"></i></span>
+          <span>Strong</span>
+        </div>
+        <p>This replaces the photograph in your mockup — the one of hands shuffling a deck, which I can't draw and can't generate. <strong>The fan is five copies of one rectangle at different rotations</strong>, which is why it looks even: it's geometry, not draughtsmanship. That's the trick to lean on wherever a subject allows it.</p>
+        <p>The one thing lost against a photo is the human hand, and with it some of the "you could do this too" pull. Worth weighing.</p>
+      </div>
+    </div>
+    <div class="in-situ">
+      <div class="label">At card scale</div>
+      <article class="card">
+        <div class="card-eyebrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--clay)"><path d="M4 7l7-3 9 13-7 3z"/><path d="M9 9h.01"/></svg>
+          <b>Learn a Skill</b><i>5 min</i>
+        </div>
+        <h3>The false shuffle</h3>
+        <div class="card-art"><svg viewBox="0 0 400 300"><use href="#art-cards"/></svg></div>
+        <p>Hold the deck. Lift the top half and let it fall back where it started. Done slowly it looks like nothing; done at speed it looks like a shuffle.</p>
+        <button class="cta clay">Learned it</button>
+      </article>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section class="specimen">
+    <div>
+      <div class="plate"><svg viewBox="0 0 400 300"><use href="#art-notebook"/></svg></div>
+      <div class="plate-meta">
+        <span class="plate-name">The Notebook</span>
+        <span class="plate-tech">object · 1.5 KB</span>
+      </div>
+      <div class="verdict">
+        <div class="rating">
+          <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot"></i></span>
+          <span>Strong</span>
+        </div>
+        <p>Curved page edges instead of straight ones are doing most of the work here — they're what stop it reading as a spreadsheet. <strong>The ruled lines are stroked paths that follow the same curve as the page</strong>, so the book looks like it has physical weight.</p>
+        <p>Honest caveat: this sits directly above a real text input in the app, so the drawing of a notebook and the actual notebook stack up. It might be one thing too many.</p>
+      </div>
+    </div>
+    <div class="in-situ">
+      <div class="label">At card scale</div>
+      <article class="card">
+        <div class="card-eyebrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--clay)"><path d="M4 4h11l5 5v11H4z"/><path d="M8 12h8M8 16h5"/></svg>
+          <b>The Notebook</b>
+        </div>
+        <h3>Write down the advice you keep giving other people.</h3>
+        <div class="card-art"><svg viewBox="0 0 400 300"><use href="#art-notebook"/></svg></div>
+        <p>Two or three lines. They stay on this device.</p>
+        <div class="tags"><button>Noted</button><button>Skip</button></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section class="specimen">
+    <div>
+      <div class="plate"><svg viewBox="0 0 400 300"><use href="#art-street"/></svg></div>
+      <div class="plate-meta">
+        <span class="plate-name">Field Trip</span>
+        <span class="plate-tech">figure · from behind · 2.6 KB</span>
+      </div>
+      <div class="verdict">
+        <div class="rating">
+          <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot"></i></span>
+          <span>The figure that works</span>
+        </div>
+        <p>Same person, same coat, turned away — and it holds up where piece 1 doesn't. <strong>A back view has no face to get wrong</strong>, so the shapes I'm good at (coat, hair mass, silhouette) carry it alone. Set the two side by side and the difference isn't subtle.</p>
+        <p>There's a second thing here worth noticing: the wall she's facing carries a small painted mural, which is the "digital street art at the end of a session" idea from your Tailwind notes. <strong>It's a natural place to put art the user unlocks</strong> — the same scene, with more painted onto the wall each time.</p>
+      </div>
+    </div>
+    <div class="in-situ">
+      <div class="label">At card scale</div>
+      <article class="card">
+        <div class="card-eyebrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--sage)"><path d="M3 20l7-16 4 9 3-5 4 12z"/></svg>
+          <b>Field Trip</b><i>5 min</i>
+        </div>
+        <h3>Find three things outside with a repeating pattern.</h3>
+        <div class="card-art"><svg viewBox="0 0 400 300"><use href="#art-street"/></svg></div>
+        <p>Brickwork, leaf veins, cracks in the pavement. Put the phone away to look for them — that's the part that counts.</p>
+        <button class="cta sage">Quest complete</button>
+      </article>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section class="specimen">
+    <div>
+      <div class="plate"><svg viewBox="0 0 400 300"><use href="#art-read"/></svg></div>
+      <div class="plate-meta">
+        <span class="plate-name">Daily Read</span>
+        <span class="plate-tech">still life · 2.1 KB</span>
+      </div>
+      <div class="verdict">
+        <div class="rating">
+          <span class="dots"><i class="dot on"></i><i class="dot on"></i><i class="dot on"></i><i class="dot warn"></i><i class="dot"></i></span>
+          <span>Good, slightly busy</span>
+        </div>
+        <p>The stacked spines give you all three accents — sage, clay, ochre — in one object, which makes this the best single advert for the palette. <strong>It's also the most crowded thing here.</strong> At card scale the cup and the steam start to mush together; I'd drop the cup and let the books stand alone.</p>
+        <p>Note this one is speculative: there's no Daily Read card in the app yet.</p>
+      </div>
+    </div>
+    <div class="in-situ">
+      <div class="label">At card scale</div>
+      <article class="card">
+        <div class="card-eyebrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--clay)"><path d="M3 5h7a2 2 0 0 1 2 2v12a2 2 0 0 0-2-2H3zM21 5h-7a2 2 0 0 0-2 2v12a2 2 0 0 1 2-2h7z"/></svg>
+          <b>Daily Read</b><i>2 pages</i>
+        </div>
+        <h3>Marcus Aurelius on the colour of your thoughts</h3>
+        <div class="card-art"><svg viewBox="0 0 400 300"><use href="#art-read"/></svg></div>
+        <p>"The soul becomes dyed by the colour of its thoughts." Two pages, public domain, no account, no next episode.</p>
+        <div class="tags"><button>Insightful</button><button>Will Reread</button><button>Food for Thought</button></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="closing">
+    <h2>What this settles, and what it doesn't</h2>
+    <p>Five of the six clear the bar in my view. The one that doesn't is the one you'd most want, which is worth saying plainly rather than burying.</p>
+    <div class="asks">
+      <div class="ask"><b>01</b><p><strong>Faces are the limit, not figures.</strong> <em>Piece 5 shows a person reading fine from behind; piece 1 shows the same person's face not quite arriving. If you want faces at your reference's quality, that's a commissioned illustrator or a generation tool — not me drawing paths.</em></p></div>
+      <div class="ask"><b>02</b><p><strong>Photographs stay out of reach entirely.</strong> <em>The shuffling-hands shot in your mockup has no vector equivalent. If that specific card needs a photo, it's Unsplash or Pexels under licence, or you supply it.</em></p></div>
+      <div class="ask"><b>03</b><p><strong>Four of these six illustrate cards that don't exist yet.</strong> <em>Only Gentle Reminder and The Notebook are live. Learn a Skill, Field Trip, and Daily Read are from your design board, so art for them is downstream of the scope question still open.</em></p></div>
+      <div class="ask"><b>04</b><p><strong>The mural idea has a home.</strong> <em>The wall in piece 5 is the natural surface for session-end unlocks — same scene, more paint on it each time. That's a feature, not a reskin, but the art supports it now.</em></p></div>
+    </div>
+  </section>
+</div>

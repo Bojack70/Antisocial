@@ -1,0 +1,365 @@
+<title>Antisocial Art Briefs</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --paper: #EFECE5; --paper-light: #F7F5F0; --paper-sunk: #E5E1D8;
+    --ink: #2D2C2A; --ink-light: #6B6A68; --ink-faint: #9A9894;
+    --rule: rgba(45,44,42,0.14); --rule-soft: rgba(45,44,42,0.07);
+    --clay: #C27B5E; --sage: #8BA087; --ochre: #D9AD6A;
+    --shadow-soft: 0 4px 20px -2px rgba(45,44,42,0.09);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #151413; --paper-light: #1C1B1A; --paper-sunk: #262423;
+      --ink: #E8E6E1; --ink-light: #A5A29B; --ink-faint: #6E6B65;
+      --rule: rgba(232,230,225,0.16); --rule-soft: rgba(232,230,225,0.08);
+      --clay: #D08F70; --sage: #9DB199; --ochre: #E0BA7E;
+      --shadow-soft: 0 4px 20px -2px rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #151413; --paper-light: #1C1B1A; --paper-sunk: #262423;
+    --ink: #E8E6E1; --ink-light: #A5A29B; --ink-faint: #6E6B65;
+    --rule: rgba(232,230,225,0.16); --rule-soft: rgba(232,230,225,0.08);
+    --clay: #D08F70; --sage: #9DB199; --ochre: #E0BA7E;
+    --shadow-soft: 0 4px 20px -2px rgba(0,0,0,0.5);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: Inter, system-ui, sans-serif; font-size: 15px; line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 52px 26px 96px; }
+
+  .kicker { font-size: 10.5px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: var(--clay); }
+  h1 { font-family: Merriweather, Georgia, serif; font-weight: 700; font-size: clamp(28px,4.4vw,40px); line-height: 1.16; margin: 12px 0 14px; text-wrap: balance; }
+  .standfirst { font-family: Merriweather, Georgia, serif; font-size: 16px; line-height: 1.75; color: var(--ink-light); max-width: 62ch; margin: 0; }
+  header { padding-bottom: 30px; border-bottom: 1px solid var(--rule); }
+
+  h2 { font-family: Merriweather, Georgia, serif; font-weight: 700; font-size: 25px; margin: 0 0 6px; }
+  .sec-note { color: var(--ink-light); font-size: 14px; margin: 0 0 24px; max-width: 66ch; }
+  section { margin-top: 56px; }
+
+  /* preamble */
+  .preamble { background: var(--paper-light); border: 1px solid var(--rule); border-radius: 16px; padding: 26px; box-shadow: var(--shadow-soft); margin-top: 34px; }
+  .preamble h3 { font-family: Merriweather, Georgia, serif; font-size: 18px; margin: 0 0 6px; }
+  .preamble > p { margin: 0 0 18px; color: var(--ink-light); font-size: 14px; max-width: 64ch; }
+  pre {
+    font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12.5px; line-height: 1.72;
+    background: var(--paper-sunk); border: 1px solid var(--rule-soft); border-radius: 11px;
+    padding: 18px; margin: 0; overflow-x: auto; white-space: pre-wrap; color: var(--ink);
+  }
+
+  /* rows */
+  .briefs { display: flex; flex-direction: column; gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 14px; overflow: hidden; }
+  .brief { background: var(--paper-light); padding: 20px 22px; display: grid; grid-template-columns: 30px 1fr auto; gap: 8px 16px; align-items: start; }
+  .brief .n { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--clay); padding-top: 3px; font-variant-numeric: tabular-nums; }
+  .brief .copy-txt { font-family: Merriweather, Georgia, serif; font-size: 15.5px; line-height: 1.5; margin: 0; }
+  .brief .dup { display: block; font-family: Inter, sans-serif; font-size: 12.5px; color: var(--ink-faint); margin-top: 5px; line-height: 1.55; }
+  .brief .subj { grid-column: 2 / -1; margin: 10px 0 0; font-size: 13.5px; line-height: 1.65; color: var(--ink-light); }
+  .brief .subj b { color: var(--ink); font-weight: 600; }
+  .brief.hard { border-left: 3px solid var(--ochre); }
+
+  button.copy {
+    font-family: Inter, sans-serif; font-size: 12px; font-weight: 500; white-space: nowrap;
+    color: var(--ink); background: transparent; border: 1px solid var(--rule);
+    border-radius: 8px; padding: 6px 12px; cursor: pointer; transition: background .15s ease, transform .15s ease;
+  }
+  button.copy:hover { background: var(--rule-soft); }
+  button.copy:active { transform: scale(.95); }
+  button.copy:focus-visible { outline: 2px solid var(--clay); outline-offset: 2px; }
+  button.copy.done { background: var(--sage); border-color: var(--sage); color: #1C1B1A; }
+
+  .flag { display: inline-block; font-size: 10px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--ochre); border: 1px solid var(--ochre); border-radius: 5px; padding: 2px 7px; margin-left: 8px; vertical-align: 2px; }
+
+  /* status board */
+  .status { display: grid; grid-template-columns: repeat(auto-fill, minmax(232px, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 14px; overflow: hidden; }
+  .st { background: var(--paper-light); padding: 13px 15px; display: flex; flex-direction: column; gap: 7px; }
+  .st .nm { font-size: 13.5px; line-height: 1.4; font-weight: 500; }
+  .st .why { font-size: 12px; line-height: 1.5; color: var(--ink-light); }
+  .chip { align-self: flex-start; font-size: 9.5px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; padding: 3px 8px; border-radius: 5px; border: 1px solid; }
+  .chip.ship { color: var(--sage); border-color: var(--sage); }
+  .chip.redo { color: var(--clay); border-color: var(--clay); }
+  .chip.check { color: var(--ochre); border-color: var(--ochre); }
+  .chip.drop { color: var(--ink-faint); border-color: var(--ink-faint); }
+  .chip.gone { color: var(--clay); border-color: var(--clay); background: rgba(194,123,94,.1); }
+  .brief.decision { grid-template-columns: 30px 1fr; }
+  .brief.decision .n { color: var(--ink-faint); }
+  .brief.decision .subj { grid-column: 2; }
+  .brief.decision code { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+  .closing { margin-top: 56px; background: var(--paper-light); border: 1px solid var(--rule); border-radius: 16px; padding: 30px; }
+  .closing h2 { font-size: 22px; }
+  .closing p { color: var(--ink-light); font-size: 14.5px; max-width: 64ch; }
+  .closing ul { margin: 16px 0 0; padding-left: 20px; }
+  .closing li { margin-bottom: 11px; font-size: 14.5px; line-height: 1.65; }
+  .closing li b { color: var(--ink); }
+
+  @media (max-width: 620px) {
+    .brief { grid-template-columns: 26px 1fr; }
+    .brief button.copy { grid-column: 2; justify-self: start; margin-top: 10px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <div class="kicker">Image briefs · Antisocial</div>
+    <h1>Every card that wants a picture</h1>
+    <p class="standfirst">Thirteen Gentle Reminder subjects and sixteen Try This skills, pulled from the live backend content, each with a ready-to-paste Gemini prompt. Copy the style block once, then copy any card — the full prompt already has the style folded in.</p>
+  </header>
+
+  <div class="preamble">
+    <h3>The style block</h3>
+    <p>Every card button below copies this <em>plus</em> that card's subject, so you can paste one at a time and get a set that matches. This is here on its own in case you want to prompt something not on the list.</p>
+    <pre id="style-block">Flat vector editorial illustration, soft matte finish with a faint paper grain.
+Strict limited palette: warm parchment background #EFECE5, terracotta #C27B5E, muted sage green #8BA087, muted ochre #D9AD6A, deep charcoal #2D2C2A, off-white #F7F5F0.
+Simple geometric shapes with organic hand-drawn curves. Flat colour fills only — no gradients, no glossy highlights, no drop shadows, no outlines.
+Calm, unhurried, contemplative mood. Generous empty space.
+Absolutely no text, no letters, no numbers, no words, no logos, no user-interface elements, no phones, no screens.
+4:3 landscape aspect ratio. Centred composition that still reads when cropped small.</pre>
+    <div style="margin-top:16px"><button class="copy" data-style-only>Copy style block</button></div>
+  </div>
+
+  <section>
+    <h2>Round one · what to fix</h2>
+    <p class="sec-note">Thirteen came back. <b>Seven are done</b>, four need a re-render, one needs a look, one should ship with no art, and one never rendered. The palette held across the whole set, which was the hard part — everything below is detail work.</p>
+
+    <div class="status" id="status"></div>
+
+    <p class="sec-note" style="margin-top:30px"><b>Three decisions before you re-run anything.</b> Each affects more than one image, so settle them first — especially the first, which decides whether the other two matter.</p>
+    <div class="briefs" style="margin-bottom:30px">
+      <div class="brief decision">
+        <div class="n">A</div>
+        <div>
+          <p class="copy-txt">Flat set, or the rendered one?</p>
+          <p class="subj">The extra image — the woman breathing among the trees — is <b>a different style from the other thirteen, not a fourteenth member of the set.</b> It has soft gradients through the hills, veins drawn into the leaves, paper texture, a fully rendered face with blush, and deep forest greens rather than the muted sage in your Tailwind palette. It's also masked into an organic blob shape none of the others use. Put it beside the flat window tile and they look like two different illustrators.<br><br>It is, to be fair, <b>the best image in the whole batch</b> — and it's the style from your original mockup, so it may be what you actually wanted all along. But pick one lane. Flat is cheaper, holds consistency across thirty images, and matches <em>"flat colour fills only"</em> in your own config. Rendered is more beautiful per image, drifts more between generations, and would mean re-running the seven that are currently done <em>and</em> deepening the greens in <code>tailwind.config.js</code>.<br><br><b>My call: flat</b> — but only because consistency across a long feed matters more than any single card, and seven are already there. If you'd rather have the rendered look, say so and I'll rewrite all 29 briefs for it; the current ones are written for flat.</p>
+        </div>
+      </div>
+      <div class="brief decision">
+        <div class="n">B</div>
+        <div>
+          <p class="copy-txt">Do figures have faces?</p>
+          <p class="subj"><b>I'm reversing what I told you an hour ago.</b> I'd said no faces, based on the two weak ones in the flat set and on my own SVG profile failing. The breathing image disproves that — the face there is genuinely good. So the problem was never faces; it was faces rendered <em>that flat</em>, where there's no shading to carry the features.<br><br>Which means this follows from decision A. <b>Rendered style: faces are fine, use them.</b> <b>Flat style: no faces</b> — turn figures away or crop above the shoulders, because flat is exactly the mode where they fail. The re-prompts below assume flat-and-faceless; if you pick rendered, skip the posture and own-voice re-runs since those tiles are already fine.</p>
+        </div>
+      </div>
+      <div class="brief decision">
+        <div class="n">C</div>
+        <div>
+          <p class="copy-txt">Are the source files square or 4:3?</p>
+          <p class="subj">In the contact sheet every tile looks square, and the breathing image is wider still — closer to 16:9. The cards are 4:3, so neither drops in cleanly. <b>Check one original before re-running anything.</b> If they're square you'll be cropping all thirteen by hand; it's cheaper to state the ratio up front. Add <em>"wide 4:3 landscape format, 1024 by 768"</em> to the end of every prompt from here on.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-family:Merriweather,Georgia,serif;font-size:19px;margin:0 0 6px">The five re-prompts</h3>
+    <p class="sec-note">Each button copies the style block plus the corrected subject, same as everywhere else on this page.</p>
+    <div class="briefs" id="revisions"></div>
+  </section>
+
+  <section>
+    <h2>Gentle Reminder</h2>
+    <p class="sec-note">Backend type <code style="font-family:'JetBrains Mono',monospace;font-size:12.5px">almost_nothing</code>. Seventeen texts live in the database, but several are near-duplicates that would render as the same picture — so I've collapsed them to <b>thirteen distinct subjects</b> and noted where a subject covers more than one card. The three marked <span class="flag">hard</span> are body-sensation gags with no natural image; I'd consider shipping those with no art at all rather than forcing one.</p>
+    <div class="briefs" id="reminders"></div>
+  </section>
+
+  <section>
+    <h2>Try This</h2>
+    <p class="sec-note">This is the "Learn a Skill" card you saw in the mockup — it already exists under the name <b>Try This</b>, in <code style="font-family:'JetBrains Mono',monospace;font-size:12.5px">backend/populate_try_this.py</code>. All sixteen skills below are live. Every one has a concrete physical subject, so this set will render far more reliably than the reminders. Note that most involve <b>hands</b>, which is the classic failure case for image generation — expect to regenerate, and prefer the framings below that keep hands simple or crop them out.</p>
+    <div class="briefs" id="skills"></div>
+  </section>
+
+  <section class="closing">
+    <h2>Before you run these</h2>
+    <p>Four things that will save you regenerations.</p>
+    <ul>
+      <li><b>Do one card first, not thirty-three.</b> Run a single prompt, check the palette actually landed, then batch the rest. Gemini drifts warm-neutral toward beige-grey, and it's cheaper to catch that once.</li>
+      <li><b>Hands are the risk in the Try This set.</b> Eleven of the sixteen skills are done with hands. The prompts below crop to fingertips or show the object mid-action without a full hand wherever the skill allows it — that's deliberate, not an oversight.</li>
+      <li><b>The "no text" instruction needs repeating.</b> Prompts about numbers, folding, and knots pull hard toward diagram labels. If a render comes back with lettering, re-prompt with "no text" moved to the front of the sentence.</li>
+      <li><b>Ask for one more size than you need.</b> These sit at roughly 300&nbsp;×&nbsp;225&nbsp;pt in a card, on screens up to 3×. Generate at 1200&nbsp;px wide or more so there's room to downsample cleanly.</li>
+    </ul>
+  </section>
+</div>
+
+<script>
+const REMINDERS = [
+  { t: "Your jaw is probably clenched.\nIt has been for a while.", dup: "Also covers: “Unclench your jaw. Drop your shoulders.”",
+    s: "A smooth abstract study of a human jaw and neck in soft profile, rendered as three or four simple flat shapes with no facial features, seen from the side against open parchment space. A few loose terracotta arcs drift away from the jawline to suggest tension leaving." },
+  { t: "When did you last drink water?\nNot coffee. Not tea. Water.", dup: "Also covers: “Drink some water. Not later. Now is fine.”",
+    s: "A single tall glass of water standing alone on a bare surface, lit from one side, with a pale sage-green refraction band falling through it onto the table. Nothing else in frame." },
+  { t: "Look at something far away.\nYour eyes have been at arm's length for hours.", dup: "Also covers the shorter “Look at something far away for a moment.”",
+    s: "An open window seen straight on from inside a quiet room, with layered sage-green hills and a low ochre sun receding into the distance beyond it. A small potted plant sits on the sill. The interior wall is plain parchment." },
+  { t: "Both feet on the floor.\nYou've been sitting on one of them, haven't you?", dup: "",
+    s: "A pair of bare feet planted flat on warm wooden floorboards, seen from directly above, with the base of a chair just visible at the top edge of the frame. Terracotta floorboards, sage shadow." },
+  { t: "You're holding your breath slightly.\nMost people do while reading.", dup: "",
+    s: "A simple abstract ribcage suggested by five or six curved sage-green lines expanding outward, with a soft ochre glow at the centre. Not anatomical — closer to a diagram of a calm expansion." },
+  { t: "Your shoulders are somewhere near your ears.\nThey don't need to be up there.", dup: "",
+    s: "A seated figure seen from directly behind, head and shoulders only, wearing a terracotta jacket, shoulders dropping into a relaxed line. No face visible. Plain parchment background, generous space above the head." },
+  { t: "Check your posture.\nRoll your shoulders back. Let your spine remember what it's like to be aligned.", dup: "",
+    s: "A seated figure in clean side profile on a simple wooden stool, spine drawn as one long confident curve, faceless and simplified. Terracotta clothing, sage stool, parchment background." },
+  { t: "When did you last laugh?\nNot a polite chuckle. A real, unguarded laugh.", dup: "",
+    s: "Warm ochre afternoon light falling in a broad diagonal across an empty room, catching dust in the air, with one empty armchair at the edge of the beam. Nostalgic and warm rather than literal." },
+  { t: "Take one slow breath.\nIn through the nose. Out longer than in.", dup: "Also covers: “Notice your breathing for a second. You're now doing it manually. Sorry.”",
+    s: "Four concentric rings expanding outward from a small solid ochre centre, each ring a slightly different weight, in sage and terracotta on parchment. Meditative, geometric, perfectly centred." },
+  { t: "There is nothing to solve here.", dup: "",
+    s: "A very wide empty landscape reduced to three flat horizontal bands — parchment sky, a distant sage ridge, a terracotta foreground plain — with a single small stone sitting off-centre. Extreme simplicity and a lot of open space." },
+  { t: "A pause, on purpose.", dup: "",
+    s: "One smooth grey-brown pebble resting at the centre of a still pool, with three or four concentric sage ripples spreading outward from it. Seen from just above the water line." },
+  { t: "You just read that in your own voice.\nYou can't stop doing it now either.", dup: "", hard: true,
+    s: "An abstract study of soft overlapping sound waves in terracotta and sage, radiating from an empty space where a mouth would be, on plain parchment. Suggestive and non-literal — no face, no figure." },
+  { t: "Your tongue has nowhere comfortable to sit in your mouth.\nIt did, until you read this.", dup: "", hard: true,
+    s: "A minimal abstract composition of one soft organic terracotta shape resting inside a larger curved sage enclosure, slightly off-centre, as though it doesn't quite fit. Entirely non-literal and anatomically vague." },
+];
+
+const SKILLS = [
+  { t: "Vanish a coin", p: "The French Drop: the oldest coin vanish there is, and it still works.",
+    s: "A single silver coin caught mid-fall in the empty space between two simplified hands, one open below and one closing above, cropped to just the fingertips. Terracotta sleeves, parchment background, motion suggested by a faint sage arc." },
+  { t: "The number that always answers 1089", p: "A three-digit number walks in; 1089 walks out. Every time.",
+    s: "Three blank paper slips arranged in a descending column on a desk, each bearing an abstract terracotta mark rather than any actual digits, with a sage arrow curving from the last one back to the first. Absolutely no numbers or text anywhere." },
+  { t: "Split your thumb", p: "The uncle trick. Two bent thumbs, one seam, one small horror.",
+    s: "Two simplified hands held together so the thumbs meet and appear as one, with a visible seam at the join, seen straight on. Flat shapes, terracotta sleeves, parchment background. Slightly playful and uncanny." },
+  { t: "Bend a pencil without bending it", p: "The rubber pencil: solid wood, visibly wobbling like rubber.",
+    s: "An ochre pencil held loosely at one end between two fingertips, drawn with a soft wave through its middle as though rubber, with faint sage motion arcs above and below. Crop tight to the fingertips." },
+  { t: "Cut a loop that refuses to become two", p: "A paper ring with one twist breaks the scissors rule.",
+    s: "A Möbius strip made from a terracotta paper band with a single visible half-twist, floating against parchment, with a small pair of sage scissors resting beside it. Clean, geometric, no hands." },
+  { t: "Fold a paper banger", p: "One sheet of paper, one whipcrack. Reloadable.",
+    s: "A folded paper banger shape in off-white, mid-snap, with a sharp burst of ochre radiating lines at its open end against parchment. Seen from the side, no hands, dynamic and crisp." },
+  { t: "A memory palace for four things", p: "The two-thousand-year-old memory trick, sized for a shopping list.",
+    s: "A simple house entrance seen from inside in flat elevation — door, shoe rack, hall light, kitchen tap — with four small sage circles marking each spot, connected by a dotted terracotta path. Architectural and calm." },
+  { t: "The two-breath reset", p: "The fastest documented way to bring your own pulse down.",
+    s: "Two nested arcs, the upper one short and the lower one long, drawn as a breathing diagram in sage and terracotta with a soft ochre centre, on parchment. Geometric, centred, meditative." },
+  { t: "Measure the daylight with your fingers", p: "How long until sunset? Your hand knows.",
+    s: "A simplified hand held out flat and edge-on in silhouette against a low ochre sun sinking toward sage hills, with the gap between sun and horizon clearly readable. Warm evening light, deep terracotta sky." },
+  { t: "Separate pepper from salt without touching either", p: "A spoon, a sleeve, and some quiet electrostatics.",
+    s: "A plastic spoon hovering an inch above a white plate scattered with fine dark specks, with several specks caught mid-leap toward the spoon. Seen from the side. Charcoal specks, off-white plate, parchment background." },
+  { t: "Keep a name for once", p: "You don't forget names. You never store them.",
+    s: "A single blank name badge in off-white pinned to a terracotta lapel, with a small sage-green scarf just visible beside it. Seen straight on, cropped close. No text or lettering on the badge." },
+  { t: "Lose a fight with a piece of paper", p: "Fold anything in half seven times. Anything. Try it.",
+    s: "A thick wedge of folded paper seen edge-on, its many compressed layers clearly visible, sitting alone on a bare surface with one unfolded sheet lying flat behind it. Off-white paper, sage shadow, parchment ground." },
+  { t: "Tie a shoelace that stays tied", p: "One extra wrap, borrowed from surgeons, ends the retying.",
+    s: "A neatly tied terracotta shoelace bow on a sage canvas shoe, cropped close to the knot so the double wrap at its base is clearly visible. Seen from just above. No hands." },
+  { t: "Summon the floating sausage", p: "Two fingers, crossed eyes, one impossible object.",
+    s: "Two index fingertips pointing toward each other with a small rounded translucent shape floating in the gap between them, rendered in soft sage with blurred edges. Blurred sage wall far behind. Crop to fingertips only." },
+  { t: "Interrogate an egg", p: "Boiled or raw, without cracking it. The egg confesses in two seconds.",
+    s: "A single off-white egg spinning on its side on a flat surface, with three light sage motion arcs trailing behind it. Warm parchment background, soft terracotta shadow beneath. No hands." },
+  { t: "Make your arm float", p: "Thirty seconds of pushing and your arm develops opinions of its own.",
+    s: "A figure seen from behind standing in a plain doorway, one arm pressed outward against the frame, faceless and simplified in a terracotta top. Warm sage light spilling through the doorway. Calm and a little strange." },
+];
+
+const STATUS = [
+  ["Jaw clenched", "check", "The arcs read as speed lines. Fine if you like it; re-run if it looks like wind."],
+  ["Drink water", "ship", "Clean. The sage refraction on the table is a nice touch."],
+  ["Look far away", "ship", "Best of the flat batch. Ship as is."],
+  ["Both feet on the floor", "ship", "Overhead view worked. Chair perspective is slightly odd but reads."],
+  ["Holding your breath", "gone", "Never rendered. Either re-run it or reuse the breathing rings for both."],
+  ["Shoulders near ears", "ship", "Faceless from behind, exactly right."],
+  ["Check your posture", "redo", "Has a face, and a stray sage arc floats along the back."],
+  ["When did you last laugh", "redo", "Empty chair in a light beam reads as grief, not warmth."],
+  ["Take one slow breath", "ship", "Bold, centred, unmistakable."],
+  ["Nothing to solve here", "ship", "Three bands and a stone. Restraint paid off."],
+  ["A pause, on purpose", "redo", "Ripples are far too faint — they'll disappear at card size."],
+  ["You read that in your own voice", "redo", "Communicates well, but it's a full rendered head in a faceless set."],
+  ["Tongue has nowhere to sit", "drop", "Abstract blob, says nothing. Ship this card with no art."],
+  ["Vanish a coin (Try This)", "ship", "Hands came out clean — good omen for the other ten hand tricks."],
+];
+
+const REVISIONS = [
+  { t: "Check your posture", p: "Remove the face and the stray back arc.",
+    s: "A seated figure on a simple wooden stool, seen in clean side profile, cropped at the neck so no head or face is visible. The spine is one long confident curve. Terracotta clothing, sage stool, parchment background. No floating lines or marks around the body." },
+  { t: "When did you last laugh?", p: "Warmer. The empty chair reads as grief.",
+    s: "Broad warm ochre afternoon light pouring through a window into a room, catching floating dust, falling across a rumpled sage armchair with a blanket thrown over its arm and a cushion knocked askew, as though someone has just got up laughing. Lived-in and warm, not empty or melancholy." },
+  { t: "A pause, on purpose", p: "Ripples need weight.",
+    s: "One smooth grey-brown pebble at the centre of a still pool, with four concentric ripples spreading outward in confident medium-weight sage-green lines, clearly visible against pale water. Seen from just above the surface. Bold enough to read at thumbnail size." },
+  { t: "You just read that in your own voice", p: "Lose the head, keep the meaning.",
+    s: "Three or four nested curved arcs in sage green and terracotta radiating outward from the left edge of the frame toward open parchment space, growing softer as they travel, like sound leaving without a source. No face, no head, no figure of any kind." },
+  { t: "You're holding your breath slightly", p: "Never rendered. Re-run this one.",
+    s: "Six nested curved arcs in sage green opening outward like an unfolding fan, arranged symmetrically around a soft ochre circle at the centre, on open parchment. A minimal geometric diagram of gentle expansion. Serene, abstract, no figure." },
+];
+
+const STYLE = document.getElementById('style-block').textContent.trim();
+
+function copyBtn(getText) {
+  const b = document.createElement('button');
+  b.className = 'copy';
+  b.type = 'button';
+  b.textContent = 'Copy prompt';
+  b.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(getText()); }
+    catch (e) {
+      const ta = document.createElement('textarea');
+      ta.value = getText(); document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); ta.remove();
+    }
+    b.textContent = 'Copied'; b.classList.add('done');
+    setTimeout(() => { b.textContent = 'Copy prompt'; b.classList.remove('done'); }, 1600);
+  });
+  return b;
+}
+
+function render(list, mount, kind) {
+  list.forEach((item, i) => {
+    const row = document.createElement('div');
+    row.className = 'brief' + (item.hard ? ' hard' : '');
+
+    const n = document.createElement('div');
+    n.className = 'n';
+    n.textContent = String(i + 1).padStart(2, '0');
+
+    const mid = document.createElement('div');
+    const p = document.createElement('p');
+    p.className = 'copy-txt';
+    if (kind === 'skill') {
+      p.textContent = item.t;
+      const sub = document.createElement('span');
+      sub.className = 'dup';
+      sub.textContent = item.p;
+      p.appendChild(sub);
+    } else {
+      p.textContent = item.t.replace('\n', ' ');
+      if (item.hard) {
+        const f = document.createElement('span');
+        f.className = 'flag'; f.textContent = 'hard';
+        p.appendChild(f);
+      }
+      if (item.dup) {
+        const d = document.createElement('span');
+        d.className = 'dup'; d.textContent = item.dup;
+        p.appendChild(d);
+      }
+    }
+    mid.appendChild(p);
+
+    const subj = document.createElement('p');
+    subj.className = 'subj';
+    const lab = document.createElement('b');
+    lab.textContent = 'Image: ';
+    subj.appendChild(lab);
+    subj.appendChild(document.createTextNode(item.s));
+
+    const full = () => STYLE + '\n\nSubject: ' + item.s;
+
+    row.append(n, mid, copyBtn(full), subj);
+    mount.appendChild(row);
+  });
+}
+
+const LABEL = { ship: 'Done', redo: 'Re-render', check: 'Your call', drop: 'No art', gone: 'Missing' };
+const board = document.getElementById('status');
+STATUS.forEach(([nm, k, why]) => {
+  const d = document.createElement('div');
+  d.className = 'st';
+  const c = document.createElement('span');
+  c.className = 'chip ' + k; c.textContent = LABEL[k];
+  const n = document.createElement('div'); n.className = 'nm'; n.textContent = nm;
+  const w = document.createElement('div'); w.className = 'why'; w.textContent = why;
+  d.append(c, n, w); board.appendChild(d);
+});
+
+render(REVISIONS, document.getElementById('revisions'), 'skill');
+render(REMINDERS, document.getElementById('reminders'), 'reminder');
+render(SKILLS, document.getElementById('skills'), 'skill');
+</script>
