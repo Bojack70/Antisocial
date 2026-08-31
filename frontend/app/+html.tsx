@@ -22,7 +22,7 @@ export default function Root({ children }: PropsWithChildren) {
         <meta name="description" content="A museum of curiosity in your pocket" />
 
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#EFECE5" />
+        <meta name="theme-color" content="#F1EADC" />
 
         {/* iOS ignores the manifest for these three, so they are repeated
             here — without them, Add to Home Screen opens a Safari tab
