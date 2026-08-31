@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   Image,
   RefreshControl,
-  useWindowDimensions,
 } from 'react-native';
 import Text from '../components/AppText';
 import { StatusBar } from 'expo-status-bar';
@@ -45,7 +44,7 @@ import { GAMES } from '../data/games';
 import { WRITING_PROMPTS } from '../data/writingPrompts';
 import { pickPrompt } from '../lib/notebook';
 import { MISSIONS } from '../data/missions';
-import { cards, colors, type, rails } from '../lib/theme';
+import { cards, colors, type } from '../lib/theme';
 import { addMinute, minutesUsedToday, DAILY_LIMIT_MINUTES } from '../lib/usage';
 import { hasSessionsLeftToday, consumeSession } from '../lib/quota';
 import { getSeenIds, markSeen } from '../lib/seen';
@@ -156,14 +155,17 @@ export default function Index() {
   const [sessionCompleted, setSessionCompleted] = useState(false);
   const [closed, setClosed] = useState<ClosedScreen | null>(null);
   const [driftLeft, setDriftLeft] = useState(false);
-  // Swipe build: the feed is a horizontal pager, so "where am I" is a page
-  // index rather than a scroll offset, and the chrome above it reads from
-  // the same number as the deck.
+  // TRIAL (vertical deck): the feed is a vertical pager — one full-screen
+  // card at a time, swipe up for the next — so the feed keeps the familiar
+  // up-and-down motion but never shows two cards at once. "Where am I" is a
+  // page index rather than a scroll offset. Pages snap by the deck's
+  // measured height (the space between the chrome and the screen bottom),
+  // which only exists after first layout, so pages render once it is known.
   const [page, setPage] = useState(0);
+  const [deckHeight, setDeckHeight] = useState(0);
   const [sessionNumber, setSessionNumber] = useState(1);
   const [minutesToday, setMinutesToday] = useState(0);
   const pagerRef = useRef<ScrollView>(null);
-  const { width } = useWindowDimensions();
 
   // The chrome's numbers come from the same stores the quota already uses,
   // so the header can't drift from what the app actually enforces.
@@ -530,13 +532,14 @@ export default function Index() {
 
   const goToPage = (i: number) => {
     const next = Math.max(0, Math.min(i, pageCount - 1));
-    pagerRef.current?.scrollTo({ x: next * width, animated: true });
+    pagerRef.current?.scrollTo({ y: next * deckHeight, animated: true });
     setPage(next);
     if (next >= pageCount - 1 && !sessionCompleted) setSessionCompleted(true);
   };
 
   const handlePageSettle = (event: any) => {
-    const i = Math.round(event.nativeEvent.contentOffset.x / width);
+    if (!deckHeight) return;
+    const i = Math.round(event.nativeEvent.contentOffset.y / deckHeight);
     if (i !== page) setPage(i);
     if (i >= pageCount - 1 && !sessionCompleted) setSessionCompleted(true);
   };
@@ -610,30 +613,29 @@ export default function Index() {
             onNext={() => goToPage(page + 1)}
           />
 
-          {/* One card per page. The deck scrolls sideways; a card taller
-              than the screen scrolls up and down inside its own page, so
-              a long incident never forces the deck to grow. */}
+          {/* One card per page. The deck snaps vertically — swipe up for
+              the next card. Every page is exactly one deck-height tall, so
+              the snap always lands on a whole card; anything that doesn't
+              fit scrolls inside its own page or card, never the deck. */}
           <ScrollView
             ref={pagerRef}
-            horizontal
             pagingEnabled
-            showsHorizontalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
             onMomentumScrollEnd={handlePageSettle}
             scrollEventThrottle={16}
             style={styles.pager}
-            // Without this the row of pages is only as tall as its tallest
-            // child, so a page's flex:1 has no height to divide and the
-            // staged card stops short of the footer.
+            // The deck's own height is the page size the snap needs.
+            onLayout={(e) => setDeckHeight(e.nativeEvent.layout.height)}
             contentContainerStyle={styles.pagerContent}
           >
-            {feed.map((item, i) => {
+            {deckHeight > 0 && feed.map((item, i) => {
               // TRIAL: only the Gentle Reminder card is on the mockup
               // treatment — full-height card plus the bottom pager and
               // pill action. Everything else keeps the current layout.
               const staged = item.type === 'almost_nothing'
                 || STAGE_PREVIEW_TYPES.has(item.type);
               return (
-                <View key={item.id} style={{ width, flex: 1 }}>
+                <View key={item.id} style={{ width: '100%', height: deckHeight }}>
                   {/* A ScrollView sizes to its content unless it is given a
                       definite height, so the staged page needs flex:1 on the
                       view itself — flexGrow on the content container alone
@@ -647,12 +649,10 @@ export default function Index() {
                     // card's rounded bottom edge stays visible above the
                     // pill at all times.
                     <View style={[styles.stageScroll, styles.stageInner]}>
-                      {/* The rails wrap the card so they are exactly as tall
-                          as it is — positioned by percentage of the card, the
-                          way the reference's neighbours peek. */}
+                      {/* No side rails on the vertical deck — the peeking
+                          neighbours were a horizontal-swipe cue, and the
+                          card now uses that width itself. */}
                       <View style={styles.stageCardRow}>
-                        <View style={[rails.rail, rails.left]} pointerEvents="none" />
-                        <View style={[rails.rail, rails.right]} pointerEvents="none" />
                         {/* fill, or the ShareableCard wrapper is content-
                             sized and the card can't stretch to the footer */}
                         {renderContentCard(item, true)}
@@ -682,7 +682,8 @@ export default function Index() {
             })}
 
             {/* End of session — the last page rather than a trailing card */}
-            <View style={{ width, flex: 1 }}>
+            {deckHeight > 0 && (
+            <View style={{ width: '100%', height: deckHeight }}>
               <ScrollView
                 contentContainerStyle={styles.pageInner}
                 showsVerticalScrollIndicator={false}
@@ -714,6 +715,7 @@ export default function Index() {
                 </View>
               </ScrollView>
             </View>
+            )}
           </ScrollView>
         </>
       )}
@@ -741,7 +743,8 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
   },
   // Each page carries the card's own margin, so the deck itself needs no
-  // padding — a page has to be exactly one screen wide for paging to snap.
+  // padding — a page has to be exactly one deck-height tall for the
+  // vertical snap to land on whole cards.
   // Top-aligned, not centred: card heights vary a lot across types, and
   // centring makes each one sit at a different height, so the card appears
   // to jump as you swipe. Anchored to the top, only the bottom edge moves.
@@ -767,8 +770,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'flex-start',
   },
-  // Grows so the card inside it can reach down to the footer; the rails
-  // stay percentage-pinned to whatever height the card ends up with.
+  // Grows so the card inside it can reach down to the footer.
   stageCardRow: {
     width: '100%',
     flexGrow: 1,

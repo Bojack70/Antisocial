@@ -152,13 +152,15 @@ export const cards = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.mintLine,
   },
-  // TRIAL — the swipe-mockup treatment, on one card type only.
+  // TRIAL — the swipe-mockup treatment, on the staged card types only.
   stage: {
-    // Sized from the reference: the card is about 78% of the screen width,
-    // and that inset is what opens the gap to the peeking neighbours. It
-    // fills the height between the chrome and the footer — the reference
-    // leaves no floating gap — with the illustration absorbing the slack
-    // and anything beyond its cap becoming breathing room around the text.
+    // Vertical-deck trial: the horizontal build held the card to ~78% of
+    // the screen width to open a gap for the peeking side rails. The rails
+    // are gone (neighbours sit above/below now, unseen), so the card takes
+    // most of that width back — one big card, meant to be sat with. It
+    // fills the height between the chrome and the footer, with the
+    // illustration absorbing the slack and anything beyond its cap
+    // becoming breathing room around the text.
     alignSelf: 'stretch',
     flexGrow: 1,
     // Shrinkable, so a card whose content outgrows the page compresses to
@@ -172,7 +174,7 @@ export const cards = StyleSheet.create({
     // heading drift down whenever the card had height to spare. 17 + the
     // eyebrow's ~6.5pt half-leading lands the glyphs at the measured gap.
     justifyContent: 'flex-start',
-    marginHorizontal: 40,
+    marginHorizontal: 24,
     // The reference card has no outline — its edge is carried by the
     // shadow alone, and the corners are markedly rounder than the feed's.
     borderRadius: 28,
@@ -221,9 +223,9 @@ export const stageType = StyleSheet.create({
   } as TextStyle,
 });
 
-// The neighbouring cards, showing at the screen edges. They are what makes
-// the deck read as a deck rather than as one card at a time — the reference
-// shows a sliver of the next card on each side.
+// The neighbouring cards, showing at the screen edges. A horizontal-deck
+// cue — UNUSED since the vertical-deck trial (2026-08-31), kept so the
+// horizontal build can be restored by rendering them again.
 export const rails = StyleSheet.create({
   // The rails live inside a wrapper that is exactly the card's height, so
   // these percentages are relative to the CARD — in the reference the

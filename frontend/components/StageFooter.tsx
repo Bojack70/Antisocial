@@ -39,10 +39,10 @@ const TONES = {
 } as const;
 
 const styles = StyleSheet.create({
-  // The pill's edges line up with the card's — the reference runs it the
-  // full card width (card marginHorizontal is 40 in cards.stage).
+  // The pill's edges line up with the card's — it runs the full card width
+  // (card marginHorizontal is 24 in cards.stage; keep the two coupled).
   wrap: {
-    paddingHorizontal: 40,
+    paddingHorizontal: 24,
     paddingTop: 14,
     paddingBottom: 10,
   },
