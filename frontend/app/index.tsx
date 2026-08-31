@@ -157,7 +157,7 @@ export default function Index() {
   const [sessionCompleted, setSessionCompleted] = useState(false);
   const [closed, setClosed] = useState<ClosedScreen | null>(null);
   const [driftLeft, setDriftLeft] = useState(false);
-  // TRIAL (vertical deck): the feed is a vertical pager — one full-screen
+  // The feed is a vertical pager — one full-screen
   // card at a time, swipe up for the next — so the feed keeps the familiar
   // up-and-down motion but never shows two cards at once. "Where am I" is a
   // page index rather than a scroll offset. Pages snap by the deck's
@@ -343,16 +343,6 @@ export default function Index() {
       if (data.success) {
         // We only want `sessionSize` number of items for this session
         let sessionItems = data.feed.slice(0, sessionSize);
-
-        // TEMP (redesign/paper-swipe): force a Gentle Reminder to the front so
-        // the staged-card treatment can be checked on screen. Remove before merge.
-        if (!sessionItems.some((i: ContentItem) => i.type === 'almost_nothing')) {
-          const gentle = data.feed.find((i: ContentItem) => i.type === 'almost_nothing');
-          if (gentle) sessionItems = [gentle, ...sessionItems.slice(0, sessionSize - 1)];
-        } else {
-          sessionItems.sort((a: ContentItem, b: ContentItem) =>
-            (b.type === 'almost_nothing' ? 1 : 0) - (a.type === 'almost_nothing' ? 1 : 0));
-        }
 
         // An empty fetch must not burn quota — show the empty state instead.
         if (sessionItems.length === 0) {
