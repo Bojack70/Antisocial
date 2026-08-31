@@ -13,6 +13,7 @@ import { useRouter } from 'expo-router';
 import { resetUsage } from '../../lib/usage';
 import { completeOnboarding } from '../../lib/onboarding';
 import { Ionicons } from '@expo/vector-icons';
+import { colors, fonts } from '../../lib/theme';
 
 const { width, height } = Dimensions.get('window');
 
@@ -82,7 +83,7 @@ export default function Onboarding() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
 
       {/* Content */}
       <View style={styles.contentContainer}>
@@ -111,10 +112,14 @@ export default function Onboarding() {
   );
 }
 
+// Repainted 2026-08-31 to the paper palette — this was the last screen on
+// the original dark theme, which made the first minute of the app
+// contradict everything after it. The manifesto lines take the serif: they
+// are the museum speaking, same voice as the wordmark.
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0a0a0a',
+    backgroundColor: colors.page,
   },
   contentContainer: {
     flex: 1,
@@ -125,25 +130,25 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   contentText: {
+    fontFamily: fonts.serifRegular,
     fontSize: 24,
     lineHeight: 36,
-    color: '#f9fafb',
-    fontWeight: '400',
+    color: colors.ink,
   },
   buttonContainer: {
     paddingHorizontal: 32,
     paddingBottom: 24,
   },
   button: {
-    backgroundColor: '#f9fafb',
+    backgroundColor: colors.ink,
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
   buttonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#0a0a0a',
+    fontSize: 15,
+    fontWeight: '500',
+    color: colors.surface,
   },
 });
