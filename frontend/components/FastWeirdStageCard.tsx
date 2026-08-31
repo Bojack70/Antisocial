@@ -52,7 +52,7 @@ export default function FastWeirdStageCard({ content }: Props) {
           slides under the pill. */}
       <ScrollView showsVerticalScrollIndicator={false}>
       <Text style={stageType.eyebrow}>Wait... What?</Text>
-      <Text style={stageType.headline}>{content.headline}</Text>
+      <Text style={[stageType.headline, styles.subheading]}>{content.headline}</Text>
 
       <View style={styles.rule} />
 
@@ -127,6 +127,12 @@ const styles = StyleSheet.create({
   },
   facts: {
     gap: 16,
+  },
+  // This card's headline is a small sub-heading under the eyebrow, not the
+  // near-equal second line the Gentle Reminder has (user-set at 15px).
+  subheading: {
+    fontSize: 15,
+    lineHeight: 20,
   },
   // Body copy reads as prose on this card, not as a caption — justified,
   // against the centred stageType.body the Gentle Reminder keeps. (Android
