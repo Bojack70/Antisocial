@@ -21,10 +21,12 @@ import FastWeirdStageCard from '../components/FastWeirdStageCard';
 import ExplainerStageCard from '../components/ExplainerStageCard';
 import MiniGameStageCard from '../components/MiniGameStageCard';
 
-// PREVIEW (redesign/paper-swipe): render these types on the stage
-// treatment so the template can be judged before rollout. Remove a type
-// (or empty the set) to compare against the shipped layouts.
-const STAGE_PREVIEW_TYPES = new Set(['fast_weird', 'explainer', 'mini_game']);
+// Design finalized 2026-08-31: every card follows the classic structure —
+// icon + label header, left-aligned heading, tags where the type has them
+// (the Gentle Reminder alone keeps an illustration, and carries no tags).
+// The centred "stage" experiments are retired; the set stays only so a
+// stage component can be re-auditioned by naming its type here.
+const STAGE_PREVIEW_TYPES = new Set<string>([]);
 import ExplainerCard from '../components/ExplainerCard';
 import PonderCard from '../components/PonderCard';
 import IncidentCard from '../components/IncidentCard';
@@ -52,7 +54,6 @@ import { isOnboardingComplete } from '../lib/onboarding';
 import { recordSession, recordLeftEarly, dueRecap, markRecapShown } from '../lib/weekLedger';
 import WeekRecapCard from '../components/WeekRecapCard';
 import SessionChrome from '../components/SessionChrome';
-import StageFooter from '../components/StageFooter';
 import { sessionsUsedToday, MAX_SESSIONS_PER_DAY } from '../lib/quota';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
@@ -628,58 +629,19 @@ export default function Index() {
             onLayout={(e) => setDeckHeight(e.nativeEvent.layout.height)}
             contentContainerStyle={styles.pagerContent}
           >
-            {deckHeight > 0 && feed.map((item, i) => {
-              // TRIAL: only the Gentle Reminder card is on the mockup
-              // treatment — full-height card plus the bottom pager and
-              // pill action. Everything else keeps the current layout.
-              const staged = item.type === 'almost_nothing'
-                || STAGE_PREVIEW_TYPES.has(item.type);
-              return (
-                <View key={item.id} style={{ width: '100%', height: deckHeight }}>
-                  {/* A ScrollView sizes to its content unless it is given a
-                      definite height, so the staged page needs flex:1 on the
-                      view itself — flexGrow on the content container alone
-                      leaves the card short of the footer. */}
-                  {staged ? (
-                    // Not a ScrollView: the page must never scroll the card
-                    // itself under the footer. The card is pinned to the
-                    // height between chrome and footer, and anything that
-                    // doesn't fit scrolls INSIDE the card (the stage card
-                    // components carry their own inner ScrollView), so the
-                    // card's rounded bottom edge stays visible above the
-                    // pill at all times.
-                    <View style={[styles.stageScroll, styles.stageInner]}>
-                      {/* No side rails on the vertical deck — the peeking
-                          neighbours were a horizontal-swipe cue, and the
-                          card now uses that width itself. */}
-                      <View style={styles.stageCardRow}>
-                        {/* fill, or the ShareableCard wrapper is content-
-                            sized and the card can't stretch to the footer */}
-                        {renderContentCard(item, true)}
-                      </View>
-                    </View>
-                  ) : (
-                    <ScrollView
-                      contentContainerStyle={styles.pageInner}
-                      showsVerticalScrollIndicator={false}
-                    >
-                      {renderContentCard(item, false)}
-                    </ScrollView>
-                  )}
-                  {staged && (
-                    <StageFooter
-                      index={i}
-                      count={pageCount}
-                      onPrev={() => goToPage(i - 1)}
-                      onNext={() => goToPage(i + 1)}
-                      label="Done"
-                      tone="sage"
-                      onPress={() => goToPage(i + 1)}
-                    />
-                  )}
-                </View>
-              );
-            })}
+            {deckHeight > 0 && feed.map((item) => (
+              // Every page is the same now: the card, top-anchored, in the
+              // classic structure. A card taller than its page scrolls
+              // inside the page; the deck itself only ever snaps.
+              <View key={item.id} style={{ width: '100%', height: deckHeight }}>
+                <ScrollView
+                  contentContainerStyle={styles.pageInner}
+                  showsVerticalScrollIndicator={false}
+                >
+                  {renderContentCard(item, false)}
+                </ScrollView>
+              </View>
+            ))}
 
             {/* End of session — the last page rather than a trailing card */}
             {deckHeight > 0 && (
@@ -754,30 +716,6 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
     flexGrow: 1,
     justifyContent: 'flex-start',
-  },
-  // TRIAL: no bottom padding and no growth cap — the staged card takes the
-  // full height between the chrome and the footer, so nothing is left over.
-  stageScroll: {
-    flex: 1,
-  },
-  // Top-anchored, not centred: the reference tucks the card right under the
-  // pager dots, so any leftover height falls below the card rather than
-  // opening a gap above it.
-  stageInner: {
-    paddingHorizontal: 0,
-    paddingTop: 8,
-    paddingBottom: 0,
-    flexGrow: 1,
-    justifyContent: 'flex-start',
-  },
-  // Grows so the card inside it can reach down to the footer.
-  stageCardRow: {
-    width: '100%',
-    flexGrow: 1,
-    // Shrink with the card (see cards.stage) — every link in the chain has
-    // to allow it or the row overflows past the footer.
-    flexShrink: 1,
-    minHeight: 0,
   },
   feedContainer: {
     paddingHorizontal: 16,
