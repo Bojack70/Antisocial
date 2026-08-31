@@ -24,8 +24,7 @@ import MiniGameStageCard from '../components/MiniGameStageCard';
 // PREVIEW (redesign/paper-swipe): render these types on the stage
 // treatment so the template can be judged before rollout. Remove a type
 // (or empty the set) to compare against the shipped layouts.
-const STAGE_PREVIEW_TYPES = new Set(['fast_weird', 'explainer', 'mini_game', 'try_this']);
-import TryThisStageCard from '../components/TryThisStageCard';
+const STAGE_PREVIEW_TYPES = new Set(['fast_weird', 'explainer', 'mini_game']);
 import ExplainerCard from '../components/ExplainerCard';
 import PonderCard from '../components/PonderCard';
 import IncidentCard from '../components/IncidentCard';
@@ -352,15 +351,6 @@ export default function Index() {
           sessionItems.sort((a: ContentItem, b: ContentItem) =>
             (b.type === 'almost_nothing' ? 1 : 0) - (a.type === 'almost_nothing' ? 1 : 0));
         }
-        // TEMP (redesign/paper-swipe): and a Try This right behind it, for the
-        // same reason — its stage treatment is under review. Remove before merge.
-        {
-          const inSession = sessionItems.findIndex((i: ContentItem) => i.type === 'try_this');
-          const tryThis = inSession >= 0
-            ? sessionItems.splice(inSession, 1)[0]
-            : data.feed.find((i: ContentItem) => i.type === 'try_this');
-          if (tryThis) sessionItems.splice(Math.min(1, sessionItems.length), 0, tryThis);
-        }
 
         // An empty fetch must not burn quota — show the empty state instead.
         if (sessionItems.length === 0) {
@@ -505,9 +495,7 @@ export default function Index() {
       case 'game':
         return <GameCard key={item.id} game={item.game} anchor={!!item.anchor} />;
       case 'try_this':
-        return STAGE_PREVIEW_TYPES.has('try_this')
-          ? <TryThisStageCard key={item.id} content={item as any} />
-          : <TryThisCard key={item.id} content={item as any} />;
+        return <TryThisCard key={item.id} content={item as any} />;
       case 'look_closer':
         return <LookCloserCard key={item.id} content={item as any} />;
       case 'notebook':
