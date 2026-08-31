@@ -131,8 +131,9 @@ const styles = StyleSheet.create({
   // This card's headline is a small sub-heading under the eyebrow, not the
   // near-equal second line the Gentle Reminder has (user-set at 15px).
   subheading: {
-    fontSize: 15,
-    lineHeight: 20,
+    fontSize: 17,
+    lineHeight: 22,
+    color: colors.muted,
   },
   // Body copy reads as prose on this card, not as a caption — justified,
   // against the centred stageType.body the Gentle Reminder keeps. (Android
