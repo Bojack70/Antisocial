@@ -38,18 +38,16 @@ export default function AlmostNothingCard({ content }: AlmostNothingCardProps) {
 }
 
 const styles = StyleSheet.create({
-  // Bounded flex: the frame soaks up whatever height the card has spare, so
-  // the card can meet the footer without a hole under it — but the cap keeps
-  // the illustration from going full-portrait at 2x the reference's size,
-  // which is what un-capped flex did the first time.
+  // Locked to the reference's landscape shape — bounded flex let the height
+  // fill push it past square into a portrait the mock never shows. The
+  // card's spare height now becomes breathing room around the text instead
+  // (cards.stage centres its content).
   artFrame: {
     width: '100%',
-    flexGrow: 1,
-    minHeight: 240,
-    maxHeight: 400,
+    aspectRatio: 1.25,
     marginTop: 22,
     marginBottom: 22,
-    borderRadius: 10,
+    borderRadius: 14,
     overflow: 'hidden',
   },
   art: {

@@ -64,10 +64,10 @@ const TONES = {
 } as const;
 
 const styles = StyleSheet.create({
-  // The reference's pill floats with clear parchment either side — wider
-  // margins than the feed's edge-to-edge buttons.
+  // The pill's edges line up with the card's — the reference runs it the
+  // full card width (card marginHorizontal is 30 in cards.stage).
   wrap: {
-    paddingHorizontal: 42,
+    paddingHorizontal: 30,
     paddingTop: 14,
     paddingBottom: 10,
   },
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   ctaText: {
-    fontSize: 19,
-    fontWeight: '500',
+    fontSize: 23,
+    fontWeight: '600',
   },
 });

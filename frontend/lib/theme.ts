@@ -163,17 +163,17 @@ export const cards = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
     marginHorizontal: 30,
-    borderRadius: 18,
+    // The reference card has no outline — its edge is carried by the
+    // shadow alone, and the corners are markedly rounder than the feed's.
+    borderRadius: 28,
     paddingHorizontal: 22,
     paddingTop: 32,
     paddingBottom: 30,
     marginBottom: 0,
     backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.line,
     shadowColor: '#2D2C2A',
-    shadowOpacity: 0.06,
-    shadowRadius: 14,
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
     shadowOffset: { width: 0, height: 4 },
     elevation: 2,
   },
@@ -187,15 +187,15 @@ export const stageType = StyleSheet.create({
   // the content line under it at near the same size but lighter.
   eyebrow: {
     fontFamily: fonts.serif,
-    fontSize: 21,
-    lineHeight: 28,
+    fontSize: 27,
+    lineHeight: 34,
     color: colors.ink,
     textAlign: 'center',
   } as TextStyle,
   headline: {
     fontFamily: fonts.serifRegular,
-    fontSize: 20,
-    lineHeight: 28,
+    fontSize: 25,
+    lineHeight: 32,
     color: colors.ink,
     textAlign: 'center',
   } as TextStyle,
@@ -204,8 +204,8 @@ export const stageType = StyleSheet.create({
   // supporting a headline above it. Tight leading — the reference stacks
   // its lines close.
   body: {
-    fontSize: 17,
-    lineHeight: 24,
+    fontSize: 21,
+    lineHeight: 28,
     color: colors.ink,
     textAlign: 'center',
   } as TextStyle,
