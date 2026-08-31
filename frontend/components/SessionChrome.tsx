@@ -60,7 +60,7 @@ export default function SessionChrome({
         >
           <Ionicons
             name="chevron-back"
-            size={26}
+            size={36}
             color={index === 0 ? colors.hairline : colors.clayDeep}
           />
         </TouchableOpacity>
@@ -82,7 +82,7 @@ export default function SessionChrome({
         >
           <Ionicons
             name="chevron-forward"
-            size={26}
+            size={36}
             color={index >= count - 1 ? colors.hairline : colors.clayDeep}
           />
         </TouchableOpacity>
@@ -98,33 +98,35 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
     alignItems: 'center',
   },
+  // Sizes and colors measured off the reference — see design-spec.md at the
+  // repo root for the pixel measurements each value traces to.
   wordmark: {
     fontFamily: fonts.serif,
-    fontSize: 26,
+    fontSize: 33,
     color: colors.ink,
     letterSpacing: -0.2,
   },
   session: {
-    fontSize: 15,
-    color: colors.body,
-    marginTop: 7,
+    fontSize: 20,
+    color: colors.ink,
+    marginTop: 17,
   },
   track: {
     width: '100%',
-    height: 9,
-    borderRadius: 5,
-    backgroundColor: colors.surfaceTinted,
-    marginTop: 10,
+    height: 13,
+    borderRadius: 7,
+    backgroundColor: '#DDD3C6',
+    marginTop: 8,
     overflow: 'hidden',
   },
   fill: {
     height: '100%',
-    borderRadius: 5,
-    backgroundColor: colors.sage,
+    borderRadius: 7,
+    backgroundColor: '#7B8570',
   },
   time: {
-    fontSize: 13,
-    color: colors.muted,
+    fontSize: 18,
+    color: colors.ink,
     marginTop: 7,
   },
   pager: {
@@ -136,21 +138,21 @@ const styles = StyleSheet.create({
   },
   dots: {
     flexDirection: 'row',
-    gap: 7,
+    gap: 11,
     alignItems: 'center',
   },
   // Warm tan dots with a deep-clay active one — the reference's pager is
   // copper on tan, not orange on grey.
   dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    width: 11,
+    height: 11,
+    borderRadius: 6,
     backgroundColor: colors.hairline,
   },
   dotOn: {
     backgroundColor: colors.clayDeep,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    width: 11,
+    height: 11,
+    borderRadius: 6,
   },
 });
