@@ -115,7 +115,7 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
               width: '100%',
               height: '54px',
               borderRadius: '12px',
-              backgroundColor: 'rgba(39, 39, 42, 0.5)',
+              backgroundColor: colors.surfaceTinted,
             }}
             preload="metadata"
           >
@@ -182,8 +182,10 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
   };
 
   return (
-    <View style={cards.dark}>
-      <CardHeader icon="headset-outline" color={accents.onDark} label="Audio Drift" tone="dark" />
+    // Light surface since the finalized design (2026-08-31) — the last
+    // card off the retired dark narrative surface.
+    <View style={cards.white}>
+      <CardHeader icon="headset-outline" color={accents.curiosity} label="Audio Drift" />
 
       <Text style={styles.title}>{content.title}</Text>
       {renderCredit()}
@@ -209,7 +211,7 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
         </View>
       ) : (
         <View style={styles.noAudioContainer}>
-          <Ionicons name="musical-notes-outline" size={32} color={colors.darkLine} />
+          <Ionicons name="musical-notes-outline" size={32} color={colors.muted} />
           <Text style={styles.noAudioText}>This one hasn’t found its voice yet.</Text>
           <Text style={styles.noAudioSubtext}>
             It will speak eventually.
@@ -220,7 +222,6 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
       <ReactionButtons
         reactions={['Stayed With Me', 'Lingering', 'Unsettling', 'Let It Pass']}
         tags={content.tags}
-        tone="dark"
       />
     </View>
   );
@@ -228,7 +229,7 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
 
 const styles = StyleSheet.create({
   title: {
-    ...type.titleOnDark,
+    ...type.title,
     marginBottom: 6,
   },
   creditRow: {
@@ -250,7 +251,9 @@ const styles = StyleSheet.create({
   mobilePlayerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.darkPanel,
+    backgroundColor: colors.surfaceTinted,
+    borderWidth: 1,
+    borderColor: colors.line,
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
@@ -259,9 +262,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: colors.darkPill,
-    borderWidth: 1,
-    borderColor: colors.darkLine,
+    backgroundColor: colors.ink,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 16,
@@ -271,13 +272,13 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: 3,
-    backgroundColor: colors.darkLine,
+    backgroundColor: colors.line,
     borderRadius: 2,
     overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
-    backgroundColor: colors.muted,
+    backgroundColor: colors.sage,
   },
   timeContainer: {
     flexDirection: 'row',
@@ -288,13 +289,15 @@ const styles = StyleSheet.create({
     ...type.micro,
   },
   scriptContainer: {
-    backgroundColor: colors.darkPanel,
+    backgroundColor: colors.surfaceTinted,
+    borderWidth: 1,
+    borderColor: colors.line,
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
   },
   scriptText: {
-    ...type.bodyOnDark,
+    ...type.body,
   },
   instructionContainer: {
     paddingVertical: 8,
@@ -302,7 +305,7 @@ const styles = StyleSheet.create({
   },
   instructionText: {
     ...type.body,
-    color: colors.darkLine,
+    color: colors.muted,
     textAlign: 'center',
     fontStyle: 'italic',
   },
@@ -310,12 +313,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 32,
-    backgroundColor: colors.darkPanel,
+    backgroundColor: colors.surfaceTinted,
+    borderWidth: 1,
+    borderColor: colors.line,
     borderRadius: 12,
     marginBottom: 16,
   },
   noAudioText: {
-    ...type.bodyOnDark,
+    ...type.body,
     marginTop: 12,
   },
   noAudioSubtext: {
