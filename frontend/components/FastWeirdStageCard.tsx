@@ -38,7 +38,7 @@ export default function FastWeirdStageCard({ content }: Props) {
   const facts = (
     <View style={styles.facts}>
       {content.facts.map((fact, i) => (
-        <Text key={i} style={[stageType.body, styles.justified]}>
+        <Text key={i} style={[stageType.body, styles.prose]}>
           {fact}
         </Text>
       ))}
@@ -58,7 +58,7 @@ export default function FastWeirdStageCard({ content }: Props) {
 
       {guess ? (
         <>
-          <Text style={[stageType.body, styles.justified]}>{guess.prompt}</Text>
+          <Text style={[stageType.body, styles.prose]}>{guess.prompt}</Text>
 
           <View style={styles.options}>
             {guess.options.map((option, i) => {
@@ -101,7 +101,7 @@ export default function FastWeirdStageCard({ content }: Props) {
               </Text>
               {facts}
               {!!guess.reveal && (
-                <Text style={[stageType.body, styles.justified, styles.reveal]}>{guess.reveal}</Text>
+                <Text style={[stageType.body, styles.prose, styles.reveal]}>{guess.reveal}</Text>
               )}
             </>
           )}
@@ -128,18 +128,18 @@ const styles = StyleSheet.create({
   facts: {
     gap: 16,
   },
-  // This card's headline is a small sub-heading under the eyebrow, not the
-  // near-equal second line the Gentle Reminder has (user-set at 15px).
+  // This card's headline is a small muted sub-heading under the eyebrow, not
+  // the near-equal second line the Gentle Reminder has (user-set: 17, muted).
   subheading: {
     fontSize: 17,
     lineHeight: 22,
     color: colors.muted,
   },
-  // Body copy reads as prose on this card, not as a caption — justified,
-  // against the centred stageType.body the Gentle Reminder keeps. (Android
-  // RN does not support 'justify' and falls back to left; web and iOS do.)
-  justified: {
-    textAlign: 'justify',
+  // Body copy reads as prose on this card, not as a caption — left-aligned
+  // (was justified, before that centred; the centred stageType.body stays
+  // for the Gentle Reminder).
+  prose: {
+    textAlign: 'left',
   },
   options: {
     alignSelf: 'stretch',
