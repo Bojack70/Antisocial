@@ -94,14 +94,18 @@ export default function SessionChrome({
 const styles = StyleSheet.create({
   wrap: {
     paddingHorizontal: 22,
-    paddingTop: 6,
+    // The reference tucks the wordmark straight under the status area —
+    // the safe-area inset is the whole gap, so no padding of our own.
+    paddingTop: 0,
     paddingBottom: 12,
     alignItems: 'center',
   },
   // Sizes and colors measured off the reference — see design-spec.md at the
   // repo root for the pixel measurements each value traces to.
   wordmark: {
-    fontFamily: fonts.serif,
+    // Regular, not bold — the reference wordmark is a light-stroked serif;
+    // Lora_700Bold read as semibold against it.
+    fontFamily: fonts.serifRegular,
     fontSize: 33,
     color: colors.ink,
     letterSpacing: -0.2,

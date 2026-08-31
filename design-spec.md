@@ -21,6 +21,17 @@ own rendered bands (band ≈ 0.78 × fontSize for our fonts).
 | Gap bar→reclaimed | 12pt | ~10pt | marginTop 7→10 |
 | Gap reclaimed→pager | 23pt | ~19.5pt | marginTop 12→16 |
 
+2026-08-31 PM follow-up (user-reported deltas vs the same mock):
+
+| Element | Mock (measured) | Was | Now |
+|---|---|---|---|
+| Wordmark weight | regular-stroke serif (zoomed crop) | `Lora_700Bold` | `Lora_400Regular` |
+| Gap safe-area→wordmark | wordmark hugs the status area | paddingTop 6 | 0 |
+| Card top→heading gap | 31px → ~23pt | paddingTop 32 + `center` slack | paddingTop 17, `flex-start` |
+
+The `justifyContent: 'flex-start'` on `cards.stage` REVERSES pass 2's centred-slack
+choice — user asked for the heading pinned up; spare height now falls below the body.
+
 Notes:
 - Mock text samples to pure black; we keep the `ink` token (#2D2C2A) for
   palette consistency — flagged, not a silent substitution.

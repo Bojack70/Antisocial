@@ -40,8 +40,8 @@ export default function AlmostNothingCard({ content }: AlmostNothingCardProps) {
 const styles = StyleSheet.create({
   // Locked to the reference's landscape shape — bounded flex let the height
   // fill push it past square into a portrait the mock never shows. The
-  // card's spare height now becomes breathing room around the text instead
-  // (cards.stage centres its content).
+  // card's spare height falls below the body copy (cards.stage is
+  // top-anchored, the way the reference keeps its title pinned to the top).
   artFrame: {
     width: '100%',
     aspectRatio: 1.25,

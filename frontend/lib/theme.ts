@@ -161,13 +161,17 @@ export const cards = StyleSheet.create({
     // and anything beyond its cap becoming breathing room around the text.
     alignSelf: 'stretch',
     flexGrow: 1,
-    justifyContent: 'center',
+    // Top-anchored, not centred: the reference holds the title ~23pt under
+    // the card's top edge however tall the card runs — centring let the
+    // heading drift down whenever the card had height to spare. 17 + the
+    // eyebrow's ~6.5pt half-leading lands the glyphs at the measured gap.
+    justifyContent: 'flex-start',
     marginHorizontal: 30,
     // The reference card has no outline — its edge is carried by the
     // shadow alone, and the corners are markedly rounder than the feed's.
     borderRadius: 28,
     paddingHorizontal: 22,
-    paddingTop: 32,
+    paddingTop: 17,
     paddingBottom: 30,
     marginBottom: 0,
     backgroundColor: colors.surface,
