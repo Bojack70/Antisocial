@@ -19,11 +19,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // Import components
 import FastWeirdCard from '../components/FastWeirdCard';
 import FastWeirdStageCard from '../components/FastWeirdStageCard';
+import ExplainerStageCard from '../components/ExplainerStageCard';
+import MiniGameStageCard from '../components/MiniGameStageCard';
 
-// PREVIEW (redesign/paper-swipe): render Wait... What? on the stage
-// treatment so the template can be judged on a no-art card. Flip to false
-// to compare against the shipped layout.
-const STAGE_FAST_WEIRD_PREVIEW = true;
+// PREVIEW (redesign/paper-swipe): render these types on the stage
+// treatment so the template can be judged before rollout. Remove a type
+// (or empty the set) to compare against the shipped layouts.
+const STAGE_PREVIEW_TYPES = new Set(['fast_weird', 'explainer', 'mini_game']);
 import ExplainerCard from '../components/ExplainerCard';
 import PonderCard from '../components/PonderCard';
 import IncidentCard from '../components/IncidentCard';
@@ -452,17 +454,21 @@ export default function Index() {
   const shareableCardFor = (item: ContentItem): React.ReactNode | null => {
     switch (item.type) {
       case 'fast_weird':
-        return STAGE_FAST_WEIRD_PREVIEW
+        return STAGE_PREVIEW_TYPES.has('fast_weird')
           ? <FastWeirdStageCard content={item as any} />
           : <FastWeirdCard content={item as any} />;
       case 'explainer':
-        return <ExplainerCard content={item as any} />;
+        return STAGE_PREVIEW_TYPES.has('explainer')
+          ? <ExplainerStageCard content={item as any} />
+          : <ExplainerCard content={item as any} />;
       case 'ponder':
         return <PonderCard content={item as any} />;
       case 'incident':
         return <IncidentCard content={item as any} />;
       case 'mini_game':
-        return <MiniGameCard content={item as any} />;
+        return STAGE_PREVIEW_TYPES.has('mini_game')
+          ? <MiniGameStageCard content={item as any} />
+          : <MiniGameCard content={item as any} />;
       case 'audio_drift':
         return <AudioDriftCard content={item as any} />;
       case 'almost_nothing':
@@ -625,7 +631,7 @@ export default function Index() {
               // treatment — full-height card plus the bottom pager and
               // pill action. Everything else keeps the current layout.
               const staged = item.type === 'almost_nothing'
-                || (STAGE_FAST_WEIRD_PREVIEW && item.type === 'fast_weird');
+                || STAGE_PREVIEW_TYPES.has(item.type);
               return (
                 <View key={item.id} style={{ width, flex: 1 }}>
                   {/* A ScrollView sizes to its content unless it is given a
