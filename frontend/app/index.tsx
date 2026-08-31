@@ -18,6 +18,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Import components
 import FastWeirdCard from '../components/FastWeirdCard';
+import FastWeirdStageCard from '../components/FastWeirdStageCard';
+
+// PREVIEW (redesign/paper-swipe): render Wait... What? on the stage
+// treatment so the template can be judged on a no-art card. Flip to false
+// to compare against the shipped layout.
+const STAGE_FAST_WEIRD_PREVIEW = true;
 import ExplainerCard from '../components/ExplainerCard';
 import PonderCard from '../components/PonderCard';
 import IncidentCard from '../components/IncidentCard';
@@ -332,6 +338,16 @@ export default function Index() {
         // We only want `sessionSize` number of items for this session
         let sessionItems = data.feed.slice(0, sessionSize);
 
+        // TEMP (redesign/paper-swipe): force a Gentle Reminder to the front so
+        // the staged-card treatment can be checked on screen. Remove before merge.
+        if (!sessionItems.some((i: ContentItem) => i.type === 'almost_nothing')) {
+          const gentle = data.feed.find((i: ContentItem) => i.type === 'almost_nothing');
+          if (gentle) sessionItems = [gentle, ...sessionItems.slice(0, sessionSize - 1)];
+        } else {
+          sessionItems.sort((a: ContentItem, b: ContentItem) =>
+            (b.type === 'almost_nothing' ? 1 : 0) - (a.type === 'almost_nothing' ? 1 : 0));
+        }
+
         // An empty fetch must not burn quota — show the empty state instead.
         if (sessionItems.length === 0) {
           setFeed([]);
@@ -436,7 +452,9 @@ export default function Index() {
   const shareableCardFor = (item: ContentItem): React.ReactNode | null => {
     switch (item.type) {
       case 'fast_weird':
-        return <FastWeirdCard content={item as any} />;
+        return STAGE_FAST_WEIRD_PREVIEW
+          ? <FastWeirdStageCard content={item as any} />
+          : <FastWeirdCard content={item as any} />;
       case 'explainer':
         return <ExplainerCard content={item as any} />;
       case 'ponder':
@@ -606,22 +624,26 @@ export default function Index() {
               // TRIAL: only the Gentle Reminder card is on the mockup
               // treatment — full-height card plus the bottom pager and
               // pill action. Everything else keeps the current layout.
-              const staged = item.type === 'almost_nothing';
+              const staged = item.type === 'almost_nothing'
+                || (STAGE_FAST_WEIRD_PREVIEW && item.type === 'fast_weird');
               return (
                 <View key={item.id} style={{ width, flex: 1 }}>
                   {/* A ScrollView sizes to its content unless it is given a
                       definite height, so the staged page needs flex:1 on the
                       view itself — flexGrow on the content container alone
                       leaves the card short of the footer. */}
-                  <ScrollView
-                    style={staged ? styles.stageScroll : undefined}
-                    contentContainerStyle={staged ? styles.stageInner : styles.pageInner}
-                    showsVerticalScrollIndicator={false}
-                  >
-                    {staged ? (
-                      // The rails wrap the card so they are exactly as tall
-                      // as it is — positioned by percentage of the card, the
-                      // way the reference's neighbours peek.
+                  {staged ? (
+                    // Not a ScrollView: the page must never scroll the card
+                    // itself under the footer. The card is pinned to the
+                    // height between chrome and footer, and anything that
+                    // doesn't fit scrolls INSIDE the card (the stage card
+                    // components carry their own inner ScrollView), so the
+                    // card's rounded bottom edge stays visible above the
+                    // pill at all times.
+                    <View style={[styles.stageScroll, styles.stageInner]}>
+                      {/* The rails wrap the card so they are exactly as tall
+                          as it is — positioned by percentage of the card, the
+                          way the reference's neighbours peek. */}
                       <View style={styles.stageCardRow}>
                         <View style={[rails.rail, rails.left]} pointerEvents="none" />
                         <View style={[rails.rail, rails.right]} pointerEvents="none" />
@@ -629,10 +651,15 @@ export default function Index() {
                             sized and the card can't stretch to the footer */}
                         {renderContentCard(item, true)}
                       </View>
-                    ) : (
-                      renderContentCard(item, false)
-                    )}
-                  </ScrollView>
+                    </View>
+                  ) : (
+                    <ScrollView
+                      contentContainerStyle={styles.pageInner}
+                      showsVerticalScrollIndicator={false}
+                    >
+                      {renderContentCard(item, false)}
+                    </ScrollView>
+                  )}
                   {staged && (
                     <StageFooter
                       index={i}
@@ -739,6 +766,10 @@ const styles = StyleSheet.create({
   stageCardRow: {
     width: '100%',
     flexGrow: 1,
+    // Shrink with the card (see cards.stage) — every link in the chain has
+    // to allow it or the row overflows past the footer.
+    flexShrink: 1,
+    minHeight: 0,
   },
   feedContainer: {
     paddingHorizontal: 16,

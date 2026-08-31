@@ -1,7 +1,6 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import Text from './AppText';
-import { Ionicons } from '@expo/vector-icons';
 import { colors, fonts } from '../lib/theme';
 
 interface Props {
@@ -14,79 +13,16 @@ interface Props {
   onNext: () => void;
 }
 
-// The header from the swipe mockup: wordmark, which of the day's two
-// sessions this is, how far through the session you are, and the pager.
-//
-// The session numbers are real — MAX_SESSIONS_PER_DAY is 2 in lib/quota.ts
-// and sessionsUsedToday() is what feeds this. The progress bar tracks
-// position in the deck rather than time, so it agrees with the dots.
+// The header, pared down to the wordmark alone. The session line, progress
+// track, Reclaimed Time line, dot strip, and chevrons from the swipe mockup
+// were all removed 2026-08-31 at the user's request — swipe is the
+// navigation, and position in the deck shows only in the StageFooter.
+// The props stay so the call site is untouched while the trial settles.
 
-const DOTS_SHOWN = 5;
-
-export default function SessionChrome({
-  sessionNumber, totalSessions, minutesToday, index, count, onPrev, onNext,
-}: Props) {
-  const progress = count > 1 ? index / (count - 1) : 0;
-
-  // With a dozen cards a dot each would be a smear, so the strip is a
-  // five-dot window that slides — the filled dot keeps its place in the
-  // middle once you are past the start.
-  const half = Math.floor(DOTS_SHOWN / 2);
-  const first = Math.max(0, Math.min(index - half, Math.max(0, count - DOTS_SHOWN)));
-  const dots = Array.from({ length: Math.min(DOTS_SHOWN, count) }, (_, i) => first + i);
-
+export default function SessionChrome(_props: Props) {
   return (
     <View style={styles.wrap}>
       <Text style={styles.wordmark}>antisocial</Text>
-
-      <Text style={styles.session}>
-        Session {sessionNumber} of {totalSessions}
-      </Text>
-
-      <View style={styles.track}>
-        <View style={[styles.fill, { width: `${Math.round(progress * 100)}%` }]} />
-      </View>
-
-      <Text style={styles.time}>
-        Reclaimed Time: {minutesToday} min
-      </Text>
-
-      <View style={styles.pager}>
-        <TouchableOpacity
-          onPress={onPrev}
-          disabled={index === 0}
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-          accessibilityLabel="Previous card"
-        >
-          <Ionicons
-            name="chevron-back"
-            size={36}
-            color={index === 0 ? colors.hairline : colors.clayDeep}
-          />
-        </TouchableOpacity>
-
-        <View style={styles.dots}>
-          {dots.map((d) => (
-            <View
-              key={d}
-              style={[styles.dot, d === index && styles.dotOn]}
-            />
-          ))}
-        </View>
-
-        <TouchableOpacity
-          onPress={onNext}
-          disabled={index >= count - 1}
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-          accessibilityLabel="Next card"
-        >
-          <Ionicons
-            name="chevron-forward"
-            size={36}
-            color={index >= count - 1 ? colors.hairline : colors.clayDeep}
-          />
-        </TouchableOpacity>
-      </View>
     </View>
   );
 }
@@ -94,9 +30,7 @@ export default function SessionChrome({
 const styles = StyleSheet.create({
   wrap: {
     paddingHorizontal: 22,
-    // The reference tucks the wordmark straight under the status area —
-    // the safe-area inset is the whole gap, so no padding of our own.
-    paddingTop: 0,
+    paddingTop: 16,
     paddingBottom: 12,
     alignItems: 'center',
   },
@@ -109,54 +43,5 @@ const styles = StyleSheet.create({
     fontSize: 33,
     color: colors.ink,
     letterSpacing: -0.2,
-  },
-  session: {
-    fontSize: 20,
-    color: colors.ink,
-    marginTop: 17,
-  },
-  track: {
-    width: '100%',
-    height: 13,
-    borderRadius: 7,
-    backgroundColor: '#DDD3C6',
-    marginTop: 8,
-    overflow: 'hidden',
-  },
-  fill: {
-    height: '100%',
-    borderRadius: 7,
-    backgroundColor: '#7B8570',
-  },
-  time: {
-    fontSize: 18,
-    color: colors.ink,
-    marginTop: 7,
-  },
-  pager: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginTop: 12,
-  },
-  dots: {
-    flexDirection: 'row',
-    gap: 11,
-    alignItems: 'center',
-  },
-  // Warm tan dots with a deep-clay active one — the reference's pager is
-  // copper on tan, not orange on grey.
-  dot: {
-    width: 11,
-    height: 11,
-    borderRadius: 6,
-    backgroundColor: colors.hairline,
-  },
-  dotOn: {
-    backgroundColor: colors.clayDeep,
-    width: 11,
-    height: 11,
-    borderRadius: 6,
   },
 });

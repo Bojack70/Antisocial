@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Image } from 'react-native';
+import { View, StyleSheet, Image, ScrollView } from 'react-native';
 import Text from './AppText';
 import { cards, stageType } from '../lib/theme';
 
@@ -21,18 +21,22 @@ export default function AlmostNothingCard({ content }: AlmostNothingCardProps) {
 
   return (
     <View style={cards.stage}>
-      <Text style={stageType.eyebrow}>Gentle Reminder:</Text>
-      <Text style={stageType.headline}>{firstLine}</Text>
+      {/* The card is pinned between chrome and footer; overflow scrolls
+          inside it so the card never slides under the pill. */}
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <Text style={stageType.eyebrow}>Gentle Reminder:</Text>
+        <Text style={stageType.headline}>{firstLine}</Text>
 
-      <View style={styles.artFrame}>
-        <Image
-          source={require('../assets/art/pause-woman.png')}
-          style={styles.art}
-          resizeMode="cover"
-        />
-      </View>
+        <View style={styles.artFrame}>
+          <Image
+            source={require('../assets/art/pause-woman.png')}
+            style={styles.art}
+            resizeMode="cover"
+          />
+        </View>
 
-      {rest.length > 0 && <Text style={stageType.body}>{rest}</Text>}
+        {rest.length > 0 && <Text style={stageType.body}>{rest}</Text>}
+      </ScrollView>
     </View>
   );
 }

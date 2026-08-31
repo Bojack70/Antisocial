@@ -161,12 +161,18 @@ export const cards = StyleSheet.create({
     // and anything beyond its cap becoming breathing room around the text.
     alignSelf: 'stretch',
     flexGrow: 1,
+    // Shrinkable, so a card whose content outgrows the page compresses to
+    // the space between chrome and footer (the overflow scrolls inside the
+    // card) instead of sliding under the footer pill. minHeight 0 is what
+    // lets flexShrink actually go below the content height on web.
+    flexShrink: 1,
+    minHeight: 0,
     // Top-anchored, not centred: the reference holds the title ~23pt under
     // the card's top edge however tall the card runs — centring let the
     // heading drift down whenever the card had height to spare. 17 + the
     // eyebrow's ~6.5pt half-leading lands the glyphs at the measured gap.
     justifyContent: 'flex-start',
-    marginHorizontal: 30,
+    marginHorizontal: 40,
     // The reference card has no outline — its edge is carried by the
     // shadow alone, and the corners are markedly rounder than the feed's.
     borderRadius: 28,
