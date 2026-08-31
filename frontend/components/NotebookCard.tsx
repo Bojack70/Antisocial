@@ -29,7 +29,7 @@ export default function NotebookCard({ promptId, prompt }: NotebookCardProps) {
 
   return (
     <View style={cards.white}>
-      <CardHeader icon="create-outline" color={accents.personal} label="The Notebook" />
+      <CardHeader icon="create-outline" color={accents.personal} label="Reflection" />
 
       <Text style={styles.prompt}>{prompt}</Text>
 
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: 12,
-    minHeight: 74,
+    minHeight: 132,
     fontSize: 13,
     lineHeight: 19,
     color: colors.ink,
