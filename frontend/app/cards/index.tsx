@@ -75,8 +75,12 @@ export default function CardGallery() {
           if (hit) one.push(hit);
         }
 
-        // The local types, built the same way the feed builds them.
-        one.push({ id: 'gallery-game', type: 'game', game: GAMES[0], anchor: true });
+        // The local types, built the same way the feed builds them. The
+        // real feed carries ONE game per session; the gallery shows every
+        // game's card, one page each.
+        for (const game of GAMES) {
+          one.push({ id: `gallery-game-${game.id}`, type: 'game', game, anchor: true });
+        }
         one.push({
           id: 'gallery-notebook', type: 'notebook',
           promptId: WRITING_PROMPTS[0].id, prompt: WRITING_PROMPTS[0].prompt,
