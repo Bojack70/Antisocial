@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import Text from './AppText';
 import CardHeader from './CardHeader';
+import CardAction from './CardAction';
 import { cards, colors, type, accents } from '../lib/theme';
 import { writeInNotebook } from '../lib/notebook';
 
@@ -45,9 +46,7 @@ export default function NotebookCard({ promptId, prompt }: NotebookCardProps) {
             textAlignVertical="top"
           />
           {text.trim().length > 0 && (
-            <TouchableOpacity style={styles.keepButton} onPress={keep} activeOpacity={0.7}>
-              <Text style={styles.keepButtonText}>Leave it in the book</Text>
-            </TouchableOpacity>
+            <CardAction label="Leave it in the book" onPress={keep} />
           )}
         </>
       ) : (
@@ -76,20 +75,6 @@ const styles = StyleSheet.create({
     lineHeight: 19,
     color: colors.ink,
     backgroundColor: colors.surfaceTinted,
-  },
-  keepButton: {
-    marginTop: 10,
-    alignSelf: 'flex-start',
-    paddingVertical: 9,
-    paddingHorizontal: 14,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: colors.hairline,
-  },
-  keepButtonText: {
-    fontSize: 11,
-    fontWeight: '400',
-    color: colors.body,
   },
   keptText: {
     ...type.body,

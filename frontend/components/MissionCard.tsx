@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import Text from './AppText';
 import CardHeader from './CardHeader';
-import { cards, colors, type, accents } from '../lib/theme';
+import CardAction from './CardAction';
+import { cards, type, accents } from '../lib/theme';
 import { MissionDefinition } from '../data/missions';
 import { recordMissionDone } from '../lib/missions';
 
@@ -33,18 +34,14 @@ export default function MissionCard({ mission }: MissionCardProps) {
           The museum will ask no further questions.
         </Text>
       ) : (
-        <View style={styles.footer}>
+        <>
           <Text style={styles.duration}>
             {mission.minutes === 2 ? 'TWO MINUTES' : 'FIVE MINUTES'}
           </Text>
-          <TouchableOpacity
-            style={styles.doneButton}
-            onPress={handleDone}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.doneButtonText}>Done</Text>
-          </TouchableOpacity>
-        </View>
+          {/* The label names the specific trip where the data carries one
+              ("Tree touched", "Bed made"); "Done" is the fallback. */}
+          <CardAction label={mission.cta ?? 'Done'} onPress={handleDone} />
+        </>
       )}
     </View>
   );
@@ -54,25 +51,9 @@ const styles = StyleSheet.create({
   text: {
     ...type.title,
   },
-  footer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 16,
-  },
   duration: {
     ...type.micro,
-  },
-  doneButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    backgroundColor: colors.ink,
-  },
-  doneButtonText: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: '#FFFFFF',
+    marginTop: 16,
   },
   confirmation: {
     ...type.micro,

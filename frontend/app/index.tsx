@@ -54,6 +54,7 @@ import { isOnboardingComplete } from '../lib/onboarding';
 import { recordSession, recordLeftEarly, dueRecap, markRecapShown } from '../lib/weekLedger';
 import WeekRecapCard from '../components/WeekRecapCard';
 import SessionChrome from '../components/SessionChrome';
+import { DeckAdvanceContext } from '../components/DeckContext';
 import { sessionsUsedToday, MAX_SESSIONS_PER_DAY } from '../lib/quota';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
@@ -629,17 +630,21 @@ export default function Index() {
             onLayout={(e) => setDeckHeight(e.nativeEvent.layout.height)}
             contentContainerStyle={styles.pagerContent}
           >
-            {deckHeight > 0 && feed.map((item) => (
+            {deckHeight > 0 && feed.map((item, i) => (
               // Every page is the same now: the card, top-anchored, in the
               // classic structure. A card taller than its page scrolls
-              // inside the page; the deck itself only ever snaps.
+              // inside the page; the deck itself only ever snaps. The
+              // advance context lets a card's completion button (CardAction)
+              // move the deck on without prop-drilling through every card.
               <View key={item.id} style={{ width: '100%', height: deckHeight }}>
-                <ScrollView
-                  contentContainerStyle={styles.pageInner}
-                  showsVerticalScrollIndicator={false}
-                >
-                  {renderContentCard(item, false)}
-                </ScrollView>
+                <DeckAdvanceContext.Provider value={() => goToPage(i + 1)}>
+                  <ScrollView
+                    contentContainerStyle={styles.pageInner}
+                    showsVerticalScrollIndicator={false}
+                  >
+                    {renderContentCard(item, false)}
+                  </ScrollView>
+                </DeckAdvanceContext.Provider>
               </View>
             ))}
 

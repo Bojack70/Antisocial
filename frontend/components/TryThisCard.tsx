@@ -3,6 +3,7 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import Text from './AppText';
 import { Ionicons } from '@expo/vector-icons';
 import CardHeader from './CardHeader';
+import CardAction from './CardAction';
 import { cards, colors, type, accents } from '../lib/theme';
 import { recordSkillDone } from '../lib/weekLedger';
 
@@ -16,6 +17,9 @@ interface TryThisCardProps {
     duration?: number;
     rarity?: string;
     tags?: string[];
+    /** Activity-specific completion label ("Folded", "Knot tied");
+        falls back to the type's default. */
+    cta_label?: string;
   };
 }
 
@@ -72,16 +76,13 @@ export default function TryThisCard({ content }: TryThisCardProps) {
       )}
 
       {allShown && !done && (
-        <TouchableOpacity
-          style={styles.doneButton}
+        <CardAction
+          label={content.cta_label ?? 'I did it'}
           onPress={() => {
             setDone(true);
             recordSkillDone(); // depth action; fire-and-forget
           }}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.doneButtonText}>I did it</Text>
-        </TouchableOpacity>
+        />
       )}
 
       {done && (
@@ -157,18 +158,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '400',
     color: colors.body,
-  },
-  doneButton: {
-    marginTop: 14,
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderRadius: 10,
-    backgroundColor: colors.ink,
-  },
-  doneButtonText: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: '#FFFFFF',
   },
   closing: {
     marginTop: 14,
