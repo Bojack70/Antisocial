@@ -15,8 +15,9 @@ interface IncidentCardProps {
   };
 }
 
-// A story card, so it takes the dark surface — the narrative types are
-// the ones that carry the feed's rhythm.
+// On the same light surface as every other card since the finalized
+// design (2026-08-31) — the dark narrative surface was retired for
+// uniformity.
 //
 // The story unfolds one line per tap. Committing to "what happened next?"
 // is what turns a 10-second skim into a story actually followed — the
@@ -27,14 +28,14 @@ export default function IncidentCard({ content }: IncidentCardProps) {
   const done = revealed >= total;
 
   return (
-    <View style={cards.dark}>
-      <CardHeader icon="newspaper-outline" color={accents.curiosity} label="Quietly Fascinating" tone="dark" />
+    <View style={cards.white}>
+      <CardHeader icon="newspaper-outline" color={accents.curiosity} label="Quietly Fascinating" />
 
       <Text style={styles.hook}>{content.hook}</Text>
 
       <View style={styles.storyContainer}>
         {content.story.slice(0, revealed).map((line, index) => (
-          <Text key={index} style={type.bodyOnDark}>
+          <Text key={index} style={type.body}>
             {line}
           </Text>
         ))}
@@ -49,7 +50,7 @@ export default function IncidentCard({ content }: IncidentCardProps) {
           <Text style={styles.nextText}>
             {revealed === 1 ? 'What happened next?' : 'And then?'}
           </Text>
-          <Ionicons name="chevron-down" size={14} color={colors.darkBody} />
+          <Ionicons name="chevron-down" size={14} color={colors.muted} />
         </TouchableOpacity>
       )}
 
@@ -59,7 +60,6 @@ export default function IncidentCard({ content }: IncidentCardProps) {
         <ReactionButtons
           reactions={['Let It Pass', 'Unexpected', 'Makes Sense']}
           tags={content.tags}
-          tone="dark"
         />
       )}
     </View>
@@ -68,7 +68,7 @@ export default function IncidentCard({ content }: IncidentCardProps) {
 
 const styles = StyleSheet.create({
   hook: {
-    ...type.titleOnDark,
+    ...type.title,
     marginBottom: 14,
   },
   storyContainer: {
@@ -83,11 +83,11 @@ const styles = StyleSheet.create({
     paddingVertical: 11,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: colors.darkLine,
+    borderColor: colors.hairline,
   },
   nextText: {
     fontSize: 11,
     fontWeight: '400',
-    color: colors.darkBody,
+    color: colors.body,
   },
 });

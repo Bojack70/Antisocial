@@ -21,7 +21,9 @@ interface ExplainerCardProps {
 export default function ExplainerCard({ content }: ExplainerCardProps) {
   const [showVideo, setShowVideo] = useState(false);
   const [selectedStep, setSelectedStep] = useState<number | null>(null);
-  const [showSteps, setShowSteps] = useState(false);
+  // Open by default (user call, 2026-08-31): the steps ARE the card, so
+  // they show without a tap. The toggle stays for collapsing.
+  const [showSteps, setShowSteps] = useState(true);
 
   const getYouTubeEmbedUrl = (url: string) => {
     if (!url) return '';
