@@ -42,9 +42,14 @@ import NotebookCard from '../components/NotebookCard';
 import TryThisCard from '../components/TryThisCard';
 import LookCloserCard from '../components/LookCloserCard';
 import MissionCard from '../components/MissionCard';
+import QuoteGuessCard from '../components/QuoteGuessCard';
+import PlaceGuessCard from '../components/PlaceGuessCard';
 import { GAMES } from '../data/games';
 import { WRITING_PROMPTS } from '../data/writingPrompts';
+import { QUOTE_GUESSES } from '../data/quoteGuesses';
+import { PLACE_GUESSES } from '../data/placeGuesses';
 import { pickPrompt } from '../lib/notebook';
+import { pickRotating } from '../lib/rotation';
 import { MISSIONS } from '../data/missions';
 import { cards, colors, type } from '../lib/theme';
 import { addMinute, minutesUsedToday, DAILY_LIMIT_MINUTES } from '../lib/usage';
@@ -409,6 +414,25 @@ export default function Index() {
           }
         );
 
+        // One extra guess rides each session, alternating between a line
+        // out of its home ("One Good Line") and a place on Earth ("Where
+        // On Earth"). Both pools are bundled data — no backend content
+        // required — and recency-rotated like the writing prompts.
+        const lastExtra = await AsyncStorage.getItem('last_extra_guess');
+        const extraType = lastExtra === 'quote' ? 'place' : 'quote';
+        const extra =
+          extraType === 'quote'
+            ? await pickRotating(QUOTE_GUESSES, 'quote_guess_recent', 12)
+            : await pickRotating(PLACE_GUESSES, 'place_guess_recent', 9);
+        if (extra) {
+          sessionItems.splice(Math.min(8, sessionItems.length), 0, {
+            ...extra,
+            id: `${extraType}-${extra.id}-${Date.now()}`,
+            type: extraType === 'quote' ? 'quote_guess' : 'place_guess',
+          });
+          AsyncStorage.setItem('last_extra_guess', extraType).catch(() => {});
+        }
+
         // Insert Body-Aware interruptions
         const indices = generateInsertionIndices(sessionItems.length);
         indices.reverse().forEach((index: number) => {
@@ -496,6 +520,10 @@ export default function Index() {
         return <AlmostNothingCard content={item as any} />;
       case 'quiet_contradiction':
         return <QuietContradictionCard content={item as any} />;
+      case 'quote_guess':
+        return <QuoteGuessCard content={item as any} />;
+      case 'place_guess':
+        return <PlaceGuessCard content={item as any} />;
       default:
         return null;
     }
@@ -744,6 +772,19 @@ export default function Index() {
                       <Text style={styles.driftButtonText}>Drift a little longer</Text>
                     </TouchableOpacity>
                   )}
+
+                  {/* A side room, offered at the door: the visitor's own
+                      photographs, assembled on the device into one image.
+                      It lives at the exit because it's a keepsake, not a
+                      card — the museum ends and hands you something. */}
+                  <TouchableOpacity
+                    style={styles.retroLink}
+                    onPress={() => router.push('/retrospective')}
+                  >
+                    <Text style={styles.retroLinkText}>
+                      The Retrospective — a side room for your own photographs
+                    </Text>
+                  </TouchableOpacity>
                 </View>
               </ScrollView>
             </View>
@@ -889,5 +930,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '400',
     color: colors.body,
+  },
+  retroLink: {
+    marginTop: 18,
+    alignItems: 'center',
+  },
+  retroLinkText: {
+    ...type.micro,
+    textAlign: 'center',
+    lineHeight: 16,
   },
 });

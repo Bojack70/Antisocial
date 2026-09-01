@@ -25,9 +25,13 @@ import SessionChrome from '../../components/SessionChrome';
 import BodyAwareInterruption from '../../components/BodyAwareInterruption';
 import BeforeYouWatchCard from '../../components/BeforeYouWatchCard';
 import IllusionCard from '../../components/IllusionCard';
+import QuoteGuessCard from '../../components/QuoteGuessCard';
+import PlaceGuessCard from '../../components/PlaceGuessCard';
 import { DeckAdvanceContext } from '../../components/DeckContext';
 import { GAMES } from '../../data/games';
 import { WRITING_PROMPTS } from '../../data/writingPrompts';
+import { QUOTE_GUESSES } from '../../data/quoteGuesses';
+import { PLACE_GUESSES } from '../../data/placeGuesses';
 import { MISSIONS } from '../../data/missions';
 import { colors, type } from '../../lib/theme';
 
@@ -124,6 +128,8 @@ export default function CardGallery() {
           id: 'gallery-interruption', type: 'body_aware_interruption',
           text: 'Notice where your shoulders are.',
         });
+        one.push({ ...QUOTE_GUESSES[0], id: 'gallery-quote', type: 'quote_guess' });
+        one.push({ ...PLACE_GUESSES[0], id: 'gallery-place', type: 'place_guess' });
 
         // PROTOTYPE — a guess card built from the video pool, for design
         // review only. The three frames below were eyeballed on 2026-09-01;
@@ -185,6 +191,10 @@ export default function CardGallery() {
         return <LookCloserCard content={item as any} />;
       case 'before_you_watch':
         return <BeforeYouWatchCard content={item as any} />;
+      case 'quote_guess':
+        return <ShareableCard shareName="gallery"><QuoteGuessCard content={item as any} /></ShareableCard>;
+      case 'place_guess':
+        return <ShareableCard shareName="gallery"><PlaceGuessCard content={item as any} /></ShareableCard>;
       case 'illusion':
         return <IllusionCard content={item as any} />;
       case 'game':
