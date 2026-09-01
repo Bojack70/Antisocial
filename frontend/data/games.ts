@@ -72,4 +72,20 @@ export const GAMES: GameDefinition[] = [
     statKey: 'bricks_best_score',
     statLabel: (value) => `Best score ${value}`,
   },
+  {
+    id: 'hands',
+    route: '/hands',
+    label: 'Game',
+    icon: 'hand-left-outline',
+    color: '#7E93A8',
+    title: 'Left vs Right',
+    description:
+      'A paddle for each thumb, one ball each, both live at once. Each hand keeps its own score, and one of them is worse.',
+    cta: 'Settle it',
+    arcDescription:
+      'One round, both thumbs. It ends when each hand has dropped its ball, and the scoreline names the weaker one.',
+    arcCta: 'Settle it',
+    statKey: 'hands_best_combined',
+    statLabel: (value) => `Best combined ${value}`,
+  },
 ];

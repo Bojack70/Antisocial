@@ -1,6 +1,6 @@
 # Game spec: Left vs Right
 
-**Status:** specced 2026-09-01, not built. Build this.
+**Status:** BUILT 2026-09-01 — `frontend/app/hands/index.tsx` + `frontend/lib/leftright.ts`, registered in `frontend/data/games.ts` as `hands`. Multitouch still needs a real-device test (see Verification caveat).
 
 A new game for the Antisocial Game Room: **left hand against right hand**, real-time, both
 thumbs working at the same time.
