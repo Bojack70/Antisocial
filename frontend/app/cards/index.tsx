@@ -23,6 +23,7 @@ import MissionCard from '../../components/MissionCard';
 import WeekRecapCard from '../../components/WeekRecapCard';
 import SessionChrome from '../../components/SessionChrome';
 import BodyAwareInterruption from '../../components/BodyAwareInterruption';
+import BeforeYouWatchCard from '../../components/BeforeYouWatchCard';
 import { DeckAdvanceContext } from '../../components/DeckContext';
 import { GAMES } from '../../data/games';
 import { WRITING_PROMPTS } from '../../data/writingPrompts';
@@ -30,6 +31,38 @@ import { MISSIONS } from '../../data/missions';
 import { colors, type } from '../../lib/theme';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+
+// PROTOTYPE DATA — three hand-verified examples for the Before You Watch
+// card. Frames are `hq2.jpg` (a still from the middle of the clip), never
+// `thumbnail_url`: YouTube thumbnails have the title painted across them.
+// Decoys are real titles from other videos in the corpus, so nobody has to
+// write plausible wrong answers.
+const BEFORE_YOU_WATCH_SAMPLES = [
+  {
+    id: '8hgEorF0vyY',
+    frame_url: 'https://i.ytimg.com/vi/8hgEorF0vyY/hq2.jpg',
+    answer: 'How exactly do inhalers work?',
+    decoys: ['What Do We Really Breathe In?', 'What the Flu Does to Your Body'],
+    channel_title: 'TED-Ed',
+    duration: 280,
+  },
+  {
+    id: 'Fv1JJ227CQk',
+    frame_url: 'https://i.ytimg.com/vi/Fv1JJ227CQk/hq2.jpg',
+    answer: 'Do Photons Cast Shadows?',
+    decoys: ['Some Galaxies Move Faster Than the Speed of Light', 'How To Make MUONS'],
+    channel_title: 'minutephysics',
+    duration: 191,
+  },
+  {
+    id: 'HQjjkRTqTeg',
+    frame_url: 'https://i.ytimg.com/vi/HQjjkRTqTeg/hq2.jpg',
+    answer: 'Does Processed and Red Meat Really Cause Cancer?',
+    decoys: ['The Deadliest Thing in Your Kitchen', 'How Stress Changes Your Brain'],
+    channel_title: 'sciBRIGHT',
+    duration: 286,
+  },
+];
 
 // A testing door, sibling of /reset: one page per card type, in the same
 // vertical deck the feed uses, so every layout can be judged on a real
@@ -90,6 +123,14 @@ export default function CardGallery() {
           id: 'gallery-interruption', type: 'body_aware_interruption',
           text: 'Notice where your shoulders are.',
         });
+
+        // PROTOTYPE — a guess card built from the video pool, for design
+        // review only. The three frames below were eyeballed on 2026-09-01;
+        // every one is a storyboard frame (hq2.jpg) rather than a thumbnail,
+        // because thumbnails carry the title as burned-in artwork.
+        for (const p of BEFORE_YOU_WATCH_SAMPLES) {
+          one.push({ ...p, id: `gallery-byw-${p.id}`, type: 'before_you_watch' });
+        }
         one.push({
           id: 'gallery-guestbook', type: 'guestbook',
           items: slate.slice(0, 5).map((i, n) => ({
@@ -141,6 +182,8 @@ export default function CardGallery() {
         return <TryThisCard content={item as any} />;
       case 'look_closer':
         return <LookCloserCard content={item as any} />;
+      case 'before_you_watch':
+        return <BeforeYouWatchCard content={item as any} />;
       case 'game':
         return <GameCard game={item.game} anchor />;
       case 'notebook':
