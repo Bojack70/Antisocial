@@ -22,6 +22,7 @@ import LookCloserCard from '../../components/LookCloserCard';
 import MissionCard from '../../components/MissionCard';
 import WeekRecapCard from '../../components/WeekRecapCard';
 import SessionChrome from '../../components/SessionChrome';
+import BodyAwareInterruption from '../../components/BodyAwareInterruption';
 import { DeckAdvanceContext } from '../../components/DeckContext';
 import { GAMES } from '../../data/games';
 import { WRITING_PROMPTS } from '../../data/writingPrompts';
@@ -152,12 +153,8 @@ export default function CardGallery() {
         return (
           <ShareableCard shareName="gallery"><WeekRecapCard recap={item.recap} /></ShareableCard>
         );
-      case 'body_aware_interruption':
-        return (
-          <View style={styles.interruptionContainer}>
-            <Text style={styles.interruptionText}>{item.text}</Text>
-          </View>
-        );
+      // 'body_aware_interruption' is not a card — the gallery renders it as
+      // a whole page below, the same way the feed does.
       default:
         return null;
     }
@@ -196,8 +193,15 @@ export default function CardGallery() {
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
         onLayout={(e) => setDeckHeight(e.nativeEvent.layout.height)}
-        onMomentumScrollEnd={(e) => {
-          if (deckHeight) setPage(Math.round(e.nativeEvent.contentOffset.y / deckHeight));
+        // onScroll, not onMomentumScrollEnd — see the note on the feed's
+        // handlePageSettle: react-native-web never fires momentum-end, and
+        // the epsilon keeps mid-flick ticks from counting as a landing.
+        onScroll={(e) => {
+          if (!deckHeight) return;
+          const y = e.nativeEvent.contentOffset.y;
+          const i = Math.round(y / deckHeight);
+          if (Math.abs(y - i * deckHeight) > 2) return;
+          setPage(i);
         }}
         style={styles.pager}
         contentContainerStyle={styles.pagerContent}
@@ -205,17 +209,31 @@ export default function CardGallery() {
         {deckHeight > 0 && items.map((item, i) => (
           <View key={item.id} style={{ width: '100%', height: deckHeight }}>
             <DeckAdvanceContext.Provider value={() => {}}>
-              <ScrollView
-                contentContainerStyle={styles.pageInner}
-                showsVerticalScrollIndicator={false}
-              >
-                {/* The caption is the gallery's one departure from the real
-                    feed: which type this page shows, and where you are. */}
-                <Text style={styles.caption}>
-                  {i + 1} of {items.length} · {item.type}
-                </Text>
-                {renderCard(item)}
-              </ScrollView>
+              {/* The full-bleed page can't take the caption inline without
+                  losing the bleed, so here alone the caption floats over it.
+                  The gallery doesn't lock the deck — it is a review surface,
+                  not a session — but the beat still plays so the timing can
+                  be judged. */}
+              {item.type === 'body_aware_interruption' ? (
+                <View style={styles.fullPage}>
+                  <BodyAwareInterruption text={item.text} active={page === i} />
+                  <Text style={[styles.caption, styles.captionOverlay]}>
+                    {i + 1} of {items.length} · {item.type}
+                  </Text>
+                </View>
+              ) : (
+                <ScrollView
+                  contentContainerStyle={styles.pageInner}
+                  showsVerticalScrollIndicator={false}
+                >
+                  {/* The caption is the gallery's one departure from the real
+                      feed: which type this page shows, and where you are. */}
+                  <Text style={styles.caption}>
+                    {i + 1} of {items.length} · {item.type}
+                  </Text>
+                  {renderCard(item)}
+                </ScrollView>
+              )}
             </DeckAdvanceContext.Provider>
           </View>
         ))}
@@ -258,17 +276,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 8,
   },
-  interruptionContainer: {
-    paddingVertical: 44,
-    alignItems: 'center',
-    justifyContent: 'center',
+  fullPage: {
+    flex: 1,
   },
-  interruptionText: {
-    fontSize: 16,
-    color: colors.muted,
-    fontStyle: 'italic',
-    textAlign: 'center',
-    paddingHorizontal: 24,
-    lineHeight: 24,
+  captionOverlay: {
+    position: 'absolute',
+    top: 4,
+    left: 0,
+    right: 0,
   },
 });

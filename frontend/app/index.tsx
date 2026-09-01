@@ -54,6 +54,7 @@ import { isOnboardingComplete } from '../lib/onboarding';
 import { recordSession, recordLeftEarly, dueRecap, markRecapShown } from '../lib/weekLedger';
 import WeekRecapCard from '../components/WeekRecapCard';
 import SessionChrome from '../components/SessionChrome';
+import BodyAwareInterruption from '../components/BodyAwareInterruption';
 import { DeckAdvanceContext } from '../components/DeckContext';
 import { sessionsUsedToday, MAX_SESSIONS_PER_DAY } from '../lib/quota';
 
@@ -168,6 +169,16 @@ export default function Index() {
   const [sessionNumber, setSessionNumber] = useState(1);
   const [minutesToday, setMinutesToday] = useState(0);
   const pagerRef = useRef<ScrollView>(null);
+
+  // The held beat. Landing on a body-aware page locks the deck for as long
+  // as the page's hairline takes to fill; the page itself calls the unlock.
+  // Every other card in the session can be swiped past in half a second,
+  // which is exactly why the one card asking you to notice your body has to
+  // be the one that doesn't move.
+  const [holding, setHolding] = useState(false);
+  useEffect(() => {
+    setHolding(feed[page]?.type === 'body_aware_interruption');
+  }, [page, feed]);
 
   // The chrome's numbers come from the same stores the quota already uses,
   // so the header can't drift from what the app actually enforces.
@@ -506,12 +517,9 @@ export default function Index() {
         );
       case 'video':
         return <VideoCard key={item.id} content={item as any} />;
-      case 'body_aware_interruption':
-        return (
-          <View key={item.id} style={styles.interruptionContainer}>
-            <Text style={styles.interruptionText}>{item.text}</Text>
-          </View>
-        );
+      // 'body_aware_interruption' is deliberately absent: it is not a card,
+      // so it is rendered by the page itself (see the pager below) rather
+      // than through here.
       default:
         return null;
     }
@@ -523,15 +531,32 @@ export default function Index() {
   const pageCount = feed.length + 1;
 
   const goToPage = (i: number) => {
+    // The lock has to cover the programmatic paths too, or the chrome's
+    // arrows and any card's advance() would walk straight through the beat.
+    if (holding) return;
     const next = Math.max(0, Math.min(i, pageCount - 1));
     pagerRef.current?.scrollTo({ y: next * deckHeight, animated: true });
     setPage(next);
     if (next >= pageCount - 1 && !sessionCompleted) setSessionCompleted(true);
   };
 
+  // Which page the deck has landed on.
+  //
+  // This runs off onScroll, not onMomentumScrollEnd, because react-native-web
+  // never fires onMomentumScrollEnd at all — its ScrollView emits onScroll for
+  // every tick AND once more ~100ms after scrolling stops, and nothing else
+  // (react-native-web/dist/exports/ScrollView/ScrollViewBase.js). Wired to
+  // momentum-end alone, `page` never moved off 0 in the browser.
+  //
+  // The epsilon is what makes onScroll safe to use: mid-flick ticks would
+  // otherwise report the next page while the deck is still travelling, and
+  // anything keyed off `page` — the held beat below — would fire mid-slide.
+  // Paging snaps to exact multiples, so "settled" is "on a boundary".
   const handlePageSettle = (event: any) => {
     if (!deckHeight) return;
-    const i = Math.round(event.nativeEvent.contentOffset.y / deckHeight);
+    const y = event.nativeEvent.contentOffset.y;
+    const i = Math.round(y / deckHeight);
+    if (Math.abs(y - i * deckHeight) > 2) return;
     if (i !== page) setPage(i);
     if (i >= pageCount - 1 && !sessionCompleted) setSessionCompleted(true);
   };
@@ -612,7 +637,9 @@ export default function Index() {
           <ScrollView
             ref={pagerRef}
             pagingEnabled
+            scrollEnabled={!holding}
             showsVerticalScrollIndicator={false}
+            onScroll={handlePageSettle}
             onMomentumScrollEnd={handlePageSettle}
             scrollEventThrottle={16}
             style={styles.pager}
@@ -628,12 +655,24 @@ export default function Index() {
               // move the deck on without prop-drilling through every card.
               <View key={item.id} style={{ width: '100%', height: deckHeight }}>
                 <DeckAdvanceContext.Provider value={() => goToPage(i + 1)}>
-                  <ScrollView
-                    contentContainerStyle={styles.pageInner}
-                    showsVerticalScrollIndicator={false}
-                  >
-                    {renderContentCard(item, false)}
-                  </ScrollView>
+                  {/* The body-aware page is the one exception to "a card,
+                      top-anchored, in the page's padding": it takes the
+                      whole page, edge to edge, with no card and no padding
+                      of its own. */}
+                  {item.type === 'body_aware_interruption' ? (
+                    <BodyAwareInterruption
+                      text={item.text}
+                      active={page === i}
+                      onHoldEnd={() => setHolding(false)}
+                    />
+                  ) : (
+                    <ScrollView
+                      contentContainerStyle={styles.pageInner}
+                      showsVerticalScrollIndicator={false}
+                    >
+                      {renderContentCard(item, false)}
+                    </ScrollView>
+                  )}
                 </DeckAdvanceContext.Provider>
               </View>
             ))}
@@ -759,19 +798,6 @@ const styles = StyleSheet.create({
     ...type.micro,
     marginTop: 8,
     textAlign: 'center',
-  },
-  interruptionContainer: {
-    paddingVertical: 44,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  interruptionText: {
-    fontSize: 16,
-    color: colors.muted,
-    fontStyle: 'italic',
-    textAlign: 'center',
-    paddingHorizontal: 24,
-    lineHeight: 24,
   },
   endSessionCard: {
     ...cards.white,

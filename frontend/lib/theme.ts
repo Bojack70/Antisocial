@@ -42,6 +42,10 @@ export const colors = {
   clayDeep: '#A8664C',
   sage: '#8BA087',
   sageDeep: '#6E8269',
+  // The one sage dark enough to carry 10px type ON the mint surface —
+  // sageDeep lands at 3.4:1 against it, which fails for label-sized text.
+  // Used by the body-aware page, the only screen that is mint edge to edge.
+  sageInk: '#4F6149',
   ochre: '#D9AD6A',
 } as const;
 
