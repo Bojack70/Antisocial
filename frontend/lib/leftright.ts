@@ -16,6 +16,14 @@ export const SPEED_RAMP = 1.045;
 export const startSpeed = (h: number) => Math.max(0.24, h * 0.0009);
 export const maxSpeed = (h: number) => h * 0.0019;
 
+// Sudden death: once one hand is out, the survivor's lane ramps harder per
+// catch AND creeps faster every frame, up to a higher cap — playing alone
+// is a countdown, not a victory lap. A perfect tracker would otherwise
+// coast forever (the Node sim ran a steady thumb 60s+ solo).
+export const SOLO_RAMP = 1.09;
+export const SOLO_CREEP = 0.00003; // per ms, compounding
+export const soloMaxSpeed = (h: number) => h * 0.0024;
+
 export interface LaneBall {
   x: number;
   y: number;

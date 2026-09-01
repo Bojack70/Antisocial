@@ -21,18 +21,23 @@ import {
   launchVelocity,
   startSpeed,
   maxSpeed,
+  soloMaxSpeed,
   SPEED_RAMP,
+  SOLO_RAMP,
+  SOLO_CREEP,
   LaneBall,
   BALL_R,
   PADDLE_H,
   PADDLE_BOTTOM,
 } from '../../lib/leftright';
+import { HANDS_FACTS } from '../../data/handsFacts';
 
 const DIVIDER_W = 1;
 
 type Phase = 'ready' | 'playing' | 'over';
 type Side = 'left' | 'right';
 const SIDES: Side[] = ['left', 'right'];
+const other = (s: Side): Side => (s === 'left' ? 'right' : 'left');
 
 interface SideState {
   ball: LaneBall;
@@ -61,6 +66,14 @@ export default function LeftVsRight() {
   const [scores, setScores] = useState({ left: 0, right: 0 });
   const [outs, setOuts] = useState({ left: false, right: false });
   const [best, setBest] = useState(0);
+  // Lifetime rounds won per HAND (not per lane), so the verdict accumulates
+  // across sessions into a standing tally. Draws change nothing.
+  const [wins, setWins] = useState({ left: 0, right: 0 });
+  const [fact, setFact] = useState<string | null>(null);
+  // Crossed mode: the left thumb drives the RIGHT paddle and vice versa.
+  // Lanes and physics don't move — only the touch→paddle mapping and which
+  // hand gets credit for which lane's score.
+  const [crossed, setCrossed] = useState(false);
 
   // Everything the loop and the input handlers touch lives in refs: the
   // loop runs at 60fps, and the PanResponder keeps its first render's
@@ -71,6 +84,8 @@ export default function LeftVsRight() {
   const paddleWRef = useRef(0);
   const phaseRef = useRef<Phase>('ready');
   const bestRef = useRef(0);
+  const winsRef = useRef({ left: 0, right: 0 });
+  const crossedRef = useRef(false);
   const boardPageX = useRef(0);
   const frame = useRef<number | null>(null);
   const lastTs = useRef<number | null>(null);
@@ -101,6 +116,18 @@ export default function LeftVsRight() {
         bestRef.current = parsed;
         setBest(parsed);
       }
+    });
+    AsyncStorage.getItem('hands_round_wins').then((v) => {
+      if (!v) return;
+      try {
+        const parsed = JSON.parse(v);
+        const tally = {
+          left: parseInt(parsed.left, 10) || 0,
+          right: parseInt(parsed.right, 10) || 0,
+        };
+        winsRef.current = tally;
+        setWins(tally);
+      } catch {}
     });
   }, []);
 
@@ -170,15 +197,22 @@ export default function LeftVsRight() {
     }
   };
 
+  // A touch steers FROM the half it lives in; in crossed mode it drives the
+  // opposite half's paddle, mapped to the same relative position.
+  const steerFrom = (touchSide: Side, boardX: number) => {
+    const controlSide = crossedRef.current ? other(touchSide) : touchSide;
+    movePaddle(controlSide, boardX - laneLeft(touchSide));
+  };
+
   // Bind by which half the touch FIRST landed in; hold until release. A
   // thumb that drifts across the centreline keeps its own paddle.
   const bindAndMove = (key: string, boardX: number) => {
-    let side = bindings.current.get(key);
-    if (!side) {
-      side = boardX < sizeRef.current.w / 2 ? 'left' : 'right';
-      bindings.current.set(key, side);
+    let touchSide = bindings.current.get(key);
+    if (!touchSide) {
+      touchSide = boardX < sizeRef.current.w / 2 ? 'left' : 'right';
+      bindings.current.set(key, touchSide);
     }
-    movePaddle(side, boardX - laneLeft(side));
+    steerFrom(touchSide, boardX);
   };
 
   const handleNativeTouches = (e: any) => {
@@ -231,13 +265,11 @@ export default function LeftVsRight() {
       const key = `p${e.pointerId}`;
       if (bindings.current.has(key)) {
         // Bound finger (or held mouse): its own paddle, wherever it drifts.
-        const side = bindings.current.get(key)!;
-        movePaddle(side, localX(e.clientX) - laneLeft(side));
+        steerFrom(bindings.current.get(key)!, localX(e.clientX));
       } else if (e.pointerType === 'mouse') {
         // Passive mouse steering for desktop: whichever half it hovers.
         const x = localX(e.clientX);
-        const side: Side = x < sizeRef.current.w / 2 ? 'left' : 'right';
-        movePaddle(side, x - laneLeft(side));
+        steerFrom(x < sizeRef.current.w / 2 ? 'left' : 'right', x);
       }
     };
     const onUp = (e: any) => {
@@ -300,10 +332,18 @@ export default function LeftVsRight() {
       const dt = Math.min(32, ts - prev);
       let scored = false;
       let dropped: Side | null = null;
+      // Sudden death: exactly one hand still in means the survivor's lane
+      // ramps harder and creeps faster every frame — a countdown, not a
+      // victory lap.
+      const solo = sides.current.left.alive !== sides.current.right.alive;
 
       for (const side of SIDES) {
         const s = sides.current[side];
         if (!s.alive) continue;
+
+        if (solo) {
+          s.speed = Math.min(s.speed * (1 + SOLO_CREEP * dt), soloMaxSpeed(h));
+        }
 
         const { bounced, lost } = advanceLane(
           s.ball,
@@ -313,7 +353,10 @@ export default function LeftVsRight() {
 
         if (bounced) {
           s.score += 1;
-          s.speed = Math.min(s.speed * SPEED_RAMP, maxSpeed(h));
+          s.speed = Math.min(
+            s.speed * (solo ? SOLO_RAMP : SPEED_RAMP),
+            solo ? soloMaxSpeed(h) : maxSpeed(h)
+          );
           scored = true;
         }
 
@@ -344,6 +387,19 @@ export default function LeftVsRight() {
             setBest(combined);
             AsyncStorage.setItem('hands_best_combined', String(combined));
           }
+          // Credit the HAND, not the lane: in crossed mode the left lane's
+          // score was earned by the right thumb.
+          const laneL = sides.current.left.score;
+          const laneR = sides.current.right.score;
+          const hand = { left: crossedRef.current ? laneR : laneL, right: crossedRef.current ? laneL : laneR };
+          if (hand.left !== hand.right) {
+            const winner: Side = hand.left > hand.right ? 'left' : 'right';
+            const tally = { ...winsRef.current, [winner]: winsRef.current[winner] + 1 };
+            winsRef.current = tally;
+            setWins(tally);
+            AsyncStorage.setItem('hands_round_wins', JSON.stringify(tally));
+          }
+          setFact(HANDS_FACTS[Math.floor(Math.random() * HANDS_FACTS.length)]);
         }
       }
     };
@@ -366,14 +422,41 @@ export default function LeftVsRight() {
     bindings.current.clear();
     setScores({ left: 0, right: 0 });
     setOuts({ left: false, right: false });
+    setFact(null);
     resetBalls();
   };
 
+  const restartCrossed = () => {
+    crossedRef.current = !crossedRef.current;
+    setCrossed(crossedRef.current);
+    restart();
+  };
+
+  // Everything below reports by HAND: in crossed mode the lane scores swap
+  // owners before anyone is judged.
+  const handScores = crossed
+    ? { left: scores.right, right: scores.left }
+    : { left: scores.left, right: scores.right };
+
   const verdict = () => {
-    const { left, right } = scores;
-    if (left > right) return 'The left hand takes it.';
-    if (right > left) return 'The right hand takes it.';
-    return 'A draw.';
+    const { left, right } = handScores;
+    if (left === right) return 'A draw.';
+    const winner = left > right ? 'left' : 'right';
+    const margin = Math.abs(left - right);
+    const base = `The ${winner} hand takes it.`;
+    if (margin >= 10) return `${base} It wasn’t close.`;
+    if (margin === 1) return `${base} By one.`;
+    return base;
+  };
+
+  const tallyLine = () => {
+    const { left, right } = wins;
+    if (left === 0 && right === 0) return null;
+    if (left === right) return `Level, ${left} round${left === 1 ? '' : 's'} each.`;
+    const leader = left > right ? 'Left' : 'Right';
+    const hi = Math.max(left, right);
+    const lo = Math.min(left, right);
+    return `${leader} leads, ${hi} round${hi === 1 ? '' : 's'} to ${lo}.`;
   };
 
   return (
@@ -386,7 +469,7 @@ export default function LeftVsRight() {
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>Left vs Right</Text>
-          <Text style={styles.headerSubtitle}>One ball each</Text>
+          <Text style={styles.headerSubtitle}>{crossed ? 'Hands crossed' : 'One ball each'}</Text>
         </View>
         <View style={styles.scorePill}>
           <Text style={styles.scoreText}>Best {best}</Text>
@@ -408,7 +491,9 @@ export default function LeftVsRight() {
               style={[styles.laneScoreBlock, { left: laneLeft(side), width: laneW }]}
               pointerEvents="none"
             >
-              <Text style={styles.laneLabel}>{side}</Text>
+              {/* The label names the HAND driving this lane, so the
+                  scoreboard follows the hands into crossed mode. */}
+              <Text style={styles.laneLabel}>{crossed ? other(side) : side}</Text>
               <Text style={styles.laneScore}>{scores[side]}</Text>
             </View>
           ))}
@@ -463,8 +548,10 @@ export default function LeftVsRight() {
         {phase === 'over' && (
           <View style={styles.panel}>
             <Text style={styles.panelTitle}>{verdict()}</Text>
+            {fact && <Text style={styles.panelFact}>{fact}</Text>}
             <Text style={styles.panelStats}>
-              Left {scores.left} · Right {scores.right}
+              Left {handScores.left} · Right {handScores.right}
+              {tallyLine() ? `\n${tallyLine()}` : ''}
             </Text>
             <TouchableOpacity
               style={styles.primaryButton}
@@ -482,6 +569,11 @@ export default function LeftVsRight() {
             >
               <Text style={styles.ghostButtonText}>
                 {anchorMode ? 'Run it back' : 'Back to the game room'}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.ghostButton} onPress={restartCrossed} activeOpacity={0.7}>
+              <Text style={styles.ghostButtonText}>
+                {crossed ? 'Again, hands uncrossed' : 'Again, hands crossed'}
               </Text>
             </TouchableOpacity>
           </View>
@@ -630,10 +722,16 @@ const styles = StyleSheet.create({
     ...type.title,
     textAlign: 'center',
   },
+  panelFact: {
+    ...type.body,
+    textAlign: 'center',
+    marginTop: 10,
+  },
   panelStats: {
     ...type.micro,
     textAlign: 'center',
     marginTop: 8,
+    lineHeight: 16,
   },
   primaryButton: {
     alignItems: 'center',
