@@ -4,7 +4,10 @@
 
 **Status: item 1 SHIPPED 2026-08-28** (commits 9105c3a, f5a4734, 5d585d8, 53f59b8 —
 incident progressive reveal, fast_weird guess-before-reveal + 19 authored guesses,
-guesses counter in the week ledger; verified headless 15/15). **Items 2–7 not built.**
+guesses counter in the week ledger; verified headless 15/15). **Items 1, 2, 3, 4 and 7
+shipped 2026-08-28; only 5b and 6 remain — see the working order below.** (This line
+previously read "Items 2–7 not built", contradicting the working-order paragraph in the
+same file; corrected 2026-09-01 after a code audit.)
 Prod backfill DONE 2026-08-28 (user-reviewed; applied via a temporary admin route since
 prod MONGO_URL is a Vercel sensitive env var — verified 19/48 via the public API, route
 removed in 6a7fc46). Note: card ids are NOT stable across local/Atlas — the backfill is
@@ -29,7 +32,9 @@ Half right — keep the kernel, drop the literal form:
 - Full type coverage makes every session structurally identical (boring by day 3).
 - It **burns the scarce pools**: almost_nothing (16) and quiet_contradiction (16) forced
   into every session cuts the ~8 repeat-free days toward 5–6. The seen-ledger doesn't
-  manufacture content.
+  manufacture content. (**Measured 2026-09-01:** first repeat was day 9 median; after the
+  adaptive-ratio and anchor-depth fixes it is **day 14**. The argument stands — forcing
+  full type coverage would spend that gain immediately.)
 - Type presence ≠ dwell; an audio card can be swiped past in 2s.
 
 Reshaped rule: **every session guarantees 2–3 high-dwell ANCHORS** — one playable
@@ -104,6 +109,7 @@ still measure cleanly.
 3. **"Look closer" photo-guess card** — one striking public-domain photograph,
    "What is this?" with three options before any caption, then the reveal + 1-2 fact
    lines + credit. Content: 12-15 curated PD/CC0 images (NASA / LoC / Wikimedia PD),
+   — **shipped as 10, all NASA**; see "Widen the look_closer image wells" under Parked,
    every URL and license click-verified; hotlinked with attribution and a graceful
    image-failure fallback rather than bundled. Backend `look_closer_content`
    (ratio 1-2). Reuses the guess interaction and the existing `guesses` counter, and
@@ -122,6 +128,47 @@ provocative writing prompts; horizontal tap-pagination noted below for item 6's
 exhibits; authored post-choice counterpoints as a possible ponder variant.
 
 ### Parked (raised, deliberately not scheduled)
+
+- **"Before You Watch" — a guess card built from the video pool** (parked 2026-09-01 at
+  user request; **prototype already built and viewable**).
+  - *Where to see it:* `/cards` gallery, pages 17–19. `frontend/components/BeforeYouWatchCard.tsx`,
+    sample data in `frontend/app/cards/index.tsx` (`BEFORE_YOU_WATCH_SAMPLES`). Gallery
+    only — nothing touches the feed, no backend, no new collection. Commit `4e5b603`.
+  - *The premise:* `look_closer` is the thinnest pool (10 items, every one NASA space
+    imagery) and `video` is the deepest (296, ~54% of the corpus at ~13% of the slate).
+    One frame from inside a clip + three real video titles + reveal + "Watch it · 4:40"
+    turns the surplus into the scarce thing with zero new content sourcing or licensing.
+  - *The rule that makes or breaks it:* the picture MUST be a storyboard frame
+    (`i.ytimg.com/vi/<id>/hq2.jpg`), never `thumbnail_url`. YouTube thumbnails are
+    clickbait with the title painted across the artwork — "Do Photons Cast Shadows?" is
+    literally written on its own thumbnail. That is the same trap
+    `populate_look_closer.py` rule 2 already refuses. Frames are raw and undesigned.
+  - *Known ceiling:* frame quality splits by format. Long-form 16:9 (TED-Ed,
+    minutephysics, sciBRIGHT) gives clean intriguing stills; vertical shorts letterboxed
+    into 16:9 (Physics Girl — **94 of 296** — and Kurzgesagt shorts) give blurred
+    pillarbox bars, talking heads and burned-in subtitles. Duration is a usable proxy
+    (~shorts ≤90s vs long-form 160–300s) but every frame still needs eyeballing, as the
+    NASA batch did. Realistic yield **~60–150 cards, not 296** — still 6–15× the current
+    `look_closer` pool.
+  - *Open design questions, deliberately not decided:* (a) new card type, or just
+    `look_closer` items carrying a `video_url` — the latter needs no new type, ratio or
+    anchor class; (b) does the watch button belong on this card, or is it a doorway to
+    the existing `video` card; (c) decoy difficulty — same-channel decoys are harder and
+    more interesting than random ones.
+
+- **Widen the `look_closer` image wells** (raised 2026-09-01). The type is thin *and*
+  monotone — all 10 items are NASA. Licence pass done that day, verified by opening the
+  actual terms pages: **Smithsonian Open Access** = CC0 with explicit commercial use,
+  5.1M items, but only items *marked* CC0 (the rest are non-commercial only) and the CC0
+  mark covers copyright only, not third-party trademark/publicity rights; **The Met** =
+  CC0 on the *dataset/metadata*, images need a per-item CC0 check; **Wellcome
+  Collection** = CC BY 4.0 site default, attribution required (the card already has a
+  `credit` field), per-item licences vary. **Not checked, do not assume:** Rijksmuseum,
+  CDC PHIL, NOAA Photo Library, USGS, Library of Congress. Smithsonian is the obvious
+  first well — 21 museums and a zoo means specimens, instruments, machinery, the range
+  space photography can't give — and its CC0 flag is queryable via API, so the populate
+  script can filter programmatically rather than by eye.
+
 - **Paged feed** (one card at a time, tap/swipe to advance, no scroll) — the deepest
   structural fix for skimming, but touches the core feed UI; revisit if 1–4 underdeliver.
 - ~~Ponder cards accept a typed one-line answer~~ — un-parked into Wave 2 item 1
@@ -149,5 +196,15 @@ exhibits; authored post-choice counterpoints as a possible ponder variant.
   stays ahead of `fetchFeed()`.
 - Slate composition changes live in `backend/server.py` (`sample_unseen` /
   `sample_videos`); pools top up with seen items when dry — keep that behavior.
+  **Updated 2026-09-01:** top-ups now go through `sample_stalest`, which prefers the
+  cards seen longest ago *ranked within the collection* — ranking across the whole
+  ledger reads as equivalent and is not (measured: mean position 117/249, a coin flip,
+  vs 76 when ranked per-collection). Repeats are flagged centrally in `build_feed`
+  against the seen set, and the client marks them "Seen before". Draw rates are no
+  longer the fixed `FEED_RATIOS`: `adaptive_ratios` bends them by remaining depth
+  (clamped 0.5–1.75×, stochastic rounding — plain `round()` quantises the correction
+  away exactly at the thin types it exists to protect). Both anchors pick by depth
+  weight, not first-match. Don't revert any of this to "simplify"; it is what moved
+  first-repeat from day 9 to day 14 (measured A/B against the live DB).
 - All copy in the deadpan museum-keeper voice: irony by understatement only, no
   exclamation marks, departure treated as success.
