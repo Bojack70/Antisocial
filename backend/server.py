@@ -11,6 +11,7 @@ import uuid
 from datetime import datetime
 from openai import AsyncOpenAI
 import json
+import math
 import random
 
 ROOT_DIR = Path(__file__).parent
@@ -629,13 +630,82 @@ FEED_RATIOS = {
     "look_closer": 2,
 }
 
+# How far a type's draw rate may move from its editorial ratio. The ratios
+# above are a taste decision — how often each kind of card SHOULD appear — and
+# depth must bend them, not replace them. Unbounded, a purely depth-driven
+# feed would be 54% video, because video is 54% of the corpus.
+RATIO_FLOOR, RATIO_CEILING = 0.5, 1.75
+
+
+async def unseen_depths(db, seen):
+    """How many items of each type this visitor has never been shown."""
+    depths = {}
+    for content_type in FEED_RATIOS:
+        query = {"id": {"$nin": seen}} if seen else {}
+        depths[content_type] = await db[f"{content_type}_content"].count_documents(query)
+    return depths
+
+
+def adaptive_ratios(depths):
+    """
+    Bend the editorial ratios toward whatever the visitor has left.
+
+    The pools and the draw rates were set by different logic and never
+    reconciled: FEED_RATIOS says how often a type should appear, pool size
+    says how much of it was feasible to make. Divide one by the other and the
+    days of supply run from ~8 (look_closer, 10 items drawn at 2/39) to ~185
+    (video, 296 items drawn at 3/39). A finite feed runs dry when its SHORTEST
+    column empties, so 185 days of video buys nothing while look_closer is the
+    thing that ends the museum.
+
+    So each type is scaled by how its supply compares to the median, clamped to
+    [0.5, 1.75] so the feed keeps its character. This does not manufacture
+    content — ten cards are still ten cards — but it stops the thinnest pool
+    being drained at the same rate as the deepest one, and hands the slack to
+    types that can absorb it.
+
+    Two details that look like fussiness and are not:
+
+    - **No damping.** An earlier version square-rooted the correction to be
+      gentle. Equalising supply IS the goal, and the sqrt pulled every
+      adjustment back toward 1 — the clamps already protect the feed's
+      character, so the damping only weakened the fix.
+    - **Stochastic rounding.** Ratios are small integers, so ordinary rounding
+      quantises the correction away exactly where it matters: look_closer
+      computed to 1.61 and rounded back to 2, i.e. no change at all for the
+      type the whole function exists to protect. Drawing 2 cards 61% of the
+      time and 1 card 39% of the time delivers the intended rate across
+      sessions while keeping the slate small.
+    """
+    supply = {t: depths.get(t, 0) / r for t, r in FEED_RATIOS.items() if r}
+    live = sorted(v for v in supply.values() if v > 0)
+    if not live:
+        return dict(FEED_RATIOS)
+    median = live[len(live) // 2] or 1
+
+    adjusted = {}
+    for content_type, ratio in FEED_RATIOS.items():
+        depth = depths.get(content_type, 0)
+        if depth <= 0:
+            # Exhausted: keep it in the slate at a single card. Dropping it
+            # outright would silently delete a card type from the product.
+            adjusted[content_type] = 1
+            continue
+        scale = max(RATIO_FLOOR, min(RATIO_CEILING, supply[content_type] / median))
+        want = ratio * scale
+        floor = int(want)
+        drawn = floor + (1 if random.random() < (want - floor) else 0)
+        # Never let a type with content left fall out of the slate entirely.
+        adjusted[content_type] = max(1, min(drawn, depth))
+    return adjusted
+
 
 class FeedRequest(BaseModel):
     limit: int = 35
     seen: List[str] = Field(default_factory=list)
 
 
-def compose_session(feed, limit):
+def compose_session(feed, limit, depths=None):
     """
     Arrange the slate so the first `limit` cards — the ones the client will
     actually show — carry the session's anchors (spec item 4):
@@ -653,12 +723,41 @@ def compose_session(feed, limit):
     """
     limit = max(1, min(limit, len(feed)))
     pool = list(feed)
+    depths = depths or {}
 
     def take(pred):
         for i, item in enumerate(pool):
             if pred(item):
                 return pool.pop(i)
         return None
+
+    def take_by_depth(pred):
+        """
+        Same as take(), but when several types can fill the slot, the one with
+        the most left is likeliest to pay for it.
+
+        Both anchor slots are filled from a choice of types, and taking the
+        first match meant a coin flip decided which pool paid. That is how
+        look_closer (10 items) ended up drained at the same rate as mini_game
+        (28) for the guess slot, and audio_drift (23) at the same rate as video
+        (296) for the listen slot — always the thinnest pool that ends the
+        museum, so the anchors should lean on the deepest one.
+
+        Weighted rather than simply picking the deepest: with 296 videos against
+        23 audio pieces, always taking the max would hand video the listen slot
+        permanently and strip audio_drift of the back-third placement the slate
+        is composed to give it. Weighting still makes the deep pool pay for most
+        sessions, and a pool at zero has weight zero, which is the case that
+        actually matters.
+        """
+        candidates = [(i, item) for i, item in enumerate(pool) if pred(item)]
+        if not candidates:
+            return None
+        weights = [max(0, depths.get(item.get("type"), 0)) for _, item in candidates]
+        if sum(weights) <= 0:  # no depth information, or everything exhausted
+            weights = [1] * len(candidates)
+        index = random.choices([i for i, _ in candidates], weights=weights, k=1)[0]
+        return pool.pop(index)
 
     def is_listenable(item):
         return item.get("type") in ("audio_drift", "video")
@@ -669,8 +768,8 @@ def compose_session(feed, limit):
         )
 
     hook = take(lambda item: item.get("type") == "fast_weird" and not item.get("guess"))
-    guess_anchor = take(is_guess)
-    listen_anchor = take(is_listenable)
+    guess_anchor = take_by_depth(is_guess)
+    listen_anchor = take_by_depth(is_listenable)
 
     anchors = [a for a in (hook, guess_anchor, listen_anchor) if a]
     session = pool[: limit - len(anchors)]
@@ -694,7 +793,13 @@ async def build_feed(seen=None, limit=12):
     seen = seen or []
     feed = []
 
-    for content_type, count in FEED_RATIOS.items():
+    # What this visitor has left, per type. Drives both the draw rates and the
+    # anchor choices below, so the feed spends the deep pools and protects the
+    # shallow ones instead of treating all eleven as equally stocked.
+    depths = await unseen_depths(db, seen)
+    ratios = adaptive_ratios(depths)
+
+    for content_type, count in ratios.items():
         collection_name = f"{content_type}_content"
         if content_type == "video":
             items = await sample_videos(db, count, seen)
@@ -717,7 +822,7 @@ async def build_feed(seen=None, limit=12):
     # Shuffle feed to mix content types, then compose the visible prefix
     # so the session opens weird and carries its anchors (spec item 4).
     random.shuffle(feed)
-    feed = compose_session(feed, limit)
+    feed = compose_session(feed, limit, depths)
 
     # Clean MongoDB _id field
     for item in feed:
