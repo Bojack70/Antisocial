@@ -109,10 +109,12 @@ still measure cleanly.
 3. **"Look closer" photo-guess card** — one striking public-domain photograph,
    "What is this?" with three options before any caption, then the reveal + 1-2 fact
    lines + credit. Content: 12-15 curated PD/CC0 images (NASA / LoC / Wikimedia PD),
-   — **shipped as 10, all NASA**; see "Widen the look_closer image wells" under Parked,
    every URL and license click-verified; hotlinked with attribution and a graceful
    image-failure fallback rather than bundled. Backend `look_closer_content`
-   (ratio 1-2). Reuses the guess interaction and the existing `guesses` counter, and
+   (ratio 1-2). **Shipped as 10 images, all NASA — not the 12-15 across three sources
+   scoped here. That gap is now the app's binding content constraint; see "Widen the
+   look_closer image wells" under Parked.**
+   Reuses the guess interaction and the existing `guesses` counter, and
    joins `compose_session`'s interactive-guess anchor class.
 
 Prod DB sync for 2-3: DONE 2026-08-28 via the temp admin-route pattern (added
