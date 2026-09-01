@@ -24,6 +24,7 @@ import WeekRecapCard from '../../components/WeekRecapCard';
 import SessionChrome from '../../components/SessionChrome';
 import BodyAwareInterruption from '../../components/BodyAwareInterruption';
 import BeforeYouWatchCard from '../../components/BeforeYouWatchCard';
+import IllusionCard from '../../components/IllusionCard';
 import { DeckAdvanceContext } from '../../components/DeckContext';
 import { GAMES } from '../../data/games';
 import { WRITING_PROMPTS } from '../../data/writingPrompts';
@@ -37,6 +38,31 @@ const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 // `thumbnail_url`: YouTube thumbnails have the title painted across them.
 // Decoys are real titles from other videos in the corpus, so nobody has to
 // write plausible wrong answers.
+// PROTOTYPE DATA — three rendered illusions. No images, no licences, no
+// sourcing: the figures are geometry drawn by IllusionCard, and the "prove it"
+// tap is the reveal. Claims are written flat — the card is not allowed to
+// sound pleased with itself before it has earned it.
+const ILLUSION_SAMPLES = [
+  {
+    kind: 'muller_lyer' as const,
+    claim: 'These two lines are exactly the same length.',
+    explain:
+      'The fins are the whole trick. Outward fins read as a near corner, inward ones as a far corner — and your eye corrects for a distance that was never there.',
+  },
+  {
+    kind: 'ebbinghaus' as const,
+    claim: 'The two orange circles are the same size.',
+    explain:
+      'Size is judged against neighbours, never on its own. Surround a thing with small things and it grows.',
+  },
+  {
+    kind: 'cafe_wall' as const,
+    claim: 'Every row here is perfectly level.',
+    explain:
+      'A café at the bottom of St Michael’s Hill in Bristol had a wall tiled like this. In 1979 someone in Richard Gregory’s lab noticed the mortar lines sloping, and the illusion ended up named after the café. The half-tile offset does it; the tiles are square.',
+  },
+];
+
 const BEFORE_YOU_WATCH_SAMPLES = [
   {
     id: '8hgEorF0vyY',
@@ -131,6 +157,11 @@ export default function CardGallery() {
         for (const p of BEFORE_YOU_WATCH_SAMPLES) {
           one.push({ ...p, id: `gallery-byw-${p.id}`, type: 'before_you_watch' });
         }
+
+        // PROTOTYPE — rendered illusions, for design review only.
+        for (const p of ILLUSION_SAMPLES) {
+          one.push({ ...p, id: `gallery-illusion-${p.kind}`, type: 'illusion' });
+        }
         one.push({
           id: 'gallery-guestbook', type: 'guestbook',
           items: slate.slice(0, 5).map((i, n) => ({
@@ -184,6 +215,8 @@ export default function CardGallery() {
         return <LookCloserCard content={item as any} />;
       case 'before_you_watch':
         return <BeforeYouWatchCard content={item as any} />;
+      case 'illusion':
+        return <IllusionCard content={item as any} />;
       case 'game':
         return <GameCard game={item.game} anchor />;
       case 'notebook':
