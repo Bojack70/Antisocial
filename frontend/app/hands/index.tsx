@@ -454,7 +454,8 @@ export default function LeftVsRight() {
 
           {phase === 'ready' && (
             <View style={styles.hintOverlay} pointerEvents="none">
-              <Text style={styles.hintText}>A thumb on each side · tap to drop both balls</Text>
+              <Text style={styles.hintText}>A thumb on each side</Text>
+              <Text style={[styles.hintText, styles.hintSecondLine]}>Tap to drop both balls</Text>
             </View>
           )}
         </View>
@@ -610,6 +611,12 @@ const styles = StyleSheet.create({
   },
   hintText: {
     ...type.micro,
+    lineHeight: 16,
+    textAlign: 'center',
+    paddingHorizontal: 12,
+  },
+  hintSecondLine: {
+    marginTop: 6,
   },
   panel: {
     marginTop: 14,
