@@ -55,6 +55,7 @@ import { recordSession, recordLeftEarly, dueRecap, markRecapShown } from '../lib
 import WeekRecapCard from '../components/WeekRecapCard';
 import SessionChrome from '../components/SessionChrome';
 import BodyAwareInterruption from '../components/BodyAwareInterruption';
+import IllusionCard from '../components/IllusionCard';
 import { DeckAdvanceContext } from '../components/DeckContext';
 import { sessionsUsedToday, MAX_SESSIONS_PER_DAY } from '../lib/quota';
 
@@ -219,6 +220,7 @@ export default function Index() {
       case 'almost_nothing': return (item.text ?? '').trim().split('\n')[0] || null;
       case 'try_this': return item.title ?? null;
       case 'look_closer': return item.answer ?? null;
+      case 'illusion': return item.question ?? null;
       case 'quiet_contradiction': return item.statement1 ?? null;
       default: return null;
     }
@@ -515,6 +517,8 @@ export default function Index() {
         return <TryThisCard key={item.id} content={item as any} />;
       case 'look_closer':
         return <LookCloserCard key={item.id} content={item as any} />;
+      case 'illusion':
+        return <IllusionCard key={item.id} content={item as any} />;
       case 'notebook':
         return (
           <NotebookCard key={item.id} promptId={item.promptId} prompt={item.prompt} />

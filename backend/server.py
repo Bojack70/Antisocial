@@ -184,6 +184,31 @@ class LookCloserContent(BaseModel):
     tags: List[str] = []
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
+class IllusionContent(BaseModel):
+    # A guess card whose figure is drawn in code rather than sourced, so the
+    # pool grows on authoring effort alone — no licence, no image host, no
+    # click-verify. `kind` selects the renderer in IllusionCard.tsx; adding a
+    # new kind means shipping a renderer, not just a row.
+    # `delta` is how much the two shapes REALLY differ (0 = the classic,
+    # identical figure). Without a few non-zero deltas in the pool the answer
+    # is always "they're the same" and the guess stops being one.
+    # Counts as an interactive-guess anchor.
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    type: Literal["illusion"] = "illusion"
+    key: str  # stable authoring key; the populate script is idempotent on it
+    kind: Literal[
+        "muller_lyer", "ebbinghaus", "ponzo",
+        "vertical_horizontal", "hering", "cafe_wall",
+    ]
+    question: str
+    options: List[str]
+    answer: str
+    explain: str
+    delta: float = 0
+    rarity: Literal["common", "uncommon", "rare"] = "common"
+    tags: List[str] = []
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
 class UserPreference(BaseModel):
     user_id: str
     preference_type: str
@@ -493,7 +518,7 @@ VIDEO_PREFERRED_MAX_SEC = 180
 # Content types whose items are real third-party media. There is nothing to
 # invent here: a generated video is a YouTube URL that doesn't exist, which
 # is how the old feed accumulated permanent "Video coming soon" cards.
-NO_AI_FALLBACK = {"video", "try_this", "look_closer"}
+NO_AI_FALLBACK = {"video", "try_this", "look_closer", "illusion"}
 
 
 async def sample_videos(db, count, seen=None):
@@ -628,6 +653,7 @@ FEED_RATIOS = {
     "quiet_contradiction": 2,
     "try_this": 2,
     "look_closer": 2,
+    "illusion": 2,
 }
 
 # How far a type's draw rate may move from its editorial ratio. The ratios
@@ -763,7 +789,7 @@ def compose_session(feed, limit, depths=None):
         return item.get("type") in ("audio_drift", "video")
 
     def is_guess(item):
-        return item.get("type") in ("mini_game", "look_closer") or (
+        return item.get("type") in ("mini_game", "look_closer", "illusion") or (
             item.get("type") == "fast_weird" and item.get("guess")
         )
 
