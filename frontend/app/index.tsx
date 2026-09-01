@@ -158,6 +158,14 @@ export default function Index() {
   const [sessionCompleted, setSessionCompleted] = useState(false);
   const [closed, setClosed] = useState<ClosedScreen | null>(null);
   const [driftLeft, setDriftLeft] = useState(false);
+
+  // How much of today's slate the visitor had already been shown. The backend
+  // has always computed this and the client has always thrown it away, so a
+  // session quietly recycling old cards looked identical to a fresh one — for
+  // the visitor AND for us. Kept as counts rather than a boolean so the tally
+  // at the end can be specific.
+  const [repeats, setRepeats] = useState(0);
+  const [freshCount, setFreshCount] = useState(0);
   // The feed is a vertical pager — one full-screen
   // card at a time, swipe up for the next — so the feed keeps the familiar
   // up-and-down motion but never shows two cards at once. "Where am I" is a
@@ -361,6 +369,12 @@ export default function Index() {
           setError('');
           return;
         }
+        // `repeats` counts the cards in THIS session the visitor has seen
+        // before — the backend flags each one and totals them over the visible
+        // prefix, not the whole 35-card slate.
+        setRepeats(typeof data.repeats === 'number' ? data.repeats : 0);
+        setFreshCount(typeof data.fresh === 'number' ? data.fresh : sessionItems.length);
+
         await consumeSession();
         // Spend only the cards that reach the screen. The slate holds 35 and
         // this session shows 9-12; marking the whole slate would burn three
@@ -670,6 +684,11 @@ export default function Index() {
                       contentContainerStyle={styles.pageInner}
                       showsVerticalScrollIndicator={false}
                     >
+                      {/* Said plainly rather than hidden. The museum running
+                          out is a fact about the collection, not a defect to
+                          disguise, and an unmarked repeat is the one thing
+                          that would make the no-repeat promise a lie. */}
+                      {item.repeat && <Text style={styles.repeatNote}>Seen before</Text>}
                       {renderContentCard(item, false)}
                     </ScrollView>
                   )}
@@ -688,6 +707,19 @@ export default function Index() {
                   <Text style={styles.endSessionText}>
                     {driftLeft ? endSessionMessage : finalSessionMessage}
                   </Text>
+
+                  {/* The tally, only when there is one to report. The
+                      all-repeats case gets its own line — "9 of today's 9"
+                      is a clumsy way to say "everything", and once a pool is
+                      exhausted that is the common case, not the edge one. */}
+                  {repeats > 0 && (
+                    <Text style={styles.repeatTally}>
+                      {freshCount === 0
+                        ? 'Every card today was one you had seen before.'
+                        : `${repeats} of today’s ${repeats + freshCount} you had seen before.`}
+                      {' The museum is starting to repeat itself.'}
+                    </Text>
+                  )}
 
                   <TouchableOpacity
                     style={styles.leaveButton}
@@ -798,6 +830,19 @@ const styles = StyleSheet.create({
     ...type.micro,
     marginTop: 8,
     textAlign: 'center',
+  },
+  // The repeat marker: the label treatment, in the muted grey, sitting where
+  // a card's eyebrow would. Quiet enough not to become the card's headline.
+  repeatNote: {
+    ...type.label,
+    marginBottom: 8,
+    marginLeft: 4,
+  },
+  repeatTally: {
+    ...type.body,
+    textAlign: 'center',
+    marginTop: -16,
+    marginBottom: 28,
   },
   endSessionCard: {
     ...cards.white,

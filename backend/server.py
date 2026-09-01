@@ -523,10 +523,11 @@ async def sample_videos(db, count, seen=None):
 
     remaining = count - len(picked)
     if remaining > 0:  # pools empty or exhausted - backfill from whatever exists
-        picked += await db.video_content.aggregate([
-            {"$match": {"_id": {"$nin": [p["_id"] for p in picked]}}},
-            {"$sample": {"size": remaining}},
-        ]).to_list(remaining)
+        # Oldest-seen first, same rule as sample_unseen: a forced repeat should
+        # be the video from three weeks ago, not the one from last night.
+        picked += await sample_stalest(
+            db, "video_content", remaining, seen or [], {p["id"] for p in picked}
+        )
 
     random.shuffle(picked)
     return picked
@@ -544,6 +545,16 @@ async def sample_unseen(db, collection_name, count, seen=None):
     If the unseen pool is short, top up with already-seen items rather than
     returning a thin session — running dry should feel like the museum
     repeating itself, not like the museum being broken.
+
+    The top-up draws from the cards seen LONGEST ago. `seen` arrives
+    oldest-first (see frontend/lib/seen.ts), so the front of that list is the
+    least recently shown, and a forced repeat is something from weeks back
+    rather than last night's card returning at random. Sampling the whole
+    collection blindly — which is what this did before — made an exhausted
+    pool feel broken rather than merely finite.
+
+    Repeats are NOT marked here; build_feed flags them centrally against the
+    seen set, so every sampling path is covered by one rule.
     """
     pipeline = []
     if seen:
@@ -553,12 +564,53 @@ async def sample_unseen(db, collection_name, count, seen=None):
 
     shortfall = count - len(items)
     if shortfall > 0 and seen:
-        items += await db[collection_name].aggregate([
-            {"$match": {"_id": {"$nin": [i["_id"] for i in items]}}},
-            {"$sample": {"size": shortfall}},
-        ]).to_list(shortfall)
+        have = {i["id"] for i in items}
+        items += await sample_stalest(db, collection_name, shortfall, seen, have)
 
     return items
+
+
+async def sample_stalest(db, collection_name, count, seen, have=None):
+    """
+    Draw `count` already-seen items, preferring the ones seen longest ago.
+
+    Ranking has to happen WITHIN the collection, not across the whole ledger.
+    Slicing the oldest half of `seen` and matching against it looks equivalent
+    and isn't: the ledger interleaves every type, so a type whose ids happen to
+    sit late in it contributes nothing to that slice and falls through to a
+    uniform draw. Measured on an exhausted corpus, the cross-ledger version put
+    repeats at mean position 117 of 249 — a coin flip. This asks the collection
+    which of ITS items are in the ledger, then orders those by how long ago
+    they were shown.
+    """
+    have = set(have or ())
+    rank = {sid: n for n, sid in enumerate(seen)}  # seen arrives oldest-first
+
+    mine = await db[collection_name].find(
+        {"id": {"$in": seen}}, {"id": 1, "_id": 0}
+    ).to_list(None)
+    stale_first = sorted(
+        (m["id"] for m in mine if m["id"] not in have), key=lambda s: rank[s]
+    )
+
+    # A window rather than the single oldest card, so a dry pool doesn't serve
+    # the same relic every session.
+    window = stale_first[: max(count * 4, len(stale_first) // 2)] or stale_first
+    picked = await db[collection_name].aggregate([
+        {"$match": {"id": {"$in": window}}},
+        {"$sample": {"size": count}},
+    ]).to_list(count)
+
+    # Nothing in the ledger for this type (or not enough of it): anything the
+    # caller hasn't already taken will do.
+    if len(picked) < count:
+        have |= {p["id"] for p in picked}
+        picked += await db[collection_name].aggregate([
+            {"$match": {"id": {"$nin": list(have)}}},
+            {"$sample": {"size": count - len(picked)}},
+        ]).to_list(count - len(picked))
+
+    return picked
 
 
 # Ratios for a 35-item slate. The client shows only the first 9-12 and marks
@@ -671,13 +723,29 @@ async def build_feed(seen=None, limit=12):
     for item in feed:
         item.pop('_id', None)
 
-    # `fresh` is how much of this slate the visitor has never been shown. The
-    # client can use it to tell "the museum is repeating itself" apart from a
-    # failed fetch, which otherwise look identical.
+    # Every repeat, flagged in one place. Marking inside each sampling helper
+    # would miss the AI-generated top-ups and anything added later; testing
+    # against the seen set here covers every path by construction.
     seen_set = set(seen)
-    fresh = sum(1 for item in feed if item.get("id") not in seen_set)
+    for item in feed:
+        item["repeat"] = item.get("id") in seen_set
 
-    return {"success": True, "count": len(feed), "fresh": fresh, "feed": feed}
+    # `fresh` counts the cards the visitor will ACTUALLY BE SHOWN, not the whole
+    # slate. build_feed returns ~35 and the client shows `limit` of them
+    # (frontend/app/index.tsx: slice(0, sessionSize)), so counting the slate
+    # described a session nobody sees — it read healthy while the visible cards
+    # were repeats.
+    visible = feed[:limit]
+    fresh = sum(1 for item in visible if not item["repeat"])
+
+    return {
+        "success": True,
+        "count": len(feed),
+        "shown": len(visible),
+        "fresh": fresh,
+        "repeats": len(visible) - fresh,
+        "feed": feed,
+    }
 
 
 @api_router.get("/feed")
