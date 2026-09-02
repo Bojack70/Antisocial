@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   ScrollView,
@@ -15,6 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { colors, type } from '../../lib/theme';
 import { shareCardImage } from '../../lib/shareCard';
+import { mountRetroFilm, type FilmHandle, type FilmPhoto } from '../../lib/retroFilm';
 
 interface RetroPhoto {
   id: string;
@@ -35,7 +36,11 @@ export default function Retrospective() {
   const router = useRouter();
   const [photos, setPhotos] = useState<RetroPhoto[]>([]);
   const [exporting, setExporting] = useState(false);
+  const [bornYear, setBornYear] = useState('');
+  const [filmOpen, setFilmOpen] = useState(false);
   const stripRef = useRef<View>(null);
+  const filmHostRef = useRef<View>(null);
+  const filmHandle = useRef<FilmHandle | null>(null);
 
   // Web-only by design for now: the deployed product is the web app, and
   // a DOM file input needs no new native dependency. Native gets an
@@ -101,6 +106,46 @@ export default function Retrospective() {
     }
   };
 
+  // The film needs years to make chapters; only dated photos join it.
+  const filmable: FilmPhoto[] = ordered.filter((p) => /^\d{4}$/.test(p.year));
+  const canPlay = canAdd && filmable.length >= 3;
+
+  // Guidance is a system, not a memo: nudge from the actual data.
+  let nudge = '';
+  if (photos.length === 1) {
+    nudge = 'One photograph is a portrait. A journey starts at three.';
+  } else if (photos.length === 2) {
+    nudge = 'Two photographs make a jump, not a journey — add a few more between them.';
+  } else if (photos.length >= 3 && filmable.length < 3) {
+    nudge = 'Add years to at least three photographs and the film can play.';
+  } else {
+    for (let i = 1; i < filmable.length; i++) {
+      const gap = parseInt(filmable[i].year, 10) - parseInt(filmable[i - 1].year, 10);
+      if (gap > 15) {
+        nudge = `${gap} years pass between ${filmable[i - 1].year} and ${filmable[i].year} — one photo from the middle would smooth the crossing.`;
+        break;
+      }
+    }
+  }
+
+  // Mount/unmount the film engine against the host View's DOM node.
+  useEffect(() => {
+    if (!filmOpen) return;
+    // On web an RN View ref IS its DOM element.
+    const host = filmHostRef.current as unknown as HTMLElement | null;
+    if (!host) return;
+    const born = parseInt(bornYear, 10);
+    filmHandle.current = mountRetroFilm(host, filmable, {
+      bornYear: isNaN(born) ? undefined : born,
+      onClose: () => setFilmOpen(false),
+    });
+    return () => {
+      filmHandle.current?.destroy();
+      filmHandle.current = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filmOpen]);
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <StatusBar style="dark" />
@@ -118,8 +163,9 @@ export default function Retrospective() {
 
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <Text style={styles.intro}>
-          Pick a few photographs of yourself across the years. Add a year and a line to each.
-          The room assembles them into one image you can keep or send.
+          Five to eight photographs, a few years apart — one for each chapter of you.
+          Faces looking at the camera work best. Add a year and a line to each, and the
+          room plays them as a short film of your becoming.
         </Text>
         <Text style={styles.privacyNote}>
           The photographs stay on this device. Nothing is uploaded — this room has no storage.
@@ -189,6 +235,42 @@ export default function Retrospective() {
               </View>
             ))}
 
+            {nudge !== '' && <Text style={styles.nudge}>{nudge}</Text>}
+
+            {canAdd && (
+              <View style={styles.bornRow}>
+                <Text style={styles.bornLabel}>Born</Text>
+                <TextInput
+                  style={[styles.input, styles.inputYear]}
+                  placeholder="Year"
+                  placeholderTextColor={colors.muted}
+                  value={bornYear}
+                  onChangeText={setBornYear}
+                  maxLength={4}
+                  keyboardType="number-pad"
+                />
+                <Text style={styles.bornHint}>optional — it opens the film</Text>
+              </View>
+            )}
+
+            {canAdd && (
+              <TouchableOpacity
+                style={[styles.playButton, !canPlay && styles.playButtonDisabled]}
+                onPress={() => canPlay && setFilmOpen(true)}
+                disabled={!canPlay}
+                activeOpacity={0.8}
+              >
+                <Ionicons
+                  name="play"
+                  size={14}
+                  color={canPlay ? colors.surface : colors.muted}
+                />
+                <Text style={[styles.playButtonText, !canPlay && styles.playButtonTextDisabled]}>
+                  {canPlay ? 'Play the film' : 'The film needs three dated photographs'}
+                </Text>
+              </TouchableOpacity>
+            )}
+
             <TouchableOpacity
               style={styles.exportButton}
               onPress={exportStrip}
@@ -202,6 +284,9 @@ export default function Retrospective() {
           </>
         )}
       </ScrollView>
+
+      {/* The film engine owns everything inside this host. */}
+      {filmOpen && <View ref={filmHostRef} />}
     </SafeAreaView>
   );
 }
@@ -352,9 +437,50 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  nudge: {
+    ...type.micro,
+    marginTop: 12,
+    lineHeight: 16,
+    color: colors.clayDeep,
+  },
+  bornRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginTop: 14,
+  },
+  bornLabel: {
+    ...type.body,
+    color: colors.ink,
+  },
+  bornHint: {
+    ...type.micro,
+    flex: 1,
+  },
+  playButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: 16,
+    paddingVertical: 13,
+    borderRadius: 10,
+    backgroundColor: colors.clayDeep,
+  },
+  playButtonDisabled: {
+    backgroundColor: colors.surfaceTinted,
+  },
+  playButtonText: {
+    color: colors.surface,
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  playButtonTextDisabled: {
+    color: colors.muted,
+  },
   exportButton: {
     alignItems: 'center',
-    marginTop: 16,
+    marginTop: 12,
     paddingVertical: 13,
     borderRadius: 10,
     backgroundColor: colors.ink,
