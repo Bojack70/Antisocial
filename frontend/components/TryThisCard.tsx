@@ -33,10 +33,6 @@ export default function TryThisCard({ content }: TryThisCardProps) {
   const total = content.steps.length;
   const allShown = revealed >= total;
 
-  const minutes = content.duration
-    ? `${Math.max(1, Math.round(content.duration / 60))} minute${content.duration > 90 ? 's' : ''}`
-    : null;
-
   return (
     <View style={cards.white}>
       <CardHeader icon="hand-left-outline" color={accents.calm} label="Try This" />
@@ -44,9 +40,11 @@ export default function TryThisCard({ content }: TryThisCardProps) {
       <Text style={styles.title}>{content.title}</Text>
       <Text style={styles.hook}>{content.hook}</Text>
 
+      {/* Duration is deliberately not shown (user call, 2026-09-02): the
+          data still carries it, but a countdown-flavored "2 minutes" reads
+          as pressure on a card whose point is unhurried doing. */}
       <View style={styles.metaRow}>
         {!!content.needs && <Text style={styles.meta}>{content.needs}</Text>}
-        {!!minutes && <Text style={styles.meta}>{minutes}</Text>}
       </View>
 
       {revealed > 0 && (
