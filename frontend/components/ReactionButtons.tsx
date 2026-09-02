@@ -3,11 +3,16 @@ import { View, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import Text from './AppText';
 import { colors, type } from '../lib/theme';
 
+// The `tags` prop is gone (2026-09-02, user call). Every card used to
+// print its content tags on the right of the chip row — "BIOLOGY ·
+// IDENTITY", "EMPATHY · HYPOTHETICAL". They were the classifier's
+// vocabulary, not the visitor's: they named the CATEGORY of a card the
+// visitor was already reading, added nothing to the retell, and made a
+// deliberately quiet card look like a tagged database row.
 interface ReactionButtonsProps {
   reactions: string[];
   onReact?: (reaction: string) => void;
   microPrompt?: string;
-  tags?: string[];
   tone?: 'light' | 'dark';
   /**
    * Drop the row's own top margin. Set when the chips ARE the card's foot
@@ -21,7 +26,6 @@ export default function ReactionButtons({
   reactions,
   onReact,
   microPrompt,
-  tags,
   tone = 'light',
   flush = false,
 }: ReactionButtonsProps) {
@@ -101,11 +105,6 @@ export default function ReactionButtons({
               </TouchableOpacity>
             ))}
           </View>
-          {tags && tags.length > 0 && (
-            <Text style={styles.tagsText} numberOfLines={1}>
-              {tags.join(' · ')}
-            </Text>
-          )}
         </View>
       )}
     </View>
@@ -123,17 +122,12 @@ const styles = StyleSheet.create({
   rowBetween: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    // If the tags can't fit beside the chips they drop to their own line —
-    // the chip row itself never wraps.
     flexWrap: 'wrap',
     rowGap: 8,
   },
   buttonsContainer: {
     flexDirection: 'row',
-    // Chips only wrap once they genuinely can't fit the line. Previously the
-    // tags held their full width (flexShrink 0) and squeezed this box until
-    // every chip stacked; now the tags drop to their own line first.
+    // Chips wrap only once they genuinely can't fit the line.
     flexWrap: 'wrap',
     // 6, not 8: the widest three-chip sets came to 279-280px against a 278px
     // row on a 360px phone, and wrapped over one or two pixels.
@@ -172,13 +166,6 @@ const styles = StyleSheet.create({
   },
   reactionTextSelectedDark: {
     color: '#FFFFFF',
-  },
-  tagsText: {
-    ...type.micro,
-    marginLeft: 'auto',
-    paddingLeft: 8,
-    flexShrink: 1,
-    textAlign: 'right',
   },
   notedContainer: {
     alignItems: 'center',

@@ -52,7 +52,6 @@ export default function FastWeirdCard({ content }: FastWeirdCardProps) {
     <CardFoot ruled>
       <ReactionButtons
         reactions={['Unexpected', 'Unsettling', 'Makes Sense']}
-        tags={content.tags}
         flush
       />
     </CardFoot>

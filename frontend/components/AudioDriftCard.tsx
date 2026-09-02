@@ -7,6 +7,7 @@ import CardHeader from './CardHeader';
 import CardFoot from './CardFoot';
 import { cards, colors, type, accents } from '../lib/theme';
 import { cardScale } from '../lib/typeScale';
+import { cleanSourcedTitle, stripDividerLines } from '../lib/titles';
 import { recordAudioPlay } from '../lib/weekLedger';
 
 interface AudioDriftCardProps {
@@ -36,7 +37,9 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
   // player that could never play. A URL we can't verify as audio is
   // treated as no audio at all.
   const audioUrl = content.audio_url;
-  const scale = cardScale(content.title, content.narration_script);
+  const title = cleanSourcedTitle(content.title);
+  const script = stripDividerLines(content.narration_script);
+  const scale = cardScale(title, script);
 
   // Hooks live at the top level. They used to be declared inside the
   // native branch of a nested render function, which is a Rules of Hooks
@@ -114,11 +117,14 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
             controls
             onPlay={recordFirstPlay}
             src={audioUrl}
+            // 38, down from 54, and the panel is tinted to the card's own
+            // surface by the `audio` rules in app/+html.tsx — the element's
+            // own backgroundColor only paints BEHIND Chrome's control
+            // panel, which is why it still read as a white pill.
             style={{
               width: '100%',
-              height: '54px',
-              borderRadius: '12px',
-              backgroundColor: colors.surfaceTinted,
+              height: '38px',
+              borderRadius: '10px',
             }}
             preload="metadata"
           >
@@ -191,15 +197,15 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
       <View>
       <CardHeader icon="headset-outline" color={accents.curiosity} label="Audio Drift" />
 
-      <Text style={[styles.title, scale.title]}>{content.title}</Text>
+      <Text style={[styles.title, scale.title]}>{title}</Text>
       {renderCredit()}
 
       {audioUrl ? (
         <>
           {renderAudioPlayer()}
-          {content.narration_script ? (
+          {script ? (
             <View style={styles.scriptContainer}>
-              <Text style={[styles.scriptText, scale.body]}>{content.narration_script}</Text>
+              <Text style={[styles.scriptText, scale.body]}>{script}</Text>
             </View>
           ) : (
             <View style={styles.instructionContainer}>
@@ -209,9 +215,9 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
             </View>
           )}
         </>
-      ) : content.narration_script ? (
+      ) : script ? (
         <View style={styles.scriptContainer}>
-          <Text style={[styles.scriptText, scale.body]}>{content.narration_script}</Text>
+          <Text style={[styles.scriptText, scale.body]}>{script}</Text>
         </View>
       ) : (
         <View style={styles.noAudioContainer}>
@@ -228,7 +234,6 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
       <CardFoot ruled>
         <ReactionButtons
           reactions={['Stayed With Me', 'Lingering', 'Unsettling', 'Let It Pass']}
-          tags={content.tags}
           flush
         />
       </CardFoot>

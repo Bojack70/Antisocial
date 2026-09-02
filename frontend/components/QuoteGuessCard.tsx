@@ -81,6 +81,12 @@ export default function QuoteGuessCard({ content }: QuoteGuessCardProps) {
       <Text style={styles.prompt}>Where is this from?</Text>
 
 
+      {/* The options stay directly under the quote (user call,
+          2026-09-02). Pinned to the foot they sat a screen away from the
+          line they are about to place, and a guess card whose question and
+          answers are that far apart stops reading as one question. */}
+      {!answered && optionList}
+
       {answered && (
         <>
           <View style={styles.resultContainer}>
@@ -95,12 +101,6 @@ export default function QuoteGuessCard({ content }: QuoteGuessCardProps) {
         </>
       )}
       </View>
-
-      {/* Unanswered, the options ARE the foot — the quote takes the height
-          above and the only thing you can tap sits in the thumb's reach.
-          Answered, the reveal is the payoff and there is nothing left to
-          act on, so the card keeps no foot. */}
-      {!answered && <CardFoot>{optionList}</CardFoot>}
     </View>
   );
 }

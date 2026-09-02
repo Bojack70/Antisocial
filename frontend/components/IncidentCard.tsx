@@ -55,7 +55,6 @@ export default function IncidentCard({ content }: IncidentCardProps) {
         <CardFoot ruled>
           <ReactionButtons
             reactions={['Let It Pass', 'Unexpected', 'Makes Sense']}
-            tags={content.tags}
             flush
           />
         </CardFoot>

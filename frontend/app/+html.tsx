@@ -47,7 +47,27 @@ export default function Root({ children }: PropsWithChildren) {
 
 const backgroundStyle = `
 body {
-  background-color: #EFECE5;
+  background-color: #F1EADC;
   overscroll-behavior-y: none;
+}
+
+/* The Audio Drift player. It is the browser's native <audio controls>,
+   and its panel is a shadow-DOM part — setting backgroundColor on the
+   element itself paints BEHIND that panel, which is why the control kept
+   reading as a white pill on the parchment. These are the only hooks
+   Chrome and Safari expose, so this is the one place the player can be
+   brought into the palette. Firefox ignores them and keeps its own
+   control, which is a plain fallback rather than a broken one. */
+audio::-webkit-media-controls-enclosure {
+  background-color: #E8DFCB;
+  border-radius: 10px;
+}
+audio::-webkit-media-controls-panel {
+  background-color: #E8DFCB;
+}
+audio::-webkit-media-controls-current-time-display,
+audio::-webkit-media-controls-time-remaining-display {
+  color: #6B6A68;
+  text-shadow: none;
 }
 `;

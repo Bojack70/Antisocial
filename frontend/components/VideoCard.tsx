@@ -8,6 +8,7 @@ import CardHeader from './CardHeader';
 import CardFoot from './CardFoot';
 import { cards, colors, type, accents } from '../lib/theme';
 import { cardScale } from '../lib/typeScale';
+import { cleanSourcedTitle } from '../lib/titles';
 
 const { width } = Dimensions.get('window');
 
@@ -33,7 +34,13 @@ export default function VideoCard({ content }: VideoCardProps) {
   // YouTube player that automatically plays content simultaneously" (the
   // feed carries three video cards per load).
   const [isPlaying, setIsPlaying] = useState(false);
-  const scale = cardScale(content.title, content.description);
+  const title = cleanSourcedTitle(content.title);
+  // Capped at 23. A video title is somebody else's headline, not one this
+  // app wrote to the content bar — at the 31px wall-label step a
+  // three-line YouTube title becomes the loudest thing in the deck and
+  // out-shouts the cards whose sentences were actually authored for it.
+  const scale = cardScale(title, content.description);
+  const titleSize = Math.min((scale.title.fontSize as number) ?? 19, 23);
   const cardRef = useRef<View>(null);
 
   const getYouTubeEmbedUrl = (url: string) => {
@@ -117,7 +124,9 @@ export default function VideoCard({ content }: VideoCardProps) {
         }
       />
       
-      <Text style={[styles.title, scale.title]}>{content.title}</Text>
+      <Text style={[styles.title, scale.title, { fontSize: titleSize, lineHeight: Math.round(titleSize * 1.35) }]}>
+        {title}
+      </Text>
 
       {/* Whose work this is, before you press play. The embedded player
           credits the channel too, but the card shouldn't pass off someone
@@ -177,7 +186,6 @@ export default function VideoCard({ content }: VideoCardProps) {
       <CardFoot ruled>
         <ReactionButtons
           reactions={['Makes Sense', 'Noted', 'Unexpected']}
-          tags={content.tags}
           flush
         />
       </CardFoot>

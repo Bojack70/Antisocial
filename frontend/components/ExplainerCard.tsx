@@ -112,7 +112,6 @@ export default function ExplainerCard({ content }: ExplainerCardProps) {
       <CardFoot ruled>
         <ReactionButtons
           reactions={['Makes Sense', 'Noted', 'Unexpected']}
-          tags={content.tags}
           flush
         />
       </CardFoot>

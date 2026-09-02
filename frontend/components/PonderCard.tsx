@@ -87,7 +87,6 @@ export default function PonderCard({ content }: PonderCardProps) {
       <CardFoot ruled>
         <ReactionButtons
           reactions={['I’m Unsure', 'Lingering', 'Stayed With Me']}
-          tags={content.tags}
           flush
         />
       </CardFoot>

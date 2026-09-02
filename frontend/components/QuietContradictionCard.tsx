@@ -37,7 +37,7 @@ export default function QuietContradictionCard({ content }: QuietContradictionCa
       </View>
 
       <CardFoot ruled>
-        <ReactionButtons reactions={reactions} tags={content.tags} flush />
+        <ReactionButtons reactions={reactions} flush />
       </CardFoot>
     </View>
   );

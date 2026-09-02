@@ -88,7 +88,6 @@ export default function LookCloserCard({ content }: LookCloserCardProps) {
         <CardFoot ruled>
           <ReactionButtons
             reactions={['Unexpected', 'Unsettling', 'Makes Sense']}
-            tags={content.tags}
             flush
           />
         </CardFoot>

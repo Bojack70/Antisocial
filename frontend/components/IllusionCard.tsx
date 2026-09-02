@@ -161,7 +161,6 @@ export default function IllusionCard({ content }: Props) {
           <CardFoot ruled>
             <ReactionButtons
               reactions={['Unexpected', 'Unsettling', 'Makes Sense']}
-              tags={content.tags}
               flush
             />
           </CardFoot>

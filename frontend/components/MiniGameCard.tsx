@@ -50,13 +50,14 @@ export default function MiniGameCard({ content }: MiniGameCardProps) {
       <CardHeader icon="game-controller-outline" color={accents.play} label={gameTypeLabel} />
 
       <Text style={[styles.prompt, scale.title]}>{content.prompt}</Text>
-      </View>
 
-      {/* The options are the card's foot until they are spent: the prompt
-          takes the height above, and the answer sits in the thumb's reach.
-          After the result they belong with the reveal, in the body. */}
+      {/* The options stay directly under the statement (user call,
+          2026-09-02). Pinning them to the card's foot put a 900px gap
+          between "Scotland's national animal is the unicorn" and
+          Fact/Myth, and the two stopped reading as an answer to it. This
+          card is only two short lines and a binary choice — they belong
+          together, and the slack goes below them. */}
       {!showResult && (
-      <CardFoot>
       <View style={styles.optionsContainer}>
         {content.options.map((option, index) => {
           const isSelected = selectedOption === option;
@@ -95,9 +96,9 @@ export default function MiniGameCard({ content }: MiniGameCardProps) {
           );
         })}
       </View>
-      </CardFoot>
       )}
-      
+      </View>
+
       {showResult && (
         <View>
           <View
