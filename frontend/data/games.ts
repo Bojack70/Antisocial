@@ -48,7 +48,7 @@ export const GAMES: GameDefinition[] = [
     color: '#C27B5E',
     title: 'Shortcuts & Rabbit Holes',
     description:
-      'Race Time across the board. Shortcuts jump you ahead, rabbit holes pull you under — every one hides a fact.',
+      'Race Time across the board. Shortcuts jump you ahead, rabbit holes pull you under. Every one hides a fact.',
     cta: 'Roll the dice',
     arcDescription:
       'One race against Time. Shortcuts jump you ahead, rabbit holes pull you under \u2014 someone reaches the end.',
@@ -64,7 +64,7 @@ export const GAMES: GameDefinition[] = [
     color: '#8BA087',
     title: 'Brick Breaker',
     description:
-      'Steer the paddle, clear the wall. Where the ball hits the paddle decides where it goes next — and every cleared level hands you a fact.',
+      'Steer the paddle, clear the wall. Where the ball hits the paddle decides where it goes next, and every cleared level hands you a fact.',
     cta: 'Break some bricks',
     arcDescription:
       'One life, one paddle. See how much of the wall comes down before the ball gets past you.',

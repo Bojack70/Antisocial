@@ -25,6 +25,12 @@ const TRAILING_SUFFIX = /\s+[-–—]\s+[^-–—]*$/;
 // sentence is somebody's punctuation and stays.
 const DIVIDER_LINE = /^[\s]*[-–—_*]{1,}[\s]*$/;
 
+// A dash acting as punctuation between clauses, or as the separator in a
+// borrowed heading ("Ep8 - National Bubble Bath Day"). It has to be an
+// em/en dash or a hyphen with space on both sides, so hyphens inside a
+// compound word (ME/CFS, well-earthed, Catch-22) are never touched.
+const CLAUSE_DASH = /\s*[—–]\s*|\s+-\s+/g;
+
 export function stripDividerLines(text?: string): string {
   if (!text) return '';
   return text
@@ -34,6 +40,21 @@ export function stripDividerLines(text?: string): string {
     // Collapse the blank runs the removed dividers leave behind.
     .replace(/\n{3,}/g, '\n\n')
     .trim();
+}
+
+/**
+ * Everything above, plus the clause dashes, for text that came out of
+ * somebody else's feed. Authored copy in this app has had its dashes
+ * removed at the source; sourced copy has to be cleaned on the way in,
+ * because the publisher will keep writing them.
+ */
+export function cleanSourcedText(text?: string): string {
+  if (!text) return '';
+  return stripDividerLines(text)
+    .replace(CLAUSE_DASH, ', ')
+    .replace(/,\s*,/g, ',')
+    .replace(/\s+([,.;:!?])/g, '$1')
+    .replace(/,(\s*\n)/g, '$1');
 }
 
 export function cleanSourcedTitle(title?: string): string {

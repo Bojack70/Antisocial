@@ -64,7 +64,7 @@ TRAILING_HASHTAGS = re.compile(r"(\s*#[\w-]+)+\s*$")
 # its owner. These are the creators already represented in the feed, plus
 # Kurzgesagt.
 CHANNELS = [
-    {"name": "Kurzgesagt – In a Nutshell", "id": "UCsXVk37bltHxD1rDPwtNM8Q",
+    {"name": "Kurzgesagt In a Nutshell", "id": "UCsXVk37bltHxD1rDPwtNM8Q",
      "tags": ["science", "space", "explainer"]},
     {"name": "TED-Ed", "id": "UCsooa4yRKGN_zEE8iknghZA",
      "tags": ["education", "science", "explainer"]},
@@ -112,7 +112,7 @@ def clean_description(raw):
             continue
         if "http://" in line or "https://" in line:
             break
-        if line.startswith("#") or set(line) <= set("▀─—-=_ "):
+        if line.startswith("#") or set(line) <= set("▀─ -=_"):
             break
         lines.append(line)
     text = " ".join(lines).strip()
@@ -264,7 +264,7 @@ async def populate():
             everything.extend(kept)
 
     if not everything:
-        print("\n✗ No videos passed the filters — leaving the collection untouched.")
+        print("✗ No videos passed the filters, leaving the collection untouched.")
         mongo_client.close()
         return 1
 

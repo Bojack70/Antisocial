@@ -8,7 +8,7 @@ import CardHeader from './CardHeader';
 import CardFoot from './CardFoot';
 import { cards, colors, type, accents } from '../lib/theme';
 import { cardScale } from '../lib/typeScale';
-import { cleanSourcedTitle } from '../lib/titles';
+import { cleanSourcedTitle, cleanSourcedText } from '../lib/titles';
 
 const { width } = Dimensions.get('window');
 
@@ -149,7 +149,7 @@ export default function VideoCard({ content }: VideoCardProps) {
       {/* Plenty of shorts ship with no description at all — render the gap
           away rather than leaving an empty line of padding. */}
       {content.description?.trim() ? (
-        <Text style={[styles.description, scale.body]}>{content.description}</Text>
+        <Text style={[styles.description, scale.body]}>{cleanSourcedText(content.description)}</Text>
       ) : (
         <View style={styles.descriptionSpacer} />
       )}

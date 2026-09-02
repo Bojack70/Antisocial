@@ -2,7 +2,7 @@ import { Platform, Share } from 'react-native';
 import { captureRef } from 'react-native-view-shot';
 import * as Sharing from 'expo-sharing';
 
-const SHARE_CAPTION = 'From Modern Weirdness — a museum of curiosity.';
+const SHARE_CAPTION = 'From Modern Weirdness: a museum of curiosity.';
 
 // Capture a card view as a PNG and hand it to the platform share sheet.
 // Web: Web Share API with files when available, else a straight download.

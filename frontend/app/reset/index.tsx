@@ -38,11 +38,11 @@ export default function ResetScreen() {
     await resetUsage();
     await AsyncStorage.multiRemove(EXTRA_KEYS);
     setDone([
-      'Daily sessions — back to zero',
-      'Seen ledger — every card eligible again',
-      'Usage clock — back to zero',
-      'Week ledger and recap — cleared',
-      'Moral Compass tally and rotation — cleared',
+      'Daily sessions: back to zero',
+      'Seen ledger: every card eligible again',
+      'Usage clock: back to zero',
+      'Week ledger and recap: cleared',
+      'Moral Compass tally and rotation: cleared',
     ]);
     setBusy(false);
   }, []);
@@ -54,7 +54,7 @@ export default function ResetScreen() {
   const fullReset = async () => {
     await runReset();
     await resetOnboarding();
-    setDone((d) => [...d, 'Onboarding — next launch behaves like a first visit']);
+    setDone((d) => [...d, 'Onboarding: next launch behaves like a first visit']);
   };
 
   return (

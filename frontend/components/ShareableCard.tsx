@@ -45,7 +45,7 @@ export default function ShareableCard({ children, shareName, fill }: ShareableCa
         {children}
         {capturing && (
           <View style={styles.brandRow}>
-            <Text style={styles.brandText}>Modern Weirdness — a museum of curiosity</Text>
+            <Text style={styles.brandText}>Modern Weirdness, a museum of curiosity</Text>
           </View>
         )}
       </View>

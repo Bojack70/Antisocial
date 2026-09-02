@@ -7,7 +7,7 @@ import CardHeader from './CardHeader';
 import CardFoot from './CardFoot';
 import { cards, colors, type, accents } from '../lib/theme';
 import { cardScale } from '../lib/typeScale';
-import { cleanSourcedTitle, stripDividerLines } from '../lib/titles';
+import { cleanSourcedTitle, cleanSourcedText } from '../lib/titles';
 import { recordAudioPlay } from '../lib/weekLedger';
 
 interface AudioDriftCardProps {
@@ -38,7 +38,7 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
   // treated as no audio at all.
   const audioUrl = content.audio_url;
   const title = cleanSourcedTitle(content.title);
-  const script = stripDividerLines(content.narration_script);
+  const script = cleanSourcedText(content.narration_script);
   const scale = cardScale(title, script);
 
   // Hooks live at the top level. They used to be declared inside the

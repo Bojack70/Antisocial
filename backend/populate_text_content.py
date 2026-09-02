@@ -120,7 +120,7 @@ FAST_WEIRD = [
         "headline": "Sharks are older than trees",
         "facts": [
             "Sharks appeared roughly 400 million years ago.",
-            "The earliest tree-like plants show up about 350 million years later in the fossil record's terms — 50 million years after sharks.",
+            "The earliest tree-like plants show up about 350 million years later in the fossil record's terms, 50 million years after sharks.",
             "Sharks are also older than Saturn's rings, by some estimates.",
         ],
         "tags": ["biology", "time"],
@@ -174,7 +174,7 @@ EXPLAINER = [
         "steps": [
             "When you speak, sound reaches your ears two ways: through the air and through your skull.",
             "Bone conduction adds deep, low frequencies only you can hear.",
-            "A recording captures just the air version — the voice everyone else hears.",
+            "A recording captures just the air version, the voice everyone else hears.",
             "That thinner, higher voice on tape is your actual public voice.",
         ],
         "interaction": "So which one is your real voice?",
@@ -238,7 +238,7 @@ EXPLAINER = [
             "A reflective inner surface reflects radiant heat back inward or outward.",
             "A tight seal stops warm or cool air from escaping.",
         ],
-        "interaction": "It doesn't know hot from cold — it just blocks change.",
+        "interaction": "It doesn't know hot from cold, it just blocks change.",
         "tags": ["everyday objects", "physics"],
     },
     {
@@ -260,7 +260,7 @@ INCIDENT = [
             "In 1925, con artist Victor Lustig posed as a government official and told scrap metal dealers that Paris was secretly dismantling the Eiffel Tower.",
             "He 'sold' it to a dealer for the equivalent of about $70,000, then disappeared.",
             "The dealer was too embarrassed to report it to the police.",
-            "A month later, Lustig came back and sold the tower again — to someone else.",
+            "A month later, Lustig came back and sold the tower again to someone else.",
         ],
         "tags": ["history", "crime"],
     },
@@ -276,7 +276,7 @@ INCIDENT = [
         "tags": ["music", "psychology"],
     },
     {
-        "hook": "A programmer automated his entire job — then forgot to turn it off.",
+        "hook": "A programmer automated his entire job, then forgot to turn it off.",
         "story": [
             "A software engineer scripted all his tasks: compiling code, sending emails, even replying to his boss.",
             "He left the company in 2012 and forgot to shut the scripts down.",
@@ -289,7 +289,7 @@ INCIDENT = [
     {
         "hook": "For a few weeks in 2013, there were two living popes.",
         "story": [
-            "Pope Benedict XVI resigned — the first pope to do so in 600 years.",
+            "Pope Benedict XVI resigned. The first pope to do so in 600 years.",
             "For a while, two popes lived in Vatican City simultaneously.",
             "Benedict wore white. Francis wore white. Both were addressed as 'Your Holiness.'",
             "Vatican protocol had no rules for this; staff improvised etiquette daily.",
@@ -302,7 +302,7 @@ INCIDENT = [
         "story": [
             "As the story goes, a keeper named Vikram tended a lighthouse on a rocky island for 23 years, supplies arriving by boat every two weeks.",
             "When automation arrived in 1998, they offered him early retirement. He refused, staying on as a 'consultant' to check the machines.",
-            "When the lighthouse was decommissioned entirely in 2015, he was 71. He moved to the mainland — but hired a fisherman to take him back to the island every month.",
+            "When the lighthouse was decommissioned entirely in 2015, he was 71. He moved to the mainland, but hired a fisherman to take him back to the island every month.",
             "He died in 2019, they say, and his family scattered his ashes near the tower.",
             "The light no longer turns, but locals still navigate by its silhouette.",
         ],
@@ -332,7 +332,7 @@ INCIDENT = [
         "hook": "People used to mail entire houses through the US Post.",
         "story": [
             "In the early 1900s, US parcel post briefly had no meaningful size limit.",
-            "Some buyers shipped bricks — and even whole kit houses — by mail.",
+            "Some buyers shipped bricks (and even whole kit houses) by mail.",
             "Postal workers effectively became building movers.",
             "Regulators soon added weight limits to stop the practice.",
         ],
@@ -369,7 +369,7 @@ AUDIO_DRIFT = [
             "On January 15, 1919, a 50-foot wave of molasses burst from a storage "
             "tank in Boston's North End. 2.3 million gallons of sticky syrup flooded "
             "the streets at 35 mph, crushing buildings and killing 21 people. The "
-            "cleanup took weeks — workers used saltwater to dissolve the molasses. "
+            "cleanup took weeks. Workers used saltwater to dissolve the molasses. "
             "On hot days, locals say you can still smell it."
         ),
         "tags": ["history", "disaster"],
@@ -379,7 +379,7 @@ AUDIO_DRIFT = [
         "narration_script": (
             "Sailors tell of Sarah Ann Island, a speck in the Pacific that vanishes "
             "and reappears every few years. It's made, the story goes, of pumice "
-            "from underwater volcanoes — light enough to float. Ships avoid the "
+            "from underwater volcanoes, light enough to float. Ships avoid the "
             "waters where it's said to surface overnight. And no one, the legend "
             "insists, has ever set foot on it before it dissolves back into the "
             "ocean. Like all good sea stories, it lives somewhere between the "
@@ -392,7 +392,7 @@ AUDIO_DRIFT = [
         "narration_script": (
             "Kolmanskop in Namibia was once a thriving diamond mining town. When "
             "diamonds ran out in the 1950s, residents left everything behind. The "
-            "desert moved in — sand now fills the hospital, school, and homes up to "
+            "desert moved in. Sand now fills the hospital, school, and homes up to "
             "the ceiling. Photographers travel there to capture rooms half-buried, "
             "as if time stopped mid-conversation."
         ),
@@ -403,7 +403,7 @@ AUDIO_DRIFT = [
         "narration_script": (
             "In the 1920s, factory workers painted watch dials with radium paint. "
             "Supervisors told them to lick their brushes for precision. The women "
-            "began glowing in the dark — their bones, their breath. When they sued, "
+            "began glowing in the dark: their bones, their breath. When they sued, "
             "the companies denied everything. Their fight created modern workplace "
             "safety laws. Some of their graves still emit radiation."
         ),
@@ -475,9 +475,9 @@ PONDER = [
     {
         "question": "If you could erase one memory, would you?",
         "options": [
-            "Yes — there's something I want gone",
-            "No — even pain shaped who I am",
-            "Maybe — depends on which memory",
+            "Yes. There's something I want gone",
+            "No, even pain shaped who I am",
+            "Maybe, depends on which memory",
             "I'd rather add good memories than delete bad ones",
         ],
         "tags": ["memory", "philosophy"],
@@ -485,8 +485,8 @@ PONDER = [
     {
         "question": "Would you press a button that shows you the exact date of your death?",
         "options": [
-            "Yes — I'd plan everything around it",
-            "No — the countdown would ruin today",
+            "Yes, I'd plan everything around it",
+            "No. The countdown would ruin today",
             "I'd press it, then instantly regret it",
         ],
         "tags": ["time", "philosophy"],
@@ -494,8 +494,8 @@ PONDER = [
     {
         "question": "If you could hear what people honestly think of you, would you listen?",
         "options": [
-            "Yes — truth over comfort",
-            "No — some doors stay closed",
+            "Yes, truth over comfort",
+            "No, some doors stay closed",
             "Only from the people I love",
         ],
         "tags": ["people", "philosophy"],

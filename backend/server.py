@@ -12,6 +12,7 @@ from datetime import datetime
 from openai import AsyncOpenAI
 import json
 import math
+import re
 import random
 
 ROOT_DIR = Path(__file__).parent
@@ -244,6 +245,13 @@ GENERAL TONE RULES:
 - No shouting, emojis, hype language
 - No moralizing, outrage, or politics
 - Everything must feel timeless and quietly surprising
+- NO DASHES. Never use an em dash, an en dash, or a hyphen standing in for
+  punctuation between clauses. Use a full stop, a comma, a colon or
+  parentheses instead. Write "It doesn't make cold. It moves heat out."
+  and never the dashed version of the same sentence. Hyphens INSIDE a
+  compound word are fine (well-earthed, red-green, Catch-22). This rule
+  exists because every seeded card was rewritten to remove them, and
+  generated top-ups are the one path that could put them back.
 
 CONTENT QUALITY BAR (every item must pass ALL of these):
 - THE RETELL TEST: would a reader repeat this to a friend at dinner tonight?
@@ -474,10 +482,41 @@ Examples:
             response_text = response_text[:-3]
         
         data = json.loads(response_text.strip())
-        return data.get('items', [])
+        return [strip_dashes(item) for item in data.get('items', [])]
     except Exception as e:
         logging.error(f"AI generation error: {e}")
         return []
+
+_CLAUSE_DASH = re.compile(r'\s*[—–]\s*|\s+-\s+')
+
+
+def strip_dashes(value):
+    """Remove clause-joining dashes from generated copy.
+
+    The system prompt already forbids them, but a prompt rule is a request
+    and this is a guarantee: every seeded card was rewritten to drop the
+    dash, and AI top-ups are the one path that could quietly put it back.
+    Two layers, because a single one is hope.
+
+    Only a dash acting as PUNCTUATION goes: it has to be an em/en dash, or
+    a hyphen with space on both sides. Hyphens inside a compound word
+    (well-earthed, red-green, Catch-22) are untouched.
+
+    A comma is the safe substitute. It is occasionally not the sharpest
+    choice a writer would make, but it is never ungrammatical, and unlike
+    a full stop it cannot turn a trailing fragment into a sentence.
+    """
+    if isinstance(value, str):
+        out = _CLAUSE_DASH.sub(', ', value)
+        out = re.sub(r',\s*,', ',', out)
+        out = re.sub(r'\s+([,.;:])', r'\1', out)
+        return out.strip().strip(',').strip()
+    if isinstance(value, list):
+        return [strip_dashes(v) for v in value]
+    if isinstance(value, dict):
+        return {k: strip_dashes(v) for k, v in value.items()}
+    return value
+
 
 # Routes
 @api_router.get("/")

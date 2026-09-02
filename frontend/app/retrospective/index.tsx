@@ -115,14 +115,14 @@ export default function Retrospective() {
   if (photos.length === 1) {
     nudge = 'One photograph is a portrait. A journey starts at three.';
   } else if (photos.length === 2) {
-    nudge = 'Two photographs make a jump, not a journey — add a few more between them.';
+    nudge = 'Two photographs make a jump, not a journey. Add a few more between them.';
   } else if (photos.length >= 3 && filmable.length < 3) {
     nudge = 'Add years to at least three photographs and the film can play.';
   } else {
     for (let i = 1; i < filmable.length; i++) {
       const gap = parseInt(filmable[i].year, 10) - parseInt(filmable[i - 1].year, 10);
       if (gap > 15) {
-        nudge = `${gap} years pass between ${filmable[i - 1].year} and ${filmable[i].year} — one photo from the middle would smooth the crossing.`;
+        nudge = `${gap} years pass between ${filmable[i - 1].year} and ${filmable[i].year}. One photo from the middle would smooth the crossing.`;
         break;
       }
     }
@@ -163,12 +163,12 @@ export default function Retrospective() {
 
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <Text style={styles.intro}>
-          Five to eight photographs, a few years apart — one for each chapter of you.
+          Five to eight photographs, a few years apart, one for each chapter of you.
           Faces looking at the camera work best. Add a year and a line to each, and the
           room plays them as a short film of your becoming.
         </Text>
         <Text style={styles.privacyNote}>
-          The photographs stay on this device. Nothing is uploaded — this room has no storage.
+          The photographs stay on this device. Nothing is uploaded: this room has no storage.
         </Text>
 
         {!canAdd && (
@@ -204,7 +204,7 @@ export default function Retrospective() {
                   )}
                 </View>
               ))}
-              <Text style={styles.brandLine}>Modern Weirdness — a museum of curiosity</Text>
+              <Text style={styles.brandLine}>Modern Weirdness, a museum of curiosity</Text>
             </View>
 
             {/* Editing controls live OUTSIDE the capture target so the
@@ -249,7 +249,7 @@ export default function Retrospective() {
                   maxLength={4}
                   keyboardType="number-pad"
                 />
-                <Text style={styles.bornHint}>optional — it opens the film</Text>
+                <Text style={styles.bornHint}>optional: it opens the film</Text>
               </View>
             )}
 

@@ -31,7 +31,7 @@ EXPLAINER = [
         "question": "How do noise-cancelling headphones erase an aeroplane?",
         "steps": [
             "A microphone on the outside listens to the noise arriving at your ear.",
-            "The headphone generates the same wave turned upside down — every peak matched with a trough.",
+            "The headphone generates the same wave turned upside down, every peak matched with a trough.",
             "The two waves meet and largely cancel, leaving much less to hear.",
             "It works best on steady, low, droning sound. A sudden voice or a clattering tray arrives too unpredictably to be inverted in time.",
         ],
@@ -41,7 +41,7 @@ EXPLAINER = [
     {
         "question": "How do they get the lead into a pencil?",
         "steps": [
-            "There is no lead, and never was — it's graphite mixed with clay.",
+            "There is no lead, and never was. It's graphite mixed with clay.",
             "The mixture is extruded as a long thin rod and fired in a kiln. More clay makes a harder, fainter pencil.",
             "A slat of wood is cut with a groove, the rod laid in, and a second grooved slat glued on top.",
             "The block is then shaped and painted. The pencil is built around the core, not drilled and filled.",
@@ -55,14 +55,14 @@ EXPLAINER = [
             "Every tooth has a small hook on one face and a hollow on the other.",
             "Inside the slider is a Y-shaped channel that forces the two rows together at a precise angle.",
             "Each tooth drops into the hollow of the tooth opposite and locks there.",
-            "Pull the slider the other way and the same wedge prises them apart. The zip is not gripping — it is a chain of tiny hooks, each held by its neighbour.",
+            "Pull the slider the other way and the same wedge prises them apart. The zip is not gripping. It is a chain of tiny hooks, each held by its neighbour.",
         ],
         "tags": ["design", "everyday mysteries"],
     },
     {
         "question": "How do they make a mirror?",
         "steps": [
-            "A sheet of glass is polished until it is optically flat — the hard part.",
+            "A sheet of glass is polished until it is optically flat, the hard part.",
             "A thin layer of metal, usually aluminium, is deposited onto the back in a vacuum.",
             "Coats of protective paint seal the metal from air and scratching.",
             "The glass isn't the mirror. It's a window protecting the real mirror, which is the metal film behind it.",
@@ -76,7 +76,7 @@ EXPLAINER = [
             "Microwaves are tuned to a frequency that water molecules absorb strongly.",
             "The molecules are flipped back and forth billions of times a second, and that agitation is heat.",
             "Ceramic and glass hold almost no free water, so the radiation passes through them.",
-            "When the plate is hot anyway, it was warmed by the food sitting on it — not by the oven.",
+            "When the plate is hot anyway, it was warmed by the food sitting on it, not by the oven.",
         ],
         "tags": ["physics", "everyday mysteries"],
     },
@@ -84,7 +84,7 @@ EXPLAINER = [
         "question": "Why does Swiss cheese have holes?",
         "steps": [
             "Bacteria in the cheese give off carbon dioxide as they feed.",
-            "But gas alone doesn't make a hole — it needs somewhere to start collecting.",
+            "But gas alone doesn't make a hole. It needs somewhere to start collecting.",
             "In 2015 Swiss researchers found the trigger: microscopic specks of hay that fall into the milk during milking.",
             "As dairies got cleaner, less hay fell in, and the famous holes started shrinking. The holes were an accident of a dirtier process.",
         ],
@@ -94,7 +94,7 @@ EXPLAINER = [
     {
         "question": "How does a plane actually stay up?",
         "steps": [
-            "Not the way most of us were taught. The story about air splitting and having to 'meet up' at the back is wrong — NASA says so explicitly.",
+            "Not the way most of us were taught. The story about air splitting and having to 'meet up' at the back is wrong. NASA says so explicitly.",
             "The wing throws a large mass of air downwards, and the air pushes the wing up in return.",
             "The curved shape and the tilt of the wing both help it deflect more air, more efficiently.",
             "A plane flies for the same reason a hand out of a car window lifts when you angle it. It is pushing air down.",
@@ -116,7 +116,7 @@ EXPLAINER = [
         "question": "If watermelons are seedless, where do the next ones come from?",
         "steps": [
             "They can't reproduce. Every seedless watermelon is grown from seed produced by other plants.",
-            "Growers treat a normal plant with colchicine, which lets chromosomes copy but stops them separating — doubling the set.",
+            "Growers treat a normal plant with colchicine, which lets chromosomes copy but stops them separating, doubling the set.",
             "That doubled plant is crossed with a normal one, giving offspring with three sets of chromosomes.",
             "Three sets can't divide evenly into pollen and eggs, so the fruit never develops seeds. The plant is sterile, and that sterility is the product.",
         ],
@@ -127,7 +127,7 @@ EXPLAINER = [
         "steps": [
             "Honestly: nobody is certain, and that is the interesting part.",
             "We know anaesthetics disrupt how neurons signal, shifting the ions that let cells fire.",
-            "Beyond that, researchers still argue between a 'bottom-up' account — the drugs hijack the brain's own sleep circuitry — and a 'top-down' one, where they break the cortex's ability to integrate information.",
+            "Beyond that, researchers still argue between a 'bottom-up' account (the drugs hijack the brain's own sleep circuitry) and a 'top-down' one, where they break the cortex's ability to integrate information.",
             "Millions of people are safely rendered unconscious every year using a mechanism we can reliably produce and cannot fully explain.",
         ],
         "interaction": "It works. We're still arguing about why.",
@@ -136,7 +136,7 @@ EXPLAINER = [
     {
         "question": "How does a fridge make things cold?",
         "steps": [
-            "It doesn't make cold. There is no such thing to make — it moves heat out.",
+            "It doesn't make cold. There is no such thing to make. It moves heat out.",
             "A liquid refrigerant is allowed to expand and evaporate inside the fridge, and evaporating takes heat from its surroundings.",
             "The gas is pumped outside and compressed, which forces that heat back out through the coils at the back.",
             "Your kitchen is very slightly warmer because your food is colder. A fridge is a heat pump pointed inwards.",
@@ -150,7 +150,7 @@ EXPLAINER = [
             "A soap molecule has two ends that want opposite things: one is drawn to water, the other to oil.",
             "Dropped into greasy water, the oil-loving ends bury themselves in the grease and the water-loving ends face out.",
             "The grease ends up trapped inside a ball of soap molecules, with a water-friendly surface.",
-            "Rinsing carries the whole package away. Soap doesn't dissolve dirt — it wraps it in something water can hold on to.",
+            "Rinsing carries the whole package away. Soap doesn't dissolve dirt. It wraps it in something water can hold on to.",
         ],
         "tags": ["chemistry", "everyday mysteries"],
     },
@@ -160,7 +160,7 @@ EXPLAINER = [
             "Carbon dioxide is forced into the liquid under pressure. Under enough pressure, far more gas will dissolve than the liquid would normally hold.",
             "The bottle is sealed while still pressurised, and the gas has nowhere to go.",
             "Opening it drops the pressure instantly, and the liquid can no longer keep all that gas dissolved.",
-            "The bubbles you see are the drink returning to normal. Flat cola isn't spoiled — it's finished.",
+            "The bubbles you see are the drink returning to normal. Flat cola isn't spoiled. It's finished.",
         ],
         "tags": ["chemistry", "food"],
     },
@@ -190,7 +190,7 @@ EXPLAINER = [
         "steps": [
             "The needle is a small magnet, balanced so it can turn freely.",
             "Earth's molten outer core generates a magnetic field, and the needle swings until it lines up with it.",
-            "It points to magnetic north, which is not the north pole on the map — the two can be a long way apart.",
+            "It points to magnetic north, which is not the north pole on the map. The two can be a long way apart.",
             "Magnetic north also wanders. Charts have to be updated as it moves, which it has been doing rather briskly.",
         ],
         "tags": ["earth", "navigation"],
@@ -210,7 +210,7 @@ EXPLAINER = [
         "steps": [
             "The colour is chemistry, not dye. Different metal salts are packed into the shell.",
             "Heat excites the electrons in those metals to a higher energy level.",
-            "When they fall back, they release the surplus as light — and each metal releases it at its own wavelength.",
+            "When they fall back, they release the surplus as light, and each metal releases it at its own wavelength.",
             "Strontium gives red, copper blue, sodium yellow, barium green. Blue is notoriously the hardest to get bright, which is why it's the one that always looks a bit thin.",
         ],
         "tags": ["chemistry", "light"],
@@ -220,7 +220,7 @@ EXPLAINER = [
         "steps": [
             "Two different materials sit in an electrolyte, and one of them holds its electrons more loosely than the other.",
             "Chemistry wants to even that out, but the electrolyte lets ions through while blocking electrons.",
-            "The only route left for the electrons is the long way around — out of the battery, through your device, and back in.",
+            "The only route left for the electrons is the long way around, out of the battery, through your device, and back in.",
             "A flat battery isn't empty. The chemistry has simply reached the balance it was trying to reach all along.",
         ],
         "tags": ["chemistry", "technology"],
@@ -228,7 +228,7 @@ EXPLAINER = [
     {
         "question": "How do they know how old a fossil is?",
         "steps": [
-            "Certain elements decay into others at a rate that nothing — heat, pressure, chemistry — meaningfully changes.",
+            "Certain elements decay into others at a rate that nothing (heat, pressure, chemistry) meaningfully changes.",
             "Measure how much of the original remains against how much of the product has built up.",
             "The ratio gives the elapsed time, because the decay rate is known.",
             "Different clocks suit different ages: carbon runs out after tens of thousands of years, so anything older is dated from the rock around it, not the bone.",
@@ -241,14 +241,14 @@ EXPLAINER = [
             "Inside the lock is a row of small pin stacks, each cut into two pieces at a different height.",
             "With no key in, the pins straddle the gap between the barrel and its housing, jamming it.",
             "The ridges on the key lift each stack by exactly the right amount, so every split lines up with that gap.",
-            "Now nothing crosses the boundary, and the barrel turns. The key isn't unlocking anything — it's making a straight line out of a row of interruptions.",
+            "Now nothing crosses the boundary, and the barrel turns. The key isn't unlocking anything. It's making a straight line out of a row of interruptions.",
         ],
         "tags": ["design", "everyday mysteries"],
     },
     {
         "question": "How does Wi-Fi get through a wall?",
         "steps": [
-            "Wi-Fi is radio — the same kind of wave as light, just far longer and far lower in energy.",
+            "Wi-Fi is radio, the same kind of wave as light, just far longer and far lower in energy.",
             "Plaster and wood are effectively see-through at that wavelength, in the way glass is see-through to visible light.",
             "Water and metal are not. They absorb or reflect the signal, which is why a fish tank, a mirror or a foil-lined wall kills a connection dead.",
             "A router struggling across your flat isn't weak. It's being eaten by the specific things in the way.",
@@ -259,7 +259,7 @@ EXPLAINER = [
         "question": "How do they dig a tunnel under a river without it flooding?",
         "steps": [
             "A boring machine works with its cutting face sealed and pressurised, pushing back against the water and soil ahead of it.",
-            "The pressure at the front is balanced against what the ground is pushing in with — too little and it floods, too much and the riverbed lifts.",
+            "The pressure at the front is balanced against what the ground is pushing in with, too little and it floods, too much and the riverbed lifts.",
             "Spoil is carried back through the machine while it inches forward.",
             "Concrete segments are bolted into a ring immediately behind the cutter, so the tunnel is permanently lined before anyone stands in it.",
         ],
@@ -268,9 +268,9 @@ EXPLAINER = [
     {
         "question": "How does a barcode hold information in some lines?",
         "steps": [
-            "The digits are encoded in the widths — of the bars and equally of the white gaps between them.",
+            "The digits are encoded in the widths of the bars and equally of the white gaps between them.",
             "The scanner sweeps a beam across and measures how the reflection changes, dark to light and back.",
-            "Guard patterns at each end tell the reader where the code starts, stops, and which way round it is — which is why direction doesn't matter.",
+            "Guard patterns at each end tell the reader where the code starts, stops, and which way round it is, which is why direction doesn't matter.",
             "The last digit is calculated from the others. If they disagree, the scanner refuses rather than guessing, which is the beep you don't hear.",
         ],
         "tags": ["technology", "design"],
@@ -292,7 +292,7 @@ EXPLAINER = [
             "Special cells in the root and shoot contain dense starch grains heavy enough to sink.",
             "Whichever way the plant is turned, the grains settle to the bottom of those cells within minutes.",
             "The cell registers where they've landed and redistributes growth hormone accordingly.",
-            "One side then grows faster than the other, bending the plant. Lay a seedling on its side in total darkness and it still turns upward — it is feeling gravity, not looking for light.",
+            "One side then grows faster than the other, bending the plant. Lay a seedling on its side in total darkness and it still turns upward. It is feeling gravity, not looking for light.",
         ],
         "tags": ["biology", "nature"],
     },

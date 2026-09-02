@@ -21,7 +21,7 @@ function formatRange(start: string, end: string): string {
   const [, sm, sd] = start.split('-').map(Number);
   const [, em, ed] = end.split('-').map(Number);
   const from = `${MONTHS[sm - 1]} ${sd}`;
-  return sm === em ? `${from} – ${ed}` : `${from} – ${MONTHS[em - 1]} ${ed}`;
+  return sm === em ? `${from} to ${ed}` : `${from} to ${MONTHS[em - 1]} ${ed}`;
 }
 
 // The week in review, on the dark surface: four honest numbers, nothing
@@ -112,7 +112,7 @@ export default function WeekRecapCard({ recap }: WeekRecapCardProps) {
         <View style={styles.entryBlock}>
           <Text style={styles.entryText}>“{entry.text}”</Text>
           <Text style={styles.entryAttribution}>
-            — you, {dayName(entry.date)}
+            you, {dayName(entry.date)}
           </Text>
         </View>
       )}

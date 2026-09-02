@@ -31,7 +31,7 @@ FAST_WEIRD = [
         "headline": "Cleopatra lived closer to the Moon landing than to the building of the Great Pyramid",
         "facts": [
             "The Great Pyramid at Giza went up around 2560 BC.",
-            "Cleopatra was born in 69 BC — roughly 2,500 years later.",
+            "Cleopatra was born in 69 BC, roughly 2,500 years later.",
             "Apollo 11 landed 1,999 years after that. She was born nearer to us than to the pyramid she grew up beside.",
         ],
         "tags": ["history", "time"],
@@ -40,7 +40,7 @@ FAST_WEIRD = [
         "headline": "Tyrannosaurus rex lived closer to you than to Stegosaurus",
         "facts": [
             "Stegosaurus died out around 150 million years ago.",
-            "T. rex didn't appear until about 68 million years ago — a gap of some 85 million years.",
+            "T. rex didn't appear until about 68 million years ago, a gap of some 85 million years.",
             "Only 66 million years separate T. rex from this sentence. The two dinosaurs were never contemporaries; you are closer to one of them than they were to each other.",
         ],
         "tags": ["dinosaurs", "time"],
@@ -58,7 +58,7 @@ FAST_WEIRD = [
         "headline": "Nintendo was founded in 1889, and its first product was a hand-painted playing card",
         "facts": [
             "Fusajiro Yamauchi started Nintendo Koppai in Kyoto on 23 September 1889.",
-            "It made hanafuda — 'flower cards', 48 to a deck, twelve suits for twelve months.",
+            "It made hanafuda, 'flower cards', 48 to a deck, twelve suits for twelve months.",
             "The company was already over a century old before it sold anyone a Game Boy.",
         ],
         "tags": ["history", "games"],
@@ -77,7 +77,7 @@ FAST_WEIRD = [
         "facts": [
             "On 27 August 1896, Britain and the Sultanate of Zanzibar went to war.",
             "Khalid bin Barghash barricaded himself in the palace with around 2,800 defenders.",
-            "British shells hit a wooden palace. Roughly 500 of his people were killed or wounded inside half an hour — a war shorter than a lunch break, and not remotely a gentle one.",
+            "British shells hit a wooden palace. Roughly 500 of his people were killed or wounded inside half an hour, a war shorter than a lunch break, and not remotely a gentle one.",
         ],
         "tags": ["history", "war"],
     },
@@ -113,7 +113,7 @@ FAST_WEIRD = [
         "facts": [
             "In 1941 George de Mestral came back from a walk covered in burdock burrs, along with his dog.",
             "Under a microscope, each burr turned out to be thousands of tiny hooks catching on looped fibres.",
-            "He spent years reproducing it in nylon and named it from velours and crochet — velvet and hook.",
+            "He spent years reproducing it in nylon and named it from velours and crochet, velvet and hook.",
         ],
         "tags": ["invention", "nature"],
     },
@@ -131,7 +131,7 @@ FAST_WEIRD = [
         "facts": [
             "In 1957 Alfred Fielding and Marc Chavannes sealed two shower curtains together, trapping bubbles between them.",
             "The plan was textured, futuristic wall covering. Interior decorators declined.",
-            "It found its purpose protecting things in transit — and, unofficially, as the most popular object in the world to destroy on purpose.",
+            "It found its purpose protecting things in transit, and, unofficially, as the most popular object in the world to destroy on purpose.",
         ],
         "tags": ["invention", "accident"],
     },
@@ -158,7 +158,7 @@ FAST_WEIRD = [
         "facts": [
             "Venus takes about 243 Earth days to turn once on its axis.",
             "It goes all the way around the Sun in about 225.",
-            "It also spins backwards, so on Venus the Sun rises in the west — on the rare occasions it finishes rising at all.",
+            "It also spins backwards, so on Venus the Sun rises in the west on the rare occasions it finishes rising at all.",
         ],
         "tags": ["space", "time"],
     },
@@ -167,7 +167,7 @@ FAST_WEIRD = [
         "facts": [
             "Sudan has somewhere between 200 and 255 of them; Egypt has around 138.",
             "They were built by the Kingdom of Kush, roughly 700 BC to 300 AD.",
-            "Nubian pyramids worked more like headstones than tombs — the ruler was buried underneath, not inside.",
+            "Nubian pyramids worked more like headstones than tombs. The ruler was buried underneath, not inside.",
         ],
         "tags": ["history", "architecture"],
     },
@@ -211,7 +211,7 @@ FAST_WEIRD = [
         "headline": "Fanta was invented because Coca-Cola couldn't reach Nazi Germany",
         "facts": [
             "Wartime embargo cut the German bottling plant off from Coke's syrup in 1940.",
-            "Max Keith, who ran the operation, made a drink from what was still available — fruit offcuts and whey.",
+            "Max Keith, who ran the operation, made a drink from what was still available, fruit offcuts and whey.",
             "A salesman named it Fanta, short for Fantasie, after Keith told the team to use their imagination.",
         ],
         "tags": ["history", "food"],
@@ -238,7 +238,7 @@ FAST_WEIRD = [
         "headline": "The fastest eater on Earth finds, identifies and swallows food in a tenth of a second",
         "facts": [
             "The star-nosed mole averages about 230 milliseconds from spotting food to moving on.",
-            "Its best recorded time is 120 milliseconds — faster than a human can react to a light turning on.",
+            "Its best recorded time is 120 milliseconds, faster than a human can react to a light turning on.",
             "The star on its nose is not for smelling. It is a touch organ, and it is reading the dark faster than your eyes read this line.",
         ],
         "tags": ["animals", "senses"],
@@ -248,7 +248,7 @@ FAST_WEIRD = [
         "facts": [
             "Claude Shannon estimated the number of playable chess games at around 10^120.",
             "The observable universe holds an estimated 10^80 atoms.",
-            "That is not forty times more. It is forty orders of magnitude more — the atoms would need a trillion trillion trillion universes to catch up.",
+            "That is not forty times more. It is forty orders of magnitude more. The atoms would need a trillion trillion trillion universes to catch up.",
         ],
         "tags": ["mathematics", "games"],
     },
@@ -275,7 +275,7 @@ FAST_WEIRD = [
         "facts": [
             "Harvard was founded on 28 October 1636.",
             "Newton and Leibniz did not develop calculus until the late 1600s.",
-            "For its first few decades, the most advanced mathematics on Earth had not been invented yet — and the university was already open.",
+            "For its first few decades, the most advanced mathematics on Earth had not been invented yet, and the university was already open.",
         ],
         "tags": ["history", "science"],
     },
@@ -284,7 +284,7 @@ FAST_WEIRD = [
         "facts": [
             "She arrived in 1886 the colour of a new penny.",
             "Salt air and pollution oxidised the copper skin, taking her through a dull brown before the green appeared.",
-            "The whole change took about twenty years. The patina was left alone — it protects the copper underneath.",
+            "The whole change took about twenty years. The patina was left alone. It protects the copper underneath.",
         ],
         "tags": ["history", "chemistry"],
     },

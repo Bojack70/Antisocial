@@ -49,7 +49,7 @@ GUESSES = {
     },
     # The world's shortest scheduled flight lasts about 90 seconds
     "The world's shortest scheduled flight lasts about 90 seconds": {
-        "prompt": "With a good tailwind, the record for the full flight is —",
+        "prompt": "With a good tailwind, the record for the full flight is…",
         "options": ["Under a minute", "About 75 seconds", "Just under the scheduled 90"],
         "answer": "Under a minute",
     },
@@ -91,7 +91,7 @@ GUESSES = {
     },
     # Manhattan was not bought for $24
     "Manhattan was not bought for $24": {
-        "prompt": "The recorded price was 60 guilders. In today's money, that is —",
+        "prompt": "The recorded price was 60 guilders. In today's money, that is…",
         "options": ["Around $200", "Over $1,000", "About $1 million"],
         "answer": "Over $1,000",
     },
@@ -103,7 +103,7 @@ GUESSES = {
     },
     # Marie Curie's notebooks are still too radioactive to handle
     "Marie Curie's notebooks are still too radioactive to handle": {
-        "prompt": "The radium in them has a half-life of —",
+        "prompt": "The radium in them has a half-life of…",
         "options": ["16 years", "1,600 years", "24,000 years"],
         "answer": "1,600 years",
     },
@@ -121,7 +121,7 @@ GUESSES = {
     },
     # The Guinness Book of Records exists because two men argued in a pub
     "The Guinness Book of Records exists because two men argued in a pub and couldn't settle it": {
-        "prompt": "Europe's fastest game bird — the argument that started the book — flies at about —",
+        "prompt": "Europe's fastest game bird (the argument that started the book) flies at about…",
         "options": ["70 km/h", "130 km/h", "210 km/h"],
         "answer": "130 km/h",
     },
@@ -138,7 +138,7 @@ GUESSES = {
         "answer": "Less than two months",
     },
     # Napoleon was not short — an inch changed length
-    "Napoleon was not short — an inch changed length": {
+    "Napoleon was not short, an inch changed length": {
         "prompt": "Converted to modern units, how tall did he stand?",
         "options": ["About 5 foot 2", "About 5 foot 6", "About 6 foot"],
         "answer": "About 5 foot 6",

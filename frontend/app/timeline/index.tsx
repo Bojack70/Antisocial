@@ -122,7 +122,7 @@ export default function TimelineGame() {
   const shareRun = async () => {
     const message =
       `I survived ${streak} round${streak === 1 ? '' : 's'} of The Timeline ` +
-      `in Modern Weirdness. The fax machine came before the telephone — how far can you get?`;
+      `in Modern Weirdness. The fax machine came before the telephone. How far can you get?`;
     try {
       if (Platform.OS === 'web' && typeof navigator !== 'undefined' && (navigator as any).share) {
         await (navigator as any).share({ text: message });

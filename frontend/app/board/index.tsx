@@ -15,15 +15,15 @@ const COLS = 6;
 // Shortcuts jump you forward, rabbit holes pull you back.
 // Every jump reveals a fact — the game stays a museum.
 const JUMPS: Record<number, { to: number; fact: string }> = {
-  4: { to: 15, fact: 'Shortcut — the fax machine was patented 33 years before the telephone.' },
-  9: { to: 21, fact: 'Shortcut — Oxford was teaching students before the Aztec Empire existed.' },
-  17: { to: 28, fact: 'Shortcut — there are more trees on Earth than stars in the Milky Way.' },
-  26: { to: 34, fact: 'Shortcut — woolly mammoths were still alive when the Great Pyramid was built.' },
-  12: { to: 3, fact: 'Rabbit hole — in 1919, a 50-foot wave of molasses flooded Boston at 35 mph.' },
-  19: { to: 7, fact: 'Rabbit hole — in 1932 Australia went to war with emus. The emus won.' },
-  24: { to: 16, fact: 'Rabbit hole — Victor Lustig sold the Eiffel Tower to scrap dealers. Twice.' },
-  31: { to: 13, fact: 'Rabbit hole — Kolmanskop, a diamond town, was swallowed whole by the desert.' },
-  35: { to: 22, fact: 'Rabbit hole — one whale sings at 52 hertz, a frequency no other whale uses.' },
+  4: { to: 15, fact: 'Shortcut: the fax machine was patented 33 years before the telephone.' },
+  9: { to: 21, fact: 'Shortcut: Oxford was teaching students before the Aztec Empire existed.' },
+  17: { to: 28, fact: 'Shortcut: there are more trees on Earth than stars in the Milky Way.' },
+  26: { to: 34, fact: 'Shortcut: woolly mammoths were still alive when the Great Pyramid was built.' },
+  12: { to: 3, fact: 'Rabbit hole: in 1919, a 50-foot wave of molasses flooded Boston at 35 mph.' },
+  19: { to: 7, fact: 'Rabbit hole: in 1932 Australia went to war with emus. The emus won.' },
+  24: { to: 16, fact: 'Rabbit hole: Victor Lustig sold the Eiffel Tower to scrap dealers. Twice.' },
+  31: { to: 13, fact: 'Rabbit hole: Kolmanskop, a diamond town, was swallowed whole by the desert.' },
+  35: { to: 22, fact: 'Rabbit hole: one whale sings at 52 hertz, a frequency no other whale uses.' },
 };
 
 type Turn = 'player' | 'rival' | 'over';

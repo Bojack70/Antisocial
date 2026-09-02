@@ -208,6 +208,40 @@ Verified headless at 414×896 before commit: all 21 types in `/cards` and a real
 session render top 96 / bottom 856, nothing clips, no page errors. Audio Drift is the
 one card that outgrows its page and scrolls, which is the intended fallback.
 
+### The no-dash rule (2026-09-02, user call)
+
+**No dash may act as punctuation in anything the visitor reads.** No em dash, no
+en dash, no hyphen standing between clauses. Hyphens INSIDE a compound word are
+untouched and always will be: `built-in`, `red-green`, `well-earthed`,
+`Catch-22`, `ME/CFS`, `Slaughterhouse-Five`.
+
+Repaired, not find-and-replaced: the dash was doing four different jobs and each
+needed a different fix. A parenthetical aside became parentheses; a label became
+a colon ("Shortcut: the fax machine was patented first"); a clause with its own
+subject and verb became a new sentence; a trailing noun phrase became a comma. A
+blind swap gives you either sentence fragments ("Signalling mood, dominance.")
+or comma splices ("tombs, the ruler was buried underneath"), and both read worse
+than the dash did. 292 strings across 30 files.
+
+**Not touched, deliberately:** code comments and docstrings (developer prose,
+not visitor copy) and the `print()` lines in `populate_youtube.py` /
+`populate_podcast_rss.py` (maintainer terminal output).
+
+**Three layers, because one is hope:**
+1. Every seed file rewritten, and the populate scripts re-run so Mongo carries
+   the corrected text (they are idempotent, keyed by title).
+2. `server.py`'s generation prompt bans dashes explicitly.
+3. `strip_dashes()` in `server.py` sanitises every AI-generated item before it
+   is stored, so the prompt is a request and this is the guarantee.
+4. Content that arrives from somebody else's feed can't be fixed at source, so
+   `frontend/lib/titles.ts` cleans it at render: `cleanSourcedTitle` drops the
+   trailing " - Ep13" / " - Rachel Yang" suffix, `cleanSourcedText` clears
+   clause dashes and the bare "—" divider lines out of podcast show notes.
+
+Verified by walking every rendered text node in `/cards` and in a real feed
+session: zero dashes visible, no page errors, layout unchanged (all 28 pages
+still top 96 / bottom 856).
+
 ### Parked (raised, deliberately not scheduled)
 
 - **"Before You Watch" — a guess card built from the video pool** (parked 2026-09-01 at

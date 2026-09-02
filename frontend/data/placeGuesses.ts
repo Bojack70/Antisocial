@@ -30,7 +30,7 @@ export const PLACE_GUESSES: PlaceGuess[] = [
     answer: 'Setenil de las Bodegas, Spain',
     decoys: ['Matera, Italy', 'Ronda, Spain', 'Bonifacio, France'],
     story:
-      'The village runs underneath an overhanging limestone cliff — each house builds three walls and lets the rock be the roof. The name comes from the Latin septem nihil, “seven times nothing,” for the seven sieges the town shrugged off before falling on the eighth, in 1484. Under the rock it stays around 15–20°C while the street outside hits 42.',
+      'The village runs underneath an overhanging limestone cliff: each house builds three walls and lets the rock be the roof. The name comes from the Latin septem nihil, “seven times nothing,” for the seven sieges the town shrugged off before falling on the eighth, in 1484. Under the rock it stays around 15 20°C while the street outside hits 42.',
     credit: 'Photo: Jialiang Gao · CC BY-SA 2.5 · Wikimedia Commons',
     source_link: 'https://commons.wikimedia.org/wiki/File:Setenil_de_las_Bodegas_Cadiz_Spain.jpg',
   },
@@ -40,7 +40,7 @@ export const PLACE_GUESSES: PlaceGuess[] = [
     answer: 'Spotted Lake, Canada',
     decoys: ['Laguna Colorada, Bolivia', 'Great Salt Lake, USA', 'Dead Sea, Jordan'],
     story:
-      'Each summer the lake evaporates into hundreds of separate mineral pools — some of the densest Epsom-salt water on Earth. The Syilx people call it kłlilx’w, a sacred place; during the First World War its salts were mined for explosives. In 2001 the Okanagan Nation bought the lake back to protect it.',
+      'Each summer the lake evaporates into hundreds of separate mineral pools, some of the densest Epsom-salt water on Earth. The Syilx people call it kłlilx’w, a sacred place; during the First World War its salts were mined for explosives. In 2001 the Okanagan Nation bought the lake back to protect it.',
     credit: 'Photo: Mykola Swarnyk · CC BY-SA 3.0 · Wikimedia Commons',
     source_link: 'https://commons.wikimedia.org/wiki/File:Spotted_Lake_Osoyoos.JPG',
   },
@@ -54,7 +54,7 @@ export const PLACE_GUESSES: PlaceGuess[] = [
       'Wadi Rum, Jordan',
     ],
     story:
-      'Dragon’s blood trees grow on this one archipelago and nowhere else on Earth. Single trees live past 300 years, and their red resin has been traded as “dragon’s blood” — dye, medicine, varnish — since antiquity. Roughly 80,000 remain.',
+      'Dragon’s blood trees grow on this one archipelago and nowhere else on Earth. Single trees live past 300 years, and their red resin has been traded as “dragon’s blood” (dye, medicine, varnish) since antiquity. Roughly 80,000 remain.',
     credit: 'Photo: Boris Khvostichenko · CC BY-SA 4.0 · Wikimedia Commons',
     source_link: 'https://commons.wikimedia.org/wiki/File:Socotra_dragon_tree.JPG',
   },
@@ -65,7 +65,7 @@ export const PLACE_GUESSES: PlaceGuess[] = [
     answer: 'Darvaza gas crater, Turkmenistan',
     decoys: ['Danakil Depression, Ethiopia', 'Mount Yasur, Vanuatu', 'Kīlauea, USA'],
     story:
-      'Soviet geologists drilling for gas hit a cavern that swallowed their rig, and lit the leak expecting it to burn off in days. The crater — 69 metres across — has now been burning for around half a century. Turkmenistan kept no official record of the accident; even the year it started is disputed.',
+      'Soviet geologists drilling for gas hit a cavern that swallowed their rig, and lit the leak expecting it to burn off in days. The crater (69 metres across) has now been burning for around half a century. Turkmenistan kept no official record of the accident; even the year it started is disputed.',
     credit: 'Photo: Benjamin Goetzinger · CC BY-SA 4.0 · Wikimedia Commons',
     source_link:
       'https://commons.wikimedia.org/wiki/File:Darvaza_gas_crater,_J%C3%A4hennem_derwezesi,_Door_to_Hell,_Gates_of_Hell,_Derweze,_Turkmenistan.jpg',
@@ -77,7 +77,7 @@ export const PLACE_GUESSES: PlaceGuess[] = [
     answer: 'Coober Pedy, Australia',
     decoys: ['Cappadocia, Turkey', 'Matmata, Tunisia', 'Petra, Jordan'],
     story:
-      'An opal-mining town where roughly half the population lives underground, in “dugouts” carved from old mine tunnels that hold a steady 23°C under the desert. The first opal here was found in 1915 by a fourteen-year-old. The town’s name comes from kupa-piti — “the white man’s hole.”',
+      'An opal-mining town where roughly half the population lives underground, in “dugouts” carved from old mine tunnels that hold a steady 23°C under the desert. The first opal here was found in 1915 by a fourteen-year-old. The town’s name comes from kupa-piti, “the white man’s hole.”',
     credit: 'Photo: Nachoman-au · CC BY-SA 3.0 · Wikimedia Commons',
     source_link: 'https://commons.wikimedia.org/wiki/File:Coober_Pedy_underground_house.jpg',
   },
@@ -98,7 +98,7 @@ export const PLACE_GUESSES: PlaceGuess[] = [
     answer: 'Zhangye Danxia, China',
     decoys: ['Vinicunca, Peru', 'Painted Hills, USA', 'Kelimutu, Indonesia'],
     story:
-      'More than twenty-four million years of layered mineral sediment, buckled upward by tectonic collision and carved by wind and water into striped ridges. The red is hematite — iron, rusting in plain sight.',
+      'More than twenty-four million years of layered mineral sediment, buckled upward by tectonic collision and carved by wind and water into striped ridges. The red is hematite, iron, rusting in plain sight.',
     credit: 'Photo: Terry Wu · CC BY-SA 2.0 · Wikimedia Commons',
     source_link:
       'https://commons.wikimedia.org/wiki/File:Colourful_mountains_of_the_Zhangye_National_Geopark.jpg',
@@ -110,7 +110,7 @@ export const PLACE_GUESSES: PlaceGuess[] = [
     answer: 'Lake Natron, Tanzania',
     decoys: ['Lake Bogoria, Kenya', 'Lake Magadi, Kenya', 'Laguna Colorada, Bolivia'],
     story:
-      'The water reaches pH 12 and 60°C — birds that stray in can calcify. It is also where roughly 2.5 million lesser flamingos breed, protected by the same water that kills nearly everything else.',
+      'The water reaches pH 12 and 60°C, birds that stray in can calcify. It is also where roughly 2.5 million lesser flamingos breed, protected by the same water that kills nearly everything else.',
     credit: 'Photo: Christoph Strässler · CC BY-SA 2.0 · Wikimedia Commons',
     source_link: 'https://commons.wikimedia.org/wiki/File:Flamingos_at_Lake_Natron,_Tanzania.jpg',
   },
@@ -121,7 +121,7 @@ export const PLACE_GUESSES: PlaceGuess[] = [
     answer: 'Chand Baori, India',
     decoys: ['Rani ki Vav, India', 'Agrasen ki Baoli, India', 'Adalaj stepwell, India'],
     story:
-      'A ninth-century stepwell descending thirteen storeys through roughly 3,500 symmetrical steps — a monsoon reservoir that doubled as the coolest room in the Rajasthan desert.',
+      'A ninth-century stepwell descending thirteen storeys through roughly 3,500 symmetrical steps, a monsoon reservoir that doubled as the coolest room in the Rajasthan desert.',
     credit: 'Photo: Chetan · CC BY-SA 3.0 · Wikimedia Commons',
     source_link: 'https://commons.wikimedia.org/wiki/File:Chand_Baori_(step-well).JPG',
   },
@@ -132,7 +132,7 @@ export const PLACE_GUESSES: PlaceGuess[] = [
     answer: 'Kawah Ijen, Indonesia',
     decoys: ['Dallol, Ethiopia', 'Mount Bromo, Indonesia', 'Poás Volcano, Costa Rica'],
     story:
-      'At night, sulfur gases escaping at up to 600°C ignite on contact with air and burn electric blue — not lava, just burning gas, gone by sunrise. The crater also holds the most acidic large lake on Earth, and miners still hand-carry 90-kilo loads of sulfur up its paths.',
+      'At night, sulfur gases escaping at up to 600°C ignite on contact with air and burn electric blue: not lava, just burning gas, gone by sunrise. The crater also holds the most acidic large lake on Earth, and miners still hand-carry 90-kilo loads of sulfur up its paths.',
     credit: 'Photo: Thomas Fuhrmann · CC BY-SA 4.0 · Wikimedia Commons',
     source_link: 'https://commons.wikimedia.org/wiki/File:The_blue_fire_of_Kawah_Ijen_1.jpg',
   },
@@ -142,7 +142,7 @@ export const PLACE_GUESSES: PlaceGuess[] = [
     answer: 'Fly Geyser, USA',
     decoys: ['Grand Prismatic Spring, USA', 'Hverir, Iceland', 'El Tatio, Chile'],
     story:
-      'Not natural. A geothermal test well drilled in 1964 was left badly capped, and the escaping water has been building this mound ever since — inches of mineral deposit a year, painted red and green by heat-loving algae. The Burning Man Project bought the ranch it stands on in 2016.',
+      'Not natural. A geothermal test well drilled in 1964 was left badly capped, and the escaping water has been building this mound ever since, inches of mineral deposit a year, painted red and green by heat-loving algae. The Burning Man Project bought the ranch it stands on in 2016.',
     credit: 'Photo: Ken Lund · CC BY-SA 2.0 · Wikimedia Commons',
     source_link: 'https://commons.wikimedia.org/wiki/File:Fly_Geyser,_Nevada.jpg',
   },
@@ -153,7 +153,7 @@ export const PLACE_GUESSES: PlaceGuess[] = [
     answer: 'Dallol, Ethiopia',
     decoys: ['Kawah Ijen, Indonesia', 'Grand Prismatic Spring, USA', 'Salar de Uyuni, Bolivia'],
     story:
-      'The hottest inhabited place on Earth by annual average — 34.6°C — sitting 125 metres below sea level. The neon terraces are acid springs dissolving buried salt and oxidizing at the surface. Astrobiologists study it as a stand-in for Mars.',
+      'The hottest inhabited place on Earth by annual average (34.6°C) sitting 125 metres below sea level. The neon terraces are acid springs dissolving buried salt and oxidizing at the surface. Astrobiologists study it as a stand-in for Mars.',
     credit: 'Photo: Barrowbob · CC BY-SA 4.0 · Wikimedia Commons',
     source_link:
       'https://commons.wikimedia.org/wiki/File:Dallol_Salt_Pan_in_the_Danakil_Desert,_Ethiopia.jpg',
@@ -165,7 +165,7 @@ export const PLACE_GUESSES: PlaceGuess[] = [
     answer: 'Caño Cristales, Colombia',
     decoys: ['Cenote Angelita, Mexico', 'Havasu Falls, USA', 'Plitvice Lakes, Croatia'],
     story:
-      'For a few weeks between seasons the riverbed turns red, yellow, green and blue — an aquatic plant that exists in this one river blooms crimson only at a precise depth and light. The river spent decades closed to visitors during Colombia’s civil conflict.',
+      'For a few weeks between seasons the riverbed turns red, yellow, green and blue, an aquatic plant that exists in this one river blooms crimson only at a precise depth and light. The river spent decades closed to visitors during Colombia’s civil conflict.',
     credit: 'Photo: Pedro Szekely · CC BY-SA 2.0 · Wikimedia Commons',
     source_link:
       'https://commons.wikimedia.org/wiki/File:Ca%C3%B1o_Cristales,_Colombia_(24867367037).jpg',
@@ -177,7 +177,7 @@ export const PLACE_GUESSES: PlaceGuess[] = [
     answer: 'Racetrack Playa, USA',
     decoys: ['Bonneville Salt Flats, USA', 'Salar de Uyuni, Bolivia', 'Rann of Kutch, India'],
     story:
-      'Rocks up to 300 kilos slide across this dry lakebed leaving long trails, and for decades no one ever saw one move. In 2013 researchers GPS-tagged fifteen rocks and caught it: overnight rain freezes into thin ice panels, and a light wind shoves the panels — rocks and all — across the mud.',
+      'Rocks up to 300 kilos slide across this dry lakebed leaving long trails, and for decades no one ever saw one move. In 2013 researchers GPS-tagged fifteen rocks and caught it: overnight rain freezes into thin ice panels, and a light wind shoves the panels (rocks and all) across the mud.',
     credit: 'Photo: Laurence G. Charlot · CC BY-SA 4.0 · Wikimedia Commons',
     source_link:
       'https://commons.wikimedia.org/wiki/File:Racetrack_Playa_in_Death_Valley_National_Park.jpg',

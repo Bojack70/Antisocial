@@ -35,7 +35,7 @@ load_dotenv()
 # Believed true by most people. Isn't.
 MYTHS = [
     {
-        "prompt": "Different parts of your tongue detect different tastes — sweet at the tip, bitter at the back.",
+        "prompt": "Different parts of your tongue detect different tastes, sweet at the tip, bitter at the back.",
         "reveal": "The whole tongue detects all five tastes more or less equally. The map comes from a German paper of 1901 that found tiny differences in sensitivity; a textbook illustrator turned those into hard zones, and the diagram outlived the evidence by a century.",
         "tags": ["body", "science"],
     },
@@ -51,12 +51,12 @@ MYTHS = [
     },
     {
         "prompt": "You have to wait 24 hours before you can report someone missing.",
-        "reveal": "There is no such rule anywhere — no law, no policy, no state. It came from television, where the delay was a convenient way to build tension. It is the rare myth that does real damage: the first hours are the ones that matter most.",
+        "reveal": "There is no such rule anywhere, no law, no policy, no state. It came from television, where the delay was a convenient way to build tension. It is the rare myth that does real damage: the first hours are the ones that matter most.",
         "tags": ["life", "myths"],
     },
     {
         "prompt": "Sugar makes children hyperactive.",
-        "reveal": "A meta-analysis of 23 controlled trials found no effect on behaviour at all. A separate study told mothers their children had been given sugar when they hadn't — those mothers rated their children as noticeably more hyperactive, and were observed hovering and correcting them more. The effect is real. It is just happening in the adult.",
+        "reveal": "A meta-analysis of 23 controlled trials found no effect on behaviour at all. A separate study told mothers their children had been given sugar when they hadn't, those mothers rated their children as noticeably more hyperactive, and were observed hovering and correcting them more. The effect is real. It is just happening in the adult.",
         "tags": ["body", "science"],
     },
     {
@@ -66,7 +66,7 @@ MYTHS = [
     },
     {
         "prompt": "Your blood is blue inside your body and turns red when it hits the air.",
-        "reveal": "It is never blue. Oxygen-rich blood is bright red, oxygen-poor blood is dark red, and that is the whole range. Veins look blue because of how skin scatters light before it reaches them — the illusion is in the tissue on top, not the liquid underneath.",
+        "reveal": "It is never blue. Oxygen-rich blood is bright red, oxygen-poor blood is dark red, and that is the whole range. Veins look blue because of how skin scatters light before it reaches them. The illusion is in the tissue on top, not the liquid underneath.",
         "tags": ["body", "science"],
     },
     {
@@ -76,17 +76,17 @@ MYTHS = [
     },
     {
         "prompt": "The Sahara is the largest desert on Earth.",
-        "reveal": "Antarctica is, and by a wide margin — roughly twice the Sahara. A desert is defined by how little falls from the sky, not by heat or sand. Parts of the Antarctic interior have had no meaningful precipitation for something like two million years.",
+        "reveal": "Antarctica is, and by a wide margin, roughly twice the Sahara. A desert is defined by how little falls from the sky, not by heat or sand. Parts of the Antarctic interior have had no meaningful precipitation for something like two million years.",
         "tags": ["earth", "geography"],
     },
     {
         "prompt": "Chameleons change colour to blend into their surroundings.",
-        "reveal": "They mostly change colour to talk and to manage heat — signalling mood, dominance, and readiness to mate. The most dramatic colour shifts a chameleon produces are the ones that make it far more visible, not less.",
+        "reveal": "They mostly change colour to talk and to manage heat, signalling mood, dominance, and readiness to mate. The most dramatic colour shifts a chameleon produces are the ones that make it far more visible, not less.",
         "tags": ["animals"],
     },
     {
         "prompt": "Lightning never strikes the same place twice.",
-        "reveal": "The Empire State Building is hit around 25 times a year. Tall, sharp, well-earthed things get struck repeatedly and predictably — which is exactly why lightning rods work.",
+        "reveal": "The Empire State Building is hit around 25 times a year. Tall, sharp, well-earthed things get struck repeatedly and predictably, which is exactly why lightning rods work.",
         "tags": ["weather", "myths"],
     },
 ]
@@ -95,17 +95,17 @@ MYTHS = [
 FACTS = [
     {
         "prompt": "Octopus blood is blue.",
-        "reveal": "It carries oxygen with hemocyanin, which is built around copper rather than the iron in our haemoglobin — and copper-based blood runs blue. It works better than ours in cold, low-oxygen water, which is where they live.",
+        "reveal": "It carries oxygen with hemocyanin, which is built around copper rather than the iron in our haemoglobin, and copper-based blood runs blue. It works better than ours in cold, low-oxygen water, which is where they live.",
         "tags": ["animals", "chemistry"],
     },
     {
         "prompt": "Butterflies taste with their feet.",
-        "reveal": "They have chemical receptors on their feet, and a female uses them before laying — standing on a leaf to check it is the right plant and not poisonous for caterpillars that haven't hatched yet.",
+        "reveal": "They have chemical receptors on their feet, and a female uses them before laying, standing on a leaf to check it is the right plant and not poisonous for caterpillars that haven't hatched yet.",
         "tags": ["animals", "senses"],
     },
     {
         "prompt": "A banana is a berry. A strawberry is not.",
-        "reveal": "Botanically a berry grows from one flower with a single ovary — which the banana does and the strawberry doesn't. A strawberry forms from many ovaries in one flower, and the things everyone calls its seeds are the actual fruit.",
+        "reveal": "Botanically a berry grows from one flower with a single ovary, which the banana does and the strawberry doesn't. A strawberry forms from many ovaries in one flower, and the things everyone calls its seeds are the actual fruit.",
         "tags": ["food", "biology"],
     },
     {
@@ -115,12 +115,12 @@ FACTS = [
     },
     {
         "prompt": "Scotland's national animal is the unicorn.",
-        "reveal": "Officially, and since the 1300s. Two unicorns supported the Scottish coat of arms until James VI became James I of England and swapped one out for the English lion. The unicorn on the royal arms is chained — a mythical beast considered too dangerous to leave loose.",
+        "reveal": "Officially, and since the 1300s. Two unicorns supported the Scottish coat of arms until James VI became James I of England and swapped one out for the English lion. The unicorn on the royal arms is chained, a mythical beast considered too dangerous to leave loose.",
         "tags": ["history"],
     },
     {
         "prompt": "A sloth can hold its breath longer than a dolphin can.",
-        "reveal": "Around 40 minutes, against roughly 10 to 15 for a dolphin. A sloth can drop its heart rate to a third of normal, which is the same trick that makes it slow on land — the animal built for hanging in a tree beats the one built for the sea.",
+        "reveal": "Around 40 minutes, against roughly 10 to 15 for a dolphin. A sloth can drop its heart rate to a third of normal, which is the same trick that makes it slow on land, the animal built for hanging in a tree beats the one built for the sea.",
         "tags": ["animals"],
     },
     {
@@ -136,13 +136,13 @@ FACTS = [
 # rewritten — the questions were already good, they were just missing the payoff.
 LEGACY_REVEALS = {
     "Glass is technically a slow-moving liquid, even at room temperature.":
-        "Glass is an amorphous solid and does not flow. Old cathedral windows are thicker at the bottom because of how panes were spun and blown before modern manufacturing — and because builders sensibly installed the heavy edge downwards.",
+        "Glass is an amorphous solid and does not flow. Old cathedral windows are thicker at the bottom because of how panes were spun and blown before modern manufacturing, and because builders sensibly installed the heavy edge downwards.",
     "Goldfish have a memory span of only a few seconds.":
-        "Their memories run to months. Researchers at the University of Michigan showed in 1966 that goldfish got steadily better at avoiding a shock across trials spread over days — they were learning, and remembering that they had learned.",
+        "Their memories run to months. Researchers at the University of Michigan showed in 1966 that goldfish got steadily better at avoiding a shock across trials spread over days. They were learning, and remembering that they had learned.",
     "Humans only use 10 percent of their brains.":
-        "Brain imaging finds essentially all of it in use, most of the time. The claim seems to have grown out of 1890s Harvard theories about untapped 'reserve energy' — a point about unrealised potential that got mangled into an anatomical fact.",
+        "Brain imaging finds essentially all of it in use, most of the time. The claim seems to have grown out of 1890s Harvard theories about untapped 'reserve energy', a point about unrealised potential that got mangled into an anatomical fact.",
     "Bulls become aggressive specifically because of the color red.":
-        "Bulls are red-green colour blind, so the cape barely registers as red at all. What provokes the charge is the movement. The colour is tradition — and it hides the blood.",
+        "Bulls are red-green colour blind, so the cape barely registers as red at all. What provokes the charge is the movement. The colour is tradition, and it hides the blood.",
 }
 
 

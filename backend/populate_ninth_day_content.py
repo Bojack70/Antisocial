@@ -51,7 +51,7 @@ FAST_WEIRD = [
         "headline": "In 18th-century England you could rent a pineapple for the evening",
         "facts": [
             "Growing one in that climate took years and enormous expense; a single fruit could cost the equivalent of thousands today.",
-            "So they were hired out for parties, carried under the arm, displayed as the centrepiece — and pointedly not eaten.",
+            "So they were hired out for parties, carried under the arm, displayed as the centrepiece, and pointedly not eaten.",
             "The same pineapple would go back to the shop and out again to the next host, doing the rounds until it finally rotted.",
         ],
         "tags": ["history", "food"],
@@ -66,10 +66,10 @@ FAST_WEIRD = [
         "tags": ["history", "money"],
     },
     {
-        "headline": "Napoleon was not short — an inch changed length",
+        "headline": "Napoleon was not short, an inch changed length",
         "facts": [
             "His height was recorded in French inches, which were about 2.71 cm, not the 2.54 cm inch used now.",
-            "Converted properly he stood around 5 foot 6 or 7 — perfectly ordinary, and slightly above average for a Frenchman of his day.",
+            "Converted properly he stood around 5 foot 6 or 7, perfectly ordinary, and slightly above average for a Frenchman of his day.",
             "The short-tempered little man is largely the invention of British cartoonist James Gillray. Napoleon said Gillray had done more to bring him down than all the armies of Europe.",
         ],
         "tags": ["history", "myths"],
@@ -78,7 +78,7 @@ FAST_WEIRD = [
         "headline": "Saturn is less dense than water",
         "facts": [
             "Its average density is about 0.7 grams per cubic centimetre; water is 1.0.",
-            "The planet is overwhelmingly hydrogen and helium, and enormous — which spreads not very much mass across a great deal of volume.",
+            "The planet is overwhelmingly hydrogen and helium, and enormous, which spreads not very much mass across a great deal of volume.",
             "The bathtub image is a comparison, not a plan. Assemble enough water to float Saturn and its own gravity would crush the tub, the water and the joke together.",
         ],
         "tags": ["space", "physics"],
@@ -88,14 +88,14 @@ FAST_WEIRD = [
         "facts": [
             "It is thousands of kilometres long but only metres wide, and made of the same material as the ground beside it.",
             "NASA says it is not visible to the naked eye from orbit. China's first astronaut, Yang Liwei, looked for it in 2003 and reported he could not see it either.",
-            "The claim predates spaceflight entirely — a version appears in a Ripley's cartoon in 1932, decades before anyone could go and check.",
+            "The claim predates spaceflight entirely, a version appears in a Ripley's cartoon in 1932, decades before anyone could go and check.",
         ],
         "tags": ["space", "myths"],
     },
     {
         "headline": "Manhattan was not bought for $24",
         "facts": [
-            "The 1626 transaction was recorded as 60 guilders — worth over a thousand dollars in today's money, not twenty-four.",
+            "The 1626 transaction was recorded as 60 guilders, worth over a thousand dollars in today's money, not twenty-four.",
             "The $24 figure comes from a history book published in 1846 and has been copied ever since without anyone rechecking it.",
             "There is a deeper problem with the story: the Lenape appear to have understood the agreement as temporary shared use, closer to a lease, with the goods a ceremonial gift sealing it. Two parties signed entirely different deals.",
         ],

@@ -261,7 +261,7 @@ export default function BrickBreaker() {
         if (bricksRef.current.every((x) => !x.alive)) {
           phaseRef.current = 'cleared';
           const event = TIMELINE_EVENTS[Math.floor(Math.random() * TIMELINE_EVENTS.length)];
-          setFact(`${event.name} — ${formatYear(event.year)}. ${event.detail}`);
+          setFact(`${event.name}, ${formatYear(event.year)}. ${event.detail}`);
           setPhase('cleared');
         }
       }

@@ -28,7 +28,7 @@ export const TIMELINE_EVENTS: TimelineEvent[] = [
   { name: 'Machu Picchu is built', year: 1450, detail: 'Abandoned barely a century later.' },
   { name: 'Gutenberg prints his Bible', year: 1455, detail: 'About 180 copies. Roughly 49 survive.' },
   { name: 'Columbus reaches the Americas', year: 1492, detail: 'He believed he had reached Asia, and never accepted otherwise.' },
-  { name: 'Leonardo paints the Mona Lisa', year: 1503, detail: 'It was stolen in 1911 — the theft made it famous.' },
+  { name: 'Leonardo paints the Mona Lisa', year: 1503, detail: 'It was stolen in 1911. The theft made it famous.' },
   { name: 'Shakespeare writes Hamlet', year: 1600, detail: 'His son, who died young, was named Hamnet.' },
   { name: 'Galileo points a telescope at the night sky', year: 1609, detail: 'Within months he found the moons of Jupiter.' },
   { name: 'Harvard is founded', year: 1636, detail: 'Before calculus was invented.' },
@@ -36,7 +36,7 @@ export const TIMELINE_EVENTS: TimelineEvent[] = [
   { name: 'The US Declaration of Independence is signed', year: 1776, detail: 'Most delegates actually signed it in August.' },
   { name: 'The French Revolution begins', year: 1789, detail: 'The Bastille held only seven prisoners when it was stormed.' },
   { name: 'Napoleon is defeated at Waterloo', year: 1815, detail: 'The battle lasted a single day.' },
-  { name: 'The first photograph of a person is taken', year: 1838, detail: 'A man getting his boots shined — the only figure still enough to appear.' },
+  { name: 'The first photograph of a person is taken', year: 1838, detail: 'A man getting his boots shined, the only figure still enough to appear.' },
   { name: 'The fax machine is patented', year: 1843, detail: '33 years before the telephone.' },
   { name: 'Darwin publishes On the Origin of Species', year: 1859, detail: 'The first print run sold out to booksellers on day one.' },
   { name: 'The telephone is patented', year: 1876, detail: 'Decades after the fax machine.' },
@@ -62,7 +62,7 @@ export const TIMELINE_EVENTS: TimelineEvent[] = [
   { name: 'The first text message is sent', year: 1992, detail: 'It said "Merry Christmas".' },
   { name: 'Google is founded', year: 1998, detail: 'In a garage its founders rented from a future YouTube CEO.' },
   { name: 'Wikipedia launches', year: 2001, detail: 'The plan was for experts to write it. Everyone else showed up instead.' },
-  { name: 'The iPhone is unveiled', year: 2007, detail: 'The demo units barely worked — the presentation followed a rehearsed "golden path".' },
+  { name: 'The iPhone is unveiled', year: 2007, detail: 'The demo units barely worked, the presentation followed a rehearsed "golden path".' },
 ];
 
 export function formatYear(year: number): string {

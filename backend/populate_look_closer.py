@@ -39,7 +39,7 @@ IMAGES = [
         "answer": "Sand dunes on Mars",
         "facts": [
             "Dunes in Nili Patera, photographed from orbit by the Mars Reconnaissance Orbiter.",
-            "Repeat images show these dunes migrating — Mars is not finished changing.",
+            "Repeat images show these dunes migrating. Mars is not finished changing.",
         ],
         "credit": "NASA/JPL-Caltech/Univ. of Arizona",
         "source_link": NASA_PAGE + "PIA18244",
@@ -63,7 +63,7 @@ IMAGES = [
         "answer": "A river delta from orbit",
         "facts": [
             "The Lena River fanning into the Arctic Ocean, in false-colour Landsat imagery.",
-            "One of Earth's largest deltas — and frozen solid for about seven months of the year.",
+            "One of Earth's largest deltas, and frozen solid for about seven months of the year.",
         ],
         "credit": "NASA/USGS Landsat",
         "source_link": NASA_PAGE + "GSFC_20171208_Archive_e002160",
@@ -75,7 +75,7 @@ IMAGES = [
         "answer": "The surface of the Sun",
         "facts": [
             "Coronal loops over an active region, seen in extreme ultraviolet by the Solar Dynamics Observatory.",
-            "Each glowing arch is plasma tracing a magnetic field line — many are taller than several Earths stacked.",
+            "Each glowing arch is plasma tracing a magnetic field line. Many are taller than several Earths stacked.",
         ],
         "credit": "NASA/GSFC/Solar Dynamics Observatory",
         "source_link": NASA_PAGE + "PIA22645",
@@ -111,7 +111,7 @@ IMAGES = [
         "answer": "The mountains and ice plains of Pluto",
         "facts": [
             "From the New Horizons flyby: mountains of water ice beside the pale cells of Sputnik Planitia.",
-            "The cells are churning nitrogen ice — Pluto's surface is slowly boiling in extreme slow motion.",
+            "The cells are churning nitrogen ice. Pluto's surface is slowly boiling in extreme slow motion.",
         ],
         "credit": "NASA/JHUAPL/SwRI",
         "source_link": NASA_PAGE + "PIA20213",
@@ -122,7 +122,7 @@ IMAGES = [
         "options": ["A meteor crater", "A fossilised eye", "A bullseye of eroded rock"],
         "answer": "A bullseye of eroded rock",
         "facts": [
-            "The Richat Structure in the Sahara — roughly forty kilometres across, and not a crater.",
+            "The Richat Structure in the Sahara, roughly forty kilometres across, and not a crater.",
             "It is a dome of rock layers worn flat by erosion; astronauts have used it as a landmark from orbit.",
         ],
         "credit": "NASA/USGS Landsat",
@@ -135,7 +135,7 @@ IMAGES = [
         "answer": "Trillions of living things, from space",
         "facts": [
             "A phytoplankton bloom in the Bering Sea, swirling around the Pribilof Islands.",
-            "Each swirl is water clouded by single-celled life — small enough to be invisible, numerous enough to be seen from orbit.",
+            "Each swirl is water clouded by single-celled life, small enough to be invisible, numerous enough to be seen from orbit.",
         ],
         "credit": "NASA/USGS Landsat",
         "source_link": NASA_PAGE + "GSFC_20171208_Archive_e000840",

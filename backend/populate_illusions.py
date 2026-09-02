@@ -58,7 +58,7 @@ ILLUSIONS = [
         "options": ["The top one", "The bottom one", "They're identical"],
         "answer": "They're identical",
         "explain": "The fins are the whole trick. Outward fins read as a near corner, "
-                   "inward ones as a far corner — and the eye corrects for a depth that "
+                   "inward ones as a far corner, and the eye corrects for a depth that "
                    "was never in the picture.",
         "delta": 0,
         "tags": ["perception", "classic"],
@@ -70,7 +70,7 @@ ILLUSIONS = [
         "options": ["The top one", "The bottom one", "They're identical"],
         # Rule 4: this one is telling the truth. The bottom line really is longer.
         "answer": "The bottom one",
-        "explain": "This time the bottom line really is longer — by about a tenth. "
+        "explain": "This time the bottom line really is longer, by about a tenth. "
                    "The fins were pushing you toward it anyway, which is the awkward "
                    "part: the illusion and the answer agreed by accident.",
         "delta": 0.10,
@@ -110,7 +110,7 @@ ILLUSIONS = [
         "answer": "They're identical",
         "explain": "Converging lines read as distance. The upper bar looks further "
                    "away, and anything further away that takes up the same width has "
-                   "to be bigger — so the eye makes it bigger.",
+                   "to be bigger, so the eye makes it bigger.",
         "delta": 0,
         "tags": ["perception", "depth"],
     },
@@ -129,7 +129,7 @@ ILLUSIONS = [
     {
         "key": "hering_classic",
         "kind": "hering",
-        "question": "The two red lines — are they straight?",
+        "question": "The two red lines, are they straight?",
         "options": ["They bow outward", "They bow inward", "Both are straight"],
         "answer": "Both are straight",
         "explain": "The fan behind them reads as a vanishing point, and lines crossing "

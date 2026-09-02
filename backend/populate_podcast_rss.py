@@ -205,7 +205,7 @@ async def populate():
             all_episodes.extend(episodes)
 
     if not all_episodes:
-        print("\n✗ No episodes passed the filters — leaving the collection untouched.")
+        print("✗ No episodes passed the filters, leaving the collection untouched.")
         mongo_client.close()
         return 1
 

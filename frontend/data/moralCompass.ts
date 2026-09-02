@@ -41,7 +41,7 @@ export const MORAL_COMPASS: MoralCompassDefinition[] = [
   {
     id: 'mc-ahead',
     scale: 'now',
-    text: 'Let someone go ahead of you — a queue, a junction, a doorway. Pick the one in more of a hurry than you.',
+    text: 'Let someone go ahead of you: a queue, a junction, a doorway. Pick the one in more of a hurry than you.',
     cta: 'Waved through',
   },
   {

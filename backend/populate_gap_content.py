@@ -65,7 +65,7 @@ INCIDENT = [
         "story": [
             "On 15 January 1919, a 50-foot steel tank on Commercial Street in Boston's North End gave way.",
             "It released 2.3 million gallons of molasses into a residential district.",
-            "Twenty-one people were killed and around 150 injured — crushed, or unable to get out of something too thick to swim in and too fast to outrun.",
+            "Twenty-one people were killed and around 150 injured, crushed, or unable to get out of something too thick to swim in and too fast to outrun.",
             "The tank belonged to a company turning molasses into industrial alcohol. It had leaked for years, and had been painted brown.",
         ],
         "tags": ["history", "disaster"],
@@ -84,7 +84,7 @@ INCIDENT = [
         "hook": "An 18th-century Frenchman could not stop eating, and doctors never worked out why.",
         "story": [
             "Tarrare was thrown out of his family home as a teenager because they could not feed him.",
-            "In a military hospital he astonished physicians by finishing four times the standard ration and continuing — eating the gauze meant for dressings, and live animals brought to test him.",
+            "In a military hospital he astonished physicians by finishing four times the standard ration and continuing, eating the gauze meant for dressings, and live animals brought to test him.",
             "The French army briefly tried using him as a courier, on the theory that he could swallow a document and carry it through enemy lines.",
             "He died around 1798, still hungry. His condition has never been satisfactorily explained.",
         ],
@@ -95,21 +95,21 @@ INCIDENT = [
 PONDER = [
     {
         "question": "Would you rather be believed when you're lying, or doubted when you're telling the truth?",
-        "options": ["Believed — I'd use it carefully", "Doubted — at least I'd know where I stand",
+        "options": ["Believed, I'd use it carefully", "Doubted at least I'd know where I stand",
                     "Believed, and I'd stop being able to trust anyone's agreement",
                     "I've had the second one and would not choose it again"],
         "tags": ["truth", "self"],
     },
     {
         "question": "If someone recorded your last ten conversations, would you seem like the person you think you are?",
-        "options": ["Roughly, yes", "No — I'd sound smaller than I feel",
-                    "No — I'd sound louder than I mean to",
+        "options": ["Roughly, yes", "No, I'd sound smaller than I feel",
+                    "No, I'd sound louder than I mean to",
                     "It would depend entirely on who I was talking to"],
         "tags": ["self", "communication"],
     },
     {
         "question": "Would you want to be told the day your body starts declining, or find out slowly?",
-        "options": ["Told — I'd train for it", "Slowly — the not-knowing is the mercy",
+        "options": ["Told, I'd train for it", "Slowly. The not-knowing is the mercy",
                     "Told, and I'd spend that day badly", "I suspect it already happened"],
         "tags": ["body", "mortality"],
     },
@@ -121,13 +121,13 @@ PONDER = [
     },
     {
         "question": "Would you rather your work outlive you and be uncredited, or be credited and forgotten?",
-        "options": ["Uncredited but useful", "Credited — I want my name on it",
+        "options": ["Uncredited but useful", "Credited, I want my name on it",
                     "Uncredited, though I'd resent it quietly", "Neither matters as much as I pretend"],
         "tags": ["work", "legacy"],
     },
     {
         "question": "If boredom were impossible, would you lose anything?",
-        "options": ["Yes — most of my ideas arrive when I'm bored",
+        "options": ["Yes, most of my ideas arrive when I'm bored",
                     "No, and I'd take the trade immediately",
                     "I'd lose the ability to notice I'm avoiding something",
                     "I haven't been properly bored in years and can't say"],

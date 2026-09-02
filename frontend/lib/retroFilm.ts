@@ -674,7 +674,7 @@ export function mountRetroFilm(
           f.style.transform = `translateY(0) rotate(${f.dataset.tilt})`;
         })
       );
-      rangeEl.textContent = `${arrivalYear} — ${photos[photos.length - 1].year}`;
+      rangeEl.textContent = `${arrivalYear} to ${photos[photos.length - 1].year}`;
       at(2000, () => { rangeEl.style.opacity = '1'; });
       at(2500, () => { subEl.style.opacity = '1'; });
       at(3200, () => {
