@@ -163,9 +163,69 @@ interface FigProps {
   delta: number;
 }
 
+/* ── Measurement rails ──────────────────────────────────────────────────────
+   Removing the illusion's cause and leaving the eye to re-judge asks the
+   reader to trust the same eye that was just shown to be unreliable. The
+   rails are the ruler: dashed guides through the reference endpoints, faded
+   in late in the proof. Equal things visibly END ON the rails; a real delta
+   visibly crosses them — so the rails also prove the honest cards honest.
+   Dashes are drawn as segments because dashed borders render solid on
+   native.                                                                   */
+
+const RAIL_W = 1.5;
+const DASH = 4;
+const DASH_GAP = 4;
+
+function Rail({
+  t,
+  x,
+  y,
+  len,
+  vertical,
+  color = colors.muted,
+}: {
+  t: Animated.Value;
+  x: number;
+  y: number;
+  len: number;
+  vertical: boolean;
+  color?: string;
+}) {
+  // The figure settles first, then the ruler arrives.
+  const opacity = t.interpolate({ inputRange: [0, 0.7, 1], outputRange: [0, 0, 1] });
+  const n = Math.max(1, Math.floor((len + DASH_GAP) / (DASH + DASH_GAP)));
+  return (
+    <Animated.View
+      pointerEvents="none"
+      style={{
+        position: 'absolute',
+        left: x,
+        top: y,
+        opacity,
+        width: vertical ? RAIL_W : len,
+        height: vertical ? len : RAIL_W,
+      }}
+    >
+      {Array.from({ length: n }).map((_, i) => (
+        <View
+          key={i}
+          style={{
+            position: 'absolute',
+            left: vertical ? 0 : i * (DASH + DASH_GAP),
+            top: vertical ? i * (DASH + DASH_GAP) : 0,
+            width: vertical ? RAIL_W : DASH,
+            height: vertical ? DASH : RAIL_W,
+            backgroundColor: color,
+          }}
+        />
+      ))}
+    </Animated.View>
+  );
+}
+
 /* ── Müller-Lyer ────────────────────────────────────────────────────────────
-   The fins do all the work. The proof fades them and leaves the lines to be
-   compared honestly.                                                        */
+   The fins do all the work. The proof fades them, slides the lines close,
+   and drops rails through the reference endpoints.                          */
 
 const ML_LINE = 200;
 const FIN = 34;
@@ -194,12 +254,22 @@ function Fin({ x, y, deg }: { x: number; y: number; deg: number }) {
 function MullerLyer({ t, delta }: FigProps) {
   const finOpacity = t.interpolate({ inputRange: [0, 1], outputRange: [1, 0] });
   const lens = [ML_LINE, ML_LINE * (1 + delta)];
+  // Lines start at y 38 and 96; the proof brings them to 59 and 75 — close
+  // enough that the endpoints can be compared like marks on a ruler.
+  const topShift = t.interpolate({ inputRange: [0, 1], outputRange: [0, 21] });
+  const botShift = t.interpolate({ inputRange: [0, 1], outputRange: [0, -21] });
+  const refX0 = (FIG - ML_LINE) / 2;
 
-  const row = (y: number, outward: boolean, len: number) => {
+  const row = (
+    y: number,
+    outward: boolean,
+    len: number,
+    shift: Animated.AnimatedInterpolation<number>,
+  ) => {
     const x0 = (FIG - len) / 2;
     const x1 = x0 + len;
     return (
-      <React.Fragment key={y}>
+      <Animated.View key={y} style={{ transform: [{ translateY: shift }] }}>
         <View style={{ position: 'absolute', left: x0, top: y, width: len, height: 2, backgroundColor: colors.ink }} />
         <Animated.View style={{ opacity: finOpacity }}>
           {/* outward = <——> (reads long); inward = >——< (reads short) */}
@@ -208,14 +278,16 @@ function MullerLyer({ t, delta }: FigProps) {
           <Fin x={x1} y={y + 1} deg={outward ? FIN_DEG : 180 - FIN_DEG} />
           <Fin x={x1} y={y + 1} deg={outward ? -FIN_DEG : 180 + FIN_DEG} />
         </Animated.View>
-      </React.Fragment>
+      </Animated.View>
     );
   };
 
   return (
     <View style={{ width: FIG, height: 130 }}>
-      {row(38, false, lens[0])}
-      {row(96, true, lens[1])}
+      {row(38, false, lens[0], topShift)}
+      {row(96, true, lens[1], botShift)}
+      <Rail t={t} vertical x={refX0 - RAIL_W / 2} y={50} len={36} />
+      <Rail t={t} vertical x={refX0 + ML_LINE - RAIL_W / 2} y={50} len={36} />
     </View>
   );
 }
@@ -281,6 +353,10 @@ function Ebbinghaus({ t, delta }: FigProps) {
     <View style={{ width: FIG, height: 150, flexDirection: 'row', justifyContent: 'center' }}>
       <Animated.View style={{ transform: [{ translateX: shift }] }}>{group(6, 60, 40, sizes[0])}</Animated.View>
       <Animated.View style={{ transform: [{ translateX: negShift }] }}>{group(8, 40, 15, sizes[1])}</Animated.View>
+      {/* Tangent rails at the reference circle's top and bottom edges — equal
+          circles both touch both rails; a bigger one visibly crosses them. */}
+      <Rail t={t} vertical={false} x={76} y={75 - CENTRE / 2 - RAIL_W / 2} len={148} />
+      <Rail t={t} vertical={false} x={76} y={75 + CENTRE / 2 - RAIL_W / 2} len={148} />
     </View>
   );
 }
@@ -294,6 +370,10 @@ function Ponzo({ t, delta }: FigProps) {
   const H = 150;
   const BAR = 120;
   const bars = [BAR, BAR * (1 + delta)];
+  // Bars start at y 40 and 104; the proof brings them to 64 and 80.
+  const topShift = t.interpolate({ inputRange: [0, 1], outputRange: [0, 24] });
+  const botShift = t.interpolate({ inputRange: [0, 1], outputRange: [0, -24] });
+  const refX0 = (FIG - BAR) / 2;
   const rail = (dir: number) => {
     // A long bar rotated to lean in from the bottom corners.
     const deg = dir * 12;
@@ -317,8 +397,14 @@ function Ponzo({ t, delta }: FigProps) {
         {rail(-1)}
         {rail(1)}
       </Animated.View>
-      <View style={{ position: 'absolute', left: (FIG - bars[0]) / 2, top: 40, width: bars[0], height: 6, backgroundColor: colors.clay, borderRadius: 3 }} />
-      <View style={{ position: 'absolute', left: (FIG - bars[1]) / 2, top: 104, width: bars[1], height: 6, backgroundColor: colors.clay, borderRadius: 3 }} />
+      <Animated.View style={{ transform: [{ translateY: topShift }] }}>
+        <View style={{ position: 'absolute', left: (FIG - bars[0]) / 2, top: 40, width: bars[0], height: 6, backgroundColor: colors.clay, borderRadius: 3 }} />
+      </Animated.View>
+      <Animated.View style={{ transform: [{ translateY: botShift }] }}>
+        <View style={{ position: 'absolute', left: (FIG - bars[1]) / 2, top: 104, width: bars[1], height: 6, backgroundColor: colors.clay, borderRadius: 3 }} />
+      </Animated.View>
+      <Rail t={t} vertical x={refX0 - RAIL_W / 2} y={56} len={38} />
+      <Rail t={t} vertical x={refX0 + BAR - RAIL_W / 2} y={56} len={38} />
     </View>
   );
 }
@@ -332,9 +418,10 @@ function VerticalHorizontal({ t, delta }: FigProps) {
   const vLen = LEN * (1 + delta);
   const rotate = t.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '90deg'] });
   const drop = t.interpolate({ inputRange: [0, 1], outputRange: [0, 40] });
+  const refX0 = (FIG - LEN) / 2;
   return (
     <View style={{ width: FIG, height: 150 }}>
-      <View style={{ position: 'absolute', left: (FIG - LEN) / 2, top: 130, width: LEN, height: 3, backgroundColor: colors.ink }} />
+      <View style={{ position: 'absolute', left: refX0, top: 130, width: LEN, height: 3, backgroundColor: colors.ink }} />
       <Animated.View
         style={{
           position: 'absolute',
@@ -346,6 +433,10 @@ function VerticalHorizontal({ t, delta }: FigProps) {
           transform: [{ translateY: drop }, { rotate }],
         }}
       />
+      {/* The upright lands parallel to the base; the rails run through the
+          base's endpoints, so an equal upright ends exactly on them. */}
+      <Rail t={t} vertical x={refX0 - RAIL_W / 2} y={100} len={40} />
+      <Rail t={t} vertical x={refX0 + LEN - RAIL_W / 2} y={100} len={40} />
     </View>
   );
 }
@@ -380,6 +471,10 @@ function Hering({ t }: FigProps) {
       </Animated.View>
       <View style={{ position: 'absolute', left: FIG / 2 - 46, top: 8, width: 3, height: H - 16, backgroundColor: colors.clay }} />
       <View style={{ position: 'absolute', left: FIG / 2 + 43, top: 8, width: 3, height: H - 16, backgroundColor: colors.clay }} />
+      {/* Straightedges laid alongside each line, like holding a ruler to the
+          page — a bowed line would visibly converge on its rail. */}
+      <Rail t={t} vertical x={FIG / 2 - 53} y={8} len={H - 16} />
+      <Rail t={t} vertical x={FIG / 2 + 51.5} y={8} len={H - 16} />
     </View>
   );
 }
@@ -423,6 +518,10 @@ function CafeWall({ t }: FigProps) {
           </View>
         );
       })}
+      {/* Straightedges laid along two mortar lines — clay, because the grey
+          rails would vanish into the grey mortar they're proving straight. */}
+      <Rail t={t} vertical={false} x={0} y={2 * (TILE + MORTAR) - MORTAR / 2 - RAIL_W / 2} len={FIG} color={colors.clay} />
+      <Rail t={t} vertical={false} x={0} y={5 * (TILE + MORTAR) - MORTAR / 2 - RAIL_W / 2} len={FIG} color={colors.clay} />
     </View>
   );
 }
