@@ -5,7 +5,9 @@ import Text from './AppText';
 import { Ionicons } from '@expo/vector-icons';
 import ReactionButtons from './ReactionButtons';
 import CardHeader from './CardHeader';
+import CardFoot from './CardFoot';
 import { cards, colors, type, accents } from '../lib/theme';
+import { cardScale } from '../lib/typeScale';
 import { recordGuess } from '../lib/weekLedger';
 
 interface LookCloserCardProps {
@@ -36,15 +38,17 @@ export default function LookCloserCard({ content }: LookCloserCardProps) {
   // to its reveal — a small fact card with a credit — rather than asking
   // a question about an image that never arrived.
   const degraded = imageFailed;
+  const scale = cardScale(content.prompt, content.options, answered ? content.facts : undefined);
 
   return (
-    <View style={cards.white}>
+    <View style={[cards.white, cards.fill]}>
+      <View style={styles.top}>
       <CardHeader icon="eye-outline" color={accents.curiosity} label="Look Closer" />
 
       {!degraded && (
         <Image
           source={{ uri: content.image_url }}
-          style={styles.image}
+          style={[styles.image, cards.artFill]}
           contentFit="cover"
           transition={200}
           onError={() => setImageFailed(true)}
@@ -52,9 +56,44 @@ export default function LookCloserCard({ content }: LookCloserCardProps) {
       )}
 
       {!degraded ? (
-        <>
-          <Text style={styles.prompt}>{content.prompt || 'What is this?'}</Text>
+        <Text style={[styles.prompt, scale.title]}>{content.prompt || 'What is this?'}</Text>
+      ) : (
+        <Text style={[styles.prompt, scale.title]}>{content.answer}</Text>
+      )}
 
+      {(answered || degraded) && (
+        <>
+          {(content.facts ?? []).map((fact, index) => (
+            <Text key={index} style={[styles.fact, scale.body]}>
+              {fact}
+            </Text>
+          ))}
+          <TouchableOpacity
+            style={styles.creditRow}
+            onPress={() => content.source_link && Linking.openURL(content.source_link)}
+            disabled={!content.source_link}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.credit}>{content.credit}</Text>
+          </TouchableOpacity>
+        </>
+      )}
+      </View>
+
+      {/* The card already owned a foot: the thing you tap. Unanswered, the
+          options sit at the bottom, in the thumb's reach, and the gap above
+          them is thinking room. Answered, the chips take the same slot —
+          the one place on the card that means "you are done here". */}
+      {answered || degraded ? (
+        <CardFoot ruled>
+          <ReactionButtons
+            reactions={['Unexpected', 'Unsettling', 'Makes Sense']}
+            tags={content.tags}
+            flush
+          />
+        </CardFoot>
+      ) : (
+        <CardFoot>
           <View style={styles.optionsContainer}>
             {content.options.map((option, index) => {
               const isSelected = selected === option;
@@ -80,6 +119,7 @@ export default function LookCloserCard({ content }: LookCloserCardProps) {
                   <Text
                     style={[
                       styles.optionText,
+                      scale.row,
                       (isSelected || isCorrectOption) && styles.optionTextBold,
                     ]}
                   >
@@ -95,43 +135,25 @@ export default function LookCloserCard({ content }: LookCloserCardProps) {
               );
             })}
           </View>
-        </>
-      ) : (
-        <Text style={styles.prompt}>{content.answer}</Text>
-      )}
-
-      {(answered || degraded) && (
-        <>
-          {(content.facts ?? []).map((fact, index) => (
-            <Text key={index} style={styles.fact}>
-              {fact}
-            </Text>
-          ))}
-          <TouchableOpacity
-            style={styles.creditRow}
-            onPress={() => content.source_link && Linking.openURL(content.source_link)}
-            disabled={!content.source_link}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.credit}>{content.credit}</Text>
-          </TouchableOpacity>
-          <ReactionButtons
-            reactions={['Unexpected', 'Unsettling', 'Makes Sense']}
-            tags={content.tags}
-          />
-        </>
+        </CardFoot>
       )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  // No aspectRatio: it fights `cards.artFill`'s flex height. The 240-400
+  // band caps the growth instead, which is what the ratio was really for.
   image: {
     width: '100%',
-    aspectRatio: 1.5,
     borderRadius: 12,
     marginBottom: 14,
     backgroundColor: '#F4F4F5',
+  },
+  top: {
+    flex: 1,
+    minHeight: 0,
+    flexDirection: 'column',
   },
   prompt: {
     ...type.title,

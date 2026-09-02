@@ -4,7 +4,9 @@ import { Image } from 'expo-image';
 import Text from './AppText';
 import { Ionicons } from '@expo/vector-icons';
 import CardHeader from './CardHeader';
+import CardFoot from './CardFoot';
 import { cards, colors, type, accents } from '../lib/theme';
+import { cardScale } from '../lib/typeScale';
 import { recordGuess } from '../lib/weekLedger';
 
 interface PlaceGuessCardProps {
@@ -39,15 +41,17 @@ export default function PlaceGuessCard({ content }: PlaceGuessCardProps) {
   // story with its credit rather than asking about an image that never
   // arrived (Look Closer's pattern).
   const degraded = imageFailed;
+  const scale = cardScale(content.answer, options, answered ? content.story : '');
 
   return (
-    <View style={cards.white}>
+    <View style={[cards.white, cards.fill]}>
+      <View style={styles.top}>
       <CardHeader icon="earth-outline" color={accents.curiosity} label="Where On Earth" />
 
       {!degraded && (
         <Image
           source={{ uri: content.image_url }}
-          style={styles.image}
+          style={[styles.image, cards.artFill]}
           contentFit="cover"
           transition={200}
           onError={() => setImageFailed(true)}
@@ -55,9 +59,33 @@ export default function PlaceGuessCard({ content }: PlaceGuessCardProps) {
       )}
 
       {!degraded ? (
-        <>
-          <Text style={styles.prompt}>This is a real place. Which one?</Text>
+        <Text style={[styles.prompt, scale.title]}>This is a real place. Which one?</Text>
+      ) : (
+        <Text style={[styles.prompt, scale.title]}>{content.answer}</Text>
+      )}
 
+      {(answered || degraded) && (
+        <>
+          <Text style={[styles.story, scale.body]}>{content.story}</Text>
+          <TouchableOpacity
+            style={styles.creditRow}
+            onPress={() => content.source_link && Linking.openURL(content.source_link)}
+            disabled={!content.source_link}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.credit}>{content.credit}</Text>
+          </TouchableOpacity>
+        </>
+      )}
+      </View>
+
+      {/* The card already owned a foot: the thing you tap. The options sit
+          at the bottom, in the thumb's reach, and the gap above them is
+          thinking room rather than dead space. Once answered there is
+          nothing left to act on, so the foot goes with the options and the
+          story takes the height. */}
+      {!answered && !degraded && (
+        <CardFoot>
           <View style={styles.optionsContainer}>
             {options.map((option, index) => {
               const isSelected = selected === option;
@@ -83,6 +111,7 @@ export default function PlaceGuessCard({ content }: PlaceGuessCardProps) {
                   <Text
                     style={[
                       styles.optionText,
+                      scale.row,
                       (isSelected || isCorrectOption) && styles.optionTextBold,
                     ]}
                   >
@@ -94,35 +123,25 @@ export default function PlaceGuessCard({ content }: PlaceGuessCardProps) {
               );
             })}
           </View>
-        </>
-      ) : (
-        <Text style={styles.prompt}>{content.answer}</Text>
-      )}
-
-      {(answered || degraded) && (
-        <>
-          <Text style={styles.story}>{content.story}</Text>
-          <TouchableOpacity
-            style={styles.creditRow}
-            onPress={() => content.source_link && Linking.openURL(content.source_link)}
-            disabled={!content.source_link}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.credit}>{content.credit}</Text>
-          </TouchableOpacity>
-        </>
+        </CardFoot>
       )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  // No aspectRatio: it fights `cards.artFill`'s flex height. The 240-400
+  // band caps the growth instead, which is what the ratio was really for.
   image: {
     width: '100%',
-    aspectRatio: 1.5,
     borderRadius: 12,
     marginBottom: 14,
     backgroundColor: '#F4F4F5',
+  },
+  top: {
+    flex: 1,
+    minHeight: 0,
+    flexDirection: 'column',
   },
   prompt: {
     ...type.title,

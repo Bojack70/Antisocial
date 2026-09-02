@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Text from './AppText';
 import CardHeader from './CardHeader';
+import CardFoot from './CardFoot';
 import { cards, colors, type, accents } from '../lib/theme';
 import { WeekRecap } from '../lib/weekLedger';
 import { entryBetween, NotebookEntry } from '../lib/notebook';
@@ -60,7 +61,8 @@ export default function WeekRecapCard({ recap }: WeekRecapCardProps) {
       : 'A quiet week at the museum.';
 
   return (
-    <View style={cards.dark}>
+    <View style={[cards.dark, cards.fill]}>
+      <View>
       <CardHeader
         icon="stats-chart-outline"
         color={accents.personal}
@@ -80,7 +82,7 @@ export default function WeekRecapCard({ recap }: WeekRecapCardProps) {
         ))}
       </View>
 
-      <Text style={styles.voiceLine}>{voiceLine}</Text>
+
 
       {/* The guestbook feeding back: how many cards passed the retell test. */}
       {recap.retells > 0 && (
@@ -114,6 +116,13 @@ export default function WeekRecapCard({ recap }: WeekRecapCardProps) {
           </Text>
         </View>
       )}
+      </View>
+
+      {/* The one card that asks nothing of you, so its foot is the line it
+          already ends with rather than a control invented to fill the slot. */}
+      <CardFoot>
+        <Text style={styles.voiceLine}>{voiceLine}</Text>
+      </CardFoot>
     </View>
   );
 }

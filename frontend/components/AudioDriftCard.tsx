@@ -4,7 +4,9 @@ import Text from './AppText';
 import { Ionicons } from '@expo/vector-icons';
 import ReactionButtons from './ReactionButtons';
 import CardHeader from './CardHeader';
+import CardFoot from './CardFoot';
 import { cards, colors, type, accents } from '../lib/theme';
+import { cardScale } from '../lib/typeScale';
 import { recordAudioPlay } from '../lib/weekLedger';
 
 interface AudioDriftCardProps {
@@ -34,6 +36,7 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
   // player that could never play. A URL we can't verify as audio is
   // treated as no audio at all.
   const audioUrl = content.audio_url;
+  const scale = cardScale(content.title, content.narration_script);
 
   // Hooks live at the top level. They used to be declared inside the
   // native branch of a nested render function, which is a Rules of Hooks
@@ -184,10 +187,11 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
   return (
     // Light surface since the finalized design (2026-08-31) — the last
     // card off the retired dark narrative surface.
-    <View style={cards.white}>
+    <View style={[cards.white, cards.fill]}>
+      <View>
       <CardHeader icon="headset-outline" color={accents.curiosity} label="Audio Drift" />
 
-      <Text style={styles.title}>{content.title}</Text>
+      <Text style={[styles.title, scale.title]}>{content.title}</Text>
       {renderCredit()}
 
       {audioUrl ? (
@@ -195,7 +199,7 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
           {renderAudioPlayer()}
           {content.narration_script ? (
             <View style={styles.scriptContainer}>
-              <Text style={styles.scriptText}>{content.narration_script}</Text>
+              <Text style={[styles.scriptText, scale.body]}>{content.narration_script}</Text>
             </View>
           ) : (
             <View style={styles.instructionContainer}>
@@ -207,7 +211,7 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
         </>
       ) : content.narration_script ? (
         <View style={styles.scriptContainer}>
-          <Text style={styles.scriptText}>{content.narration_script}</Text>
+          <Text style={[styles.scriptText, scale.body]}>{content.narration_script}</Text>
         </View>
       ) : (
         <View style={styles.noAudioContainer}>
@@ -219,10 +223,15 @@ export default function AudioDriftCard({ content }: AudioDriftCardProps) {
         </View>
       )}
 
-      <ReactionButtons
-        reactions={['Stayed With Me', 'Lingering', 'Unsettling', 'Let It Pass']}
-        tags={content.tags}
-      />
+      </View>
+
+      <CardFoot ruled>
+        <ReactionButtons
+          reactions={['Stayed With Me', 'Lingering', 'Unsettling', 'Let It Pass']}
+          tags={content.tags}
+          flush
+        />
+      </CardFoot>
     </View>
   );
 }

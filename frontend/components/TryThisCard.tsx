@@ -3,8 +3,10 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import Text from './AppText';
 import { Ionicons } from '@expo/vector-icons';
 import CardHeader from './CardHeader';
+import CardFoot from './CardFoot';
 import CardAction from './CardAction';
 import { cards, colors, type, accents } from '../lib/theme';
+import { cardScale } from '../lib/typeScale';
 import { recordSkillDone } from '../lib/weekLedger';
 
 interface TryThisCardProps {
@@ -32,20 +34,20 @@ export default function TryThisCard({ content }: TryThisCardProps) {
   const [done, setDone] = useState(false);
   const total = content.steps.length;
   const allShown = revealed >= total;
+  const scale = cardScale(content.title, content.hook, content.steps.slice(0, revealed), done ? content.why : '');
 
   return (
-    <View style={cards.white}>
+    <View style={[cards.white, cards.fill]}>
+      <View>
       <CardHeader icon="hand-left-outline" color={accents.calm} label="Try This" />
 
-      <Text style={styles.title}>{content.title}</Text>
-      <Text style={styles.hook}>{content.hook}</Text>
+      <Text style={[styles.title, scale.title]}>{content.title}</Text>
+      <Text style={[styles.hook, scale.body]}>{content.hook}</Text>
 
       {/* Duration is deliberately not shown (user call, 2026-09-02): the
           data still carries it, but a countdown-flavored "2 minutes" reads
-          as pressure on a card whose point is unhurried doing. */}
-      <View style={styles.metaRow}>
-        {!!content.needs && <Text style={styles.meta}>{content.needs}</Text>}
-      </View>
+          as pressure on a card whose point is unhurried doing. `needs` has
+          moved to the foot's meta slot. */}
 
       {revealed > 0 && (
         <View style={styles.stepsContainer}>
@@ -54,40 +56,49 @@ export default function TryThisCard({ content }: TryThisCardProps) {
               <View style={styles.stepNumber}>
                 <Text style={styles.stepNumberText}>{index + 1}</Text>
               </View>
-              <Text style={styles.stepText}>{step}</Text>
+              <Text style={[styles.stepText, scale.row]}>{step}</Text>
             </View>
           ))}
         </View>
       )}
 
-      {!allShown && (
-        <TouchableOpacity
-          style={styles.nextRow}
-          onPress={() => setRevealed(revealed + 1)}
-          activeOpacity={0.7}
-        >
-          <Text style={styles.nextText}>
-            {revealed === 0 ? 'Show me how' : 'Then what?'}
-          </Text>
-          <Ionicons name="chevron-down" size={14} color={colors.muted} />
-        </TouchableOpacity>
+      {done && !!content.why && (
+        <Text style={[styles.why, scale.body]}>{content.why}</Text>
       )}
+      </View>
 
-      {allShown && !done && (
-        <CardAction
-          label={content.cta_label ?? 'I did it'}
-          onPress={() => {
-            setDone(true);
-            recordSkillDone(); // depth action; fire-and-forget
-          }}
-        />
-      )}
-
-      {done && (
-        <View style={styles.closing}>
-          {!!content.why && <Text style={styles.why}>{content.why}</Text>}
+      {/* The foot walks the card's own arc: reveal the next step, then the
+          completion, then the closing line. `needs` rides on the right as
+          the quiet meta — it used to sit under the hook, where it read as
+          part of the pitch rather than as what to go and fetch. */}
+      {!allShown ? (
+        <CardFoot meta={content.needs}>
+          <TouchableOpacity
+            style={styles.nextRow}
+            onPress={() => setRevealed(revealed + 1)}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.nextText}>
+              {revealed === 0 ? 'Show me how' : 'Then what?'}
+            </Text>
+            <Ionicons name="chevron-down" size={15} color={colors.muted} />
+          </TouchableOpacity>
+        </CardFoot>
+      ) : !done ? (
+        <CardFoot>
+          <CardAction
+            label={content.cta_label ?? 'I did it'}
+            flush
+            onPress={() => {
+              setDone(true);
+              recordSkillDone(); // depth action; fire-and-forget
+            }}
+          />
+        </CardFoot>
+      ) : (
+        <CardFoot>
           <Text style={styles.closingLine}>That’s yours now.</Text>
-        </View>
+        </CardFoot>
       )}
     </View>
   );
@@ -141,30 +152,27 @@ const styles = StyleSheet.create({
     ...type.body,
     flex: 1,
   },
+  // Pinned to the card's bottom edge: full width, and over the 44px floor.
   nextRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
-    marginTop: 14,
-    paddingVertical: 11,
-    borderRadius: 8,
+    gap: 8,
+    height: 48,
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: colors.hairline,
   },
   nextText: {
-    fontSize: 11,
+    fontSize: 13,
     fontWeight: '400',
     color: colors.body,
   },
-  closing: {
-    marginTop: 14,
-  },
   why: {
     ...type.body,
+    marginTop: 14,
   },
   closingLine: {
     ...type.micro,
-    marginTop: 10,
   },
 });

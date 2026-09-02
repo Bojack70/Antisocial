@@ -5,7 +5,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
 import ReactionButtons from './ReactionButtons';
 import CardHeader from './CardHeader';
+import CardFoot from './CardFoot';
 import { cards, colors, type, accents } from '../lib/theme';
+import { cardScale } from '../lib/typeScale';
 
 const { width } = Dimensions.get('window');
 
@@ -31,6 +33,7 @@ export default function VideoCard({ content }: VideoCardProps) {
   // YouTube player that automatically plays content simultaneously" (the
   // feed carries three video cards per load).
   const [isPlaying, setIsPlaying] = useState(false);
+  const scale = cardScale(content.title, content.description);
   const cardRef = useRef<View>(null);
 
   const getYouTubeEmbedUrl = (url: string) => {
@@ -101,7 +104,8 @@ export default function VideoCard({ content }: VideoCardProps) {
   };
 
   return (
-    <View style={cards.white} ref={cardRef}>
+    <View style={[cards.white, cards.fill]} ref={cardRef}>
+      <View>
       <CardHeader
         icon="videocam-outline"
         color={accents.curiosity}
@@ -113,7 +117,7 @@ export default function VideoCard({ content }: VideoCardProps) {
         }
       />
       
-      <Text style={styles.title}>{content.title}</Text>
+      <Text style={[styles.title, scale.title]}>{content.title}</Text>
 
       {/* Whose work this is, before you press play. The embedded player
           credits the channel too, but the card shouldn't pass off someone
@@ -136,7 +140,7 @@ export default function VideoCard({ content }: VideoCardProps) {
       {/* Plenty of shorts ship with no description at all — render the gap
           away rather than leaving an empty line of padding. */}
       {content.description?.trim() ? (
-        <Text style={styles.description}>{content.description}</Text>
+        <Text style={[styles.description, scale.body]}>{content.description}</Text>
       ) : (
         <View style={styles.descriptionSpacer} />
       )}
@@ -168,10 +172,15 @@ export default function VideoCard({ content }: VideoCardProps) {
         </View>
       )}
       
-      <ReactionButtons
-        reactions={['Makes Sense', 'Noted', 'Unexpected']}
-        tags={content.tags}
-      />
+      </View>
+
+      <CardFoot ruled>
+        <ReactionButtons
+          reactions={['Makes Sense', 'Noted', 'Unexpected']}
+          tags={content.tags}
+          flush
+        />
+      </CardFoot>
     </View>
   );
 }

@@ -5,7 +5,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
 import ReactionButtons from './ReactionButtons';
 import CardHeader from './CardHeader';
+import CardFoot from './CardFoot';
 import { cards, colors, type, accents } from '../lib/theme';
+import { cardScale } from '../lib/typeScale';
 
 interface ExplainerCardProps {
   content: {
@@ -24,6 +26,7 @@ export default function ExplainerCard({ content }: ExplainerCardProps) {
   // Open by default (user call, 2026-08-31): the steps ARE the card, so
   // they show without a tap. The toggle stays for collapsing.
   const [showSteps, setShowSteps] = useState(true);
+  const scale = cardScale(content.question, content.steps, content.interaction);
 
   const getYouTubeEmbedUrl = (url: string) => {
     if (!url) return '';
@@ -32,10 +35,11 @@ export default function ExplainerCard({ content }: ExplainerCardProps) {
   };
 
   return (
-    <View style={cards.white}>
+    <View style={[cards.white, cards.fill]}>
+      <View>
       <CardHeader icon="bulb-outline" color={accents.curiosity} label="How Does This Work?" />
 
-      <Text style={styles.question}>{content.question}</Text>
+      <Text style={[styles.question, scale.title]}>{content.question}</Text>
 
       <TouchableOpacity
         style={styles.seeHowRow}
@@ -65,7 +69,7 @@ export default function ExplainerCard({ content }: ExplainerCardProps) {
               <View style={styles.stepNumber}>
                 <Text style={styles.stepNumberText}>{index + 1}</Text>
               </View>
-              <Text style={styles.stepText}>{step}</Text>
+              <Text style={[styles.stepText, scale.row]}>{step}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -74,16 +78,9 @@ export default function ExplainerCard({ content }: ExplainerCardProps) {
       {content.interaction && (
         <>
           <View style={styles.divider} />
-          <Text style={styles.interaction}>{content.interaction}</Text>
+          <Text style={[styles.interaction, scale.body]}>{content.interaction}</Text>
         </>
       )}
-
-      <View style={styles.divider} />
-
-      <ReactionButtons
-        reactions={['Makes Sense', 'Noted', 'Unexpected']}
-        tags={content.tags}
-      />
 
       {content.video_url && (
         <TouchableOpacity
@@ -110,6 +107,15 @@ export default function ExplainerCard({ content }: ExplainerCardProps) {
           />
         </View>
       )}
+      </View>
+
+      <CardFoot ruled>
+        <ReactionButtons
+          reactions={['Makes Sense', 'Noted', 'Unexpected']}
+          tags={content.tags}
+          flush
+        />
+      </CardFoot>
     </View>
   );
 }

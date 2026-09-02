@@ -3,7 +3,9 @@ import { View, StyleSheet } from 'react-native';
 import Text from './AppText';
 import CardHeader from './CardHeader';
 import CardAction from './CardAction';
+import CardFoot from './CardFoot';
 import { cards, type, accents } from '../lib/theme';
+import { cardScale } from '../lib/typeScale';
 import { MoralCompassDefinition } from '../data/moralCompass';
 import { recordGoodTurnDone } from '../lib/moralCompass';
 
@@ -12,9 +14,9 @@ interface MoralCompassCardProps {
 }
 
 const SCALE_LABEL: Record<MoralCompassDefinition['scale'], string> = {
-  now: 'BEFORE THE NEXT CARD',
-  today: 'TODAY',
-  week: 'THIS WEEK',
+  now: 'Before the next card',
+  today: 'Today',
+  week: 'This week',
 };
 
 // Moral Compass: one act pointed outward, at someone who isn't you. It
@@ -27,6 +29,7 @@ const SCALE_LABEL: Record<MoralCompassDefinition['scale'], string> = {
 // preaching users left other wellbeing apps over.
 export default function MoralCompassCard({ entry }: MoralCompassCardProps) {
   const [done, setDone] = useState(false);
+  const scale = cardScale(entry.text, entry.note);
 
   const handleDone = () => {
     if (done) return;
@@ -35,25 +38,28 @@ export default function MoralCompassCard({ entry }: MoralCompassCardProps) {
   };
 
   return (
-    <View style={cards.tinted}>
-      <CardHeader
-        icon="navigate-outline"
-        color={accents.calm}
-        label="Moral Compass"
-      />
+    <View style={[cards.tinted, cards.fill]}>
+      <View>
+        <CardHeader
+          icon="navigate-outline"
+          color={accents.calm}
+          label="Moral Compass"
+        />
 
-      <Text style={styles.text}>{entry.text}</Text>
-      {!!entry.note && <Text style={styles.note}>{entry.note}</Text>}
+        <Text style={[styles.text, scale.title]}>{entry.text}</Text>
+        {!!entry.note && <Text style={[styles.note, scale.body]}>{entry.note}</Text>}
+      </View>
 
       {done ? (
         // No congratulation. The whole point of the card is that nobody
         // was watching, and the app is nobody.
-        <Text style={styles.confirmation}>Nobody will ever know.</Text>
+        <CardFoot>
+          <Text style={styles.confirmation}>Nobody will ever know.</Text>
+        </CardFoot>
       ) : (
-        <>
-          <Text style={styles.scale}>{SCALE_LABEL[entry.scale]}</Text>
-          <CardAction label={entry.cta ?? 'Done'} onPress={handleDone} />
-        </>
+        <CardFoot meta={SCALE_LABEL[entry.scale]}>
+          <CardAction label={entry.cta ?? 'Done'} onPress={handleDone} flush />
+        </CardFoot>
       )}
     </View>
   );
@@ -67,12 +73,7 @@ const styles = StyleSheet.create({
     ...type.body,
     marginTop: 10,
   },
-  scale: {
-    ...type.micro,
-    marginTop: 16,
-  },
   confirmation: {
     ...type.micro,
-    marginTop: 16,
   },
 });

@@ -4,7 +4,9 @@ import Text from './AppText';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import CardHeader from './CardHeader';
+import CardFoot from './CardFoot';
 import { cards, colors, type, accents } from '../lib/theme';
+import { cardScale } from '../lib/typeScale';
 import { recordGuess } from '../lib/weekLedger';
 
 interface MiniGameCardProps {
@@ -40,13 +42,21 @@ export default function MiniGameCard({ content }: MiniGameCardProps) {
     arrange_steps: 'Arrange Steps',
     guess_scale: 'Guess Scale',
   }[content.game_type] || 'Mini Game';
+  const scale = cardScale(content.prompt, content.options, showResult ? content.reveal : '');
 
   return (
-    <View style={cards.white}>
+    <View style={[cards.white, cards.fill]}>
+      <View>
       <CardHeader icon="game-controller-outline" color={accents.play} label={gameTypeLabel} />
 
-      <Text style={styles.prompt}>{content.prompt}</Text>
-      
+      <Text style={[styles.prompt, scale.title]}>{content.prompt}</Text>
+      </View>
+
+      {/* The options are the card's foot until they are spent: the prompt
+          takes the height above, and the answer sits in the thumb's reach.
+          After the result they belong with the reveal, in the body. */}
+      {!showResult && (
+      <CardFoot>
       <View style={styles.optionsContainer}>
         {content.options.map((option, index) => {
           const isSelected = selectedOption === option;
@@ -69,6 +79,7 @@ export default function MiniGameCard({ content }: MiniGameCardProps) {
               <Text
                 style={[
                   styles.optionText,
+                  scale.row,
                   (isSelected || isCorrectOption) && styles.optionTextBold,
                 ]}
               >
@@ -84,6 +95,8 @@ export default function MiniGameCard({ content }: MiniGameCardProps) {
           );
         })}
       </View>
+      </CardFoot>
+      )}
       
       {showResult && (
         <View>
@@ -105,7 +118,7 @@ export default function MiniGameCard({ content }: MiniGameCardProps) {
 
           {/* The payoff. Being told you were wrong is worth nothing on its own —
               what makes the card land is finding out where the belief came from. */}
-          {!!content.reveal && <Text style={styles.reveal}>{content.reveal}</Text>}
+          {!!content.reveal && <Text style={[styles.reveal, scale.body]}>{content.reveal}</Text>}
         </View>
       )}
 

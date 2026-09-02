@@ -4,7 +4,9 @@ import Text from './AppText';
 import { Ionicons } from '@expo/vector-icons';
 import ReactionButtons from './ReactionButtons';
 import CardHeader from './CardHeader';
+import CardFoot from './CardFoot';
 import { cards, colors, type, accents } from '../lib/theme';
+import { cardScale } from '../lib/typeScale';
 import { recordGuess } from '../lib/weekLedger';
 
 interface NumberGuess {
@@ -33,20 +35,34 @@ export default function FastWeirdCard({ content }: FastWeirdCardProps) {
   const guess = content.guess?.options?.length ? content.guess : null;
   const answered = selected !== null;
   const isCorrect = guess ? selected === guess.answer : false;
+  const scale = cardScale(content.headline, content.facts, guess?.prompt, guess?.options);
 
   const facts = (
     <View style={styles.factsContainer}>
       {content.facts.map((fact, index) => (
         <View key={index} style={styles.factRow}>
-          <View style={styles.bullet} />
-          <Text style={styles.fact}>{fact}</Text>
+          <View style={[styles.bullet, { marginTop: Math.round((scale.body.lineHeight as number) / 2) }]} />
+          <Text style={[styles.fact, scale.body]}>{fact}</Text>
         </View>
       ))}
     </View>
   );
 
+  const chips = (
+    <CardFoot ruled>
+      <ReactionButtons
+        reactions={['Unexpected', 'Unsettling', 'Makes Sense']}
+        tags={content.tags}
+        flush
+      />
+    </CardFoot>
+  );
+
   return (
-    <View style={cards.white}>
+    <View style={[cards.white, cards.fill]}>
+      {/* One child above the foot, so the card's space-between has exactly
+          two things to push apart. */}
+      <View>
       <CardHeader
         icon="flash-outline"
         color={accents.curiosity}
@@ -58,11 +74,11 @@ export default function FastWeirdCard({ content }: FastWeirdCardProps) {
         }
       />
 
-      <Text style={styles.headline}>{content.headline}</Text>
+      <Text style={[styles.headline, scale.title]}>{content.headline}</Text>
 
       {guess ? (
         <>
-          <Text style={styles.guessPrompt}>{guess.prompt}</Text>
+          <Text style={[styles.guessPrompt, scale.body]}>{guess.prompt}</Text>
 
           <View style={styles.optionsContainer}>
             {guess.options.map((option, index) => {
@@ -90,6 +106,7 @@ export default function FastWeirdCard({ content }: FastWeirdCardProps) {
                   <Text
                     style={[
                       styles.optionText,
+                      scale.row,
                       (isSelected || isCorrectOption) && styles.optionTextBold,
                     ]}
                   >
@@ -121,24 +138,20 @@ export default function FastWeirdCard({ content }: FastWeirdCardProps) {
 
               {/* The payoff arrives only after the commitment. */}
               {facts}
-              {!!guess.reveal && <Text style={styles.reveal}>{guess.reveal}</Text>}
-
-              <ReactionButtons
-                reactions={['Unexpected', 'Unsettling', 'Makes Sense']}
-                tags={content.tags}
-              />
+              {!!guess.reveal && (
+                <Text style={[styles.reveal, scale.body]}>{guess.reveal}</Text>
+              )}
             </>
           )}
         </>
       ) : (
-        <>
-          {facts}
-          <ReactionButtons
-            reactions={['Unexpected', 'Unsettling', 'Makes Sense']}
-            tags={content.tags}
-          />
-        </>
+        facts
       )}
+      </View>
+
+      {/* The chips wait for the guess to be answered; until then the card
+          has no foot and the slack simply sits under the options. */}
+      {(!guess || answered) && chips}
     </View>
   );
 }

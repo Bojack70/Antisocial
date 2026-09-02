@@ -5,7 +5,9 @@ import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import CardHeader from './CardHeader';
+import CardFoot from './CardFoot';
 import { cards, colors, type } from '../lib/theme';
+import { cardScale } from '../lib/typeScale';
 import { GameDefinition } from '../data/games';
 
 interface GameCardProps {
@@ -22,6 +24,7 @@ interface GameCardProps {
 export default function GameCard({ game, anchor = false }: GameCardProps) {
   const router = useRouter();
   const [stat, setStat] = useState<number>(0);
+  const scale = cardScale(game.title, anchor ? game.arcDescription : game.description);
 
   useEffect(() => {
     let active = true;
@@ -34,14 +37,20 @@ export default function GameCard({ game, anchor = false }: GameCardProps) {
   }, [game.statKey]);
 
   return (
-    <View style={cards.tinted}>
-      <CardHeader icon={game.icon} color={game.color} label={game.label} />
+    <View style={[cards.tinted, cards.fill]}>
+      <View>
+        <CardHeader icon={game.icon} color={game.color} label={game.label} />
 
-      <Text style={styles.title}>{game.title}</Text>
-      <Text style={styles.description}>
-        {anchor ? game.arcDescription : game.description}
-      </Text>
+        <Text style={[styles.title, scale.title]}>{game.title}</Text>
+        <Text style={[styles.description, scale.body]}>
+          {anchor ? game.arcDescription : game.description}
+        </Text>
+      </View>
 
+      {/* The card already had its own CTA — it just moves to the foot, and
+          the personal best rides the meta slot instead of trailing under
+          the button. */}
+      <CardFoot meta={stat > 0 ? game.statLabel(stat) : undefined}>
       <TouchableOpacity
         style={styles.cta}
         onPress={() =>
@@ -50,10 +59,9 @@ export default function GameCard({ game, anchor = false }: GameCardProps) {
         activeOpacity={0.8}
       >
         <Text style={styles.ctaText}>{anchor ? game.arcCta : game.cta}</Text>
-        <Ionicons name="arrow-forward" size={13} color="#FFFFFF" />
+        <Ionicons name="arrow-forward" size={14} color="#FFFFFF" />
       </TouchableOpacity>
-
-      {stat > 0 && <Text style={styles.stat}>{game.statLabel(stat)}</Text>}
+      </CardFoot>
     </View>
   );
 }
@@ -66,14 +74,15 @@ const styles = StyleSheet.create({
   description: {
     ...type.body,
   },
+  // The card's foot now, so it matches CardAction's shape and clears the
+  // 44px touch floor.
   cta: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 7,
-    marginTop: 16,
-    paddingVertical: 12,
-    borderRadius: 10,
+    gap: 8,
+    height: 52,
+    borderRadius: 12,
     backgroundColor: colors.ink,
   },
   ctaText: {

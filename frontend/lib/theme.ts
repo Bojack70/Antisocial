@@ -123,10 +123,50 @@ const cardBase: ViewStyle = {
   marginBottom: 16,
 };
 
+// The stretch (2026-09-02). Every card fills its page instead of shrinking
+// to its content, and pins its closing element — chips, action, control, or
+// the option list — to the bottom edge. Two things this buys: the deck gets
+// a rhythm, because every card now ends at the same place, and the closing
+// element lands in the thumb's reach.
+//
+// The top edge is untouched. Centring the card was tried and rejected: card
+// heights vary enough that the header would jump on every swipe.
+//
+// Spread onto a card's root ALONGSIDE its surface, and wrap the card's
+// content above the foot in a single <View> so space-between has exactly
+// two children:
+//
+//   <View style={[cards.white, cards.fill]}>
+//     <View>{header, title, body}</View>
+//     <CardFoot>{chips or action}</CardFoot>
+//   </View>
+//
+// `minHeight: 0` is what lets a card whose content outgrows the page shrink
+// below its content height on web; without it the card pushes past the page
+// instead of letting the page scroll.
 // Three surfaces. Paper is the default, tinted is for the quieter card
 // types, dark is for the narrative ones — the alternation down the feed
 // is what stops twelve cards reading as one wall.
 export const cards = StyleSheet.create({
+  // Spread ALONGSIDE a surface (see the note above) to stretch the card.
+  fill: {
+    flex: 1,
+    minHeight: 0,
+    justifyContent: 'space-between',
+    // A little more air top and bottom than the sides, now that the card is
+    // a full page rather than a box around a paragraph.
+    paddingVertical: 28,
+    marginBottom: 0,
+  },
+  // An image inside a filled card absorbs the spare height rather than
+  // letting it fall out as a gap below the text. The band is the one the
+  // retired stage treatment had already settled on: big enough to be worth
+  // looking at, capped before it goes portrait.
+  artFill: {
+    flex: 1,
+    minHeight: 240,
+    maxHeight: 400,
+  },
   white: {
     ...cardBase,
     backgroundColor: colors.surface,

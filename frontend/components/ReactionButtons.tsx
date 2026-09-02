@@ -9,6 +9,12 @@ interface ReactionButtonsProps {
   microPrompt?: string;
   tags?: string[];
   tone?: 'light' | 'dark';
+  /**
+   * Drop the row's own top margin. Set when the chips ARE the card's foot
+   * (inside CardFoot), which already owns the spacing and the hairline —
+   * otherwise the two stack into a 40px gap.
+   */
+  flush?: boolean;
 }
 
 export default function ReactionButtons({
@@ -17,6 +23,7 @@ export default function ReactionButtons({
   microPrompt,
   tags,
   tone = 'light',
+  flush = false,
 }: ReactionButtonsProps) {
   const dark = tone === 'dark';
   const [selectedReaction, setSelectedReaction] = useState<string | null>(null);
@@ -50,7 +57,7 @@ export default function ReactionButtons({
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, flush && styles.flush]}>
       {showNoted && (
         <View style={styles.notedContainer}>
           <Text style={styles.notedText}>Noted.</Text>
@@ -109,6 +116,9 @@ const styles = StyleSheet.create({
   container: {
     marginTop: 16,
     minHeight: 34,
+  },
+  flush: {
+    marginTop: 0,
   },
   rowBetween: {
     flexDirection: 'row',

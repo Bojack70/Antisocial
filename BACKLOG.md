@@ -162,6 +162,52 @@ The header label "Moral Compass" is the user's word and is the one part still wo
 second look — every other label in the app is a plain noun (Field Trip, Try This,
 Look Closer), and this one announces virtue before the card has earned it.
 
+### Wave 4 — the card stretch (SHIPPED 2026-09-02, all 21 card types)
+
+The problem, measured before anything was built: the deck slot is 826px and the mean
+card filled **48%** of it. The spread was the story — Audio Drift 90%, How Does This
+Work 87%, but Field Trip 27%, Game 27%, Try This 29%. A short-card problem, not a
+layout problem.
+
+Three changes, no new content and no backend work:
+
+1. **`cards.fill`** (`lib/theme.ts`) — the card fills its page and pins its closing
+   element to the bottom, so every card now ends at the same place. Top edge
+   untouched: centring was tried in the paper redesign and rejected because the
+   header jumps between swipes. `ShareableCard` needs `fill` or it silently blocks
+   the stretch (it is content-sized by default) — `renderContentCard(item, true)`.
+2. **`lib/typeScale.ts`** — the wall-label step. Under 180 characters of card text
+   sets at 31/41 serif, under 420 at 27/36, longer keeps the old 19/27. Bucketed on
+   the card's TOTAL text, not its title, so a short headline over three long facts
+   isn't mistaken for a short card. Automatic; nothing is authored per card.
+3. **`components/CardFoot.tsx`** — one place for the foot. What it holds is always
+   the card's OWN closing element: chips + tags (6 reading cards, the only foot with
+   a hairline), its action or reveal control (7 doing cards), its option list (6
+   guess cards + Guestbook), or its closing sentence (Week in Review).
+
+**Rejected on the record: a Next button in the empty feet.** It would reverse the
+2026-08-31 decision that swipe is the only navigation, it is the most doomscroll-
+shaped control there is on an app whose posture is DAU-down, and — the concrete
+one — Gentle Reminder's Done already advances the deck via `useDeckAdvance`, so a
+Next button in the same slot on other cards teaches "bottom button = move on" and
+inflates the honor-system counters (`reminders`, `missions`, `goodTurns`,
+`skillsDone`) that the Week in Review reports. The guess cards already owned a foot:
+their options. Pinning those put the only tappable thing in the thumb's reach and
+turned the gap above it into thinking room.
+
+**Images absorb the slack** (`cards.artFill`, a 240–400px band) rather than leaving
+it as a gap — the mechanism the retired stage treatment had already settled on.
+`aspectRatio` had to come off those frames: a ratio and a flex height both try to
+size the box and the ratio wins, so the frame stops growing.
+
+Also: Quiet Contradiction's two statements are now the REGULAR serif, not bold (user
+call) — it is the only card whose "title" is two halves of a held contradiction
+rather than a headline, and bold made each half assert itself.
+
+Verified headless at 414×896 before commit: all 21 types in `/cards` and a real feed
+session render top 96 / bottom 856, nothing clips, no page errors. Audio Drift is the
+one card that outgrows its page and scrolls, which is the intended fallback.
+
 ### Parked (raised, deliberately not scheduled)
 
 - **"Before You Watch" — a guess card built from the video pool** (parked 2026-09-01 at

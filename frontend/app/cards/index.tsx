@@ -177,21 +177,21 @@ export default function CardGallery() {
   const renderCard = (item: ContentItem) => {
     switch (item.type) {
       case 'fast_weird':
-        return <ShareableCard shareName="gallery" ><FastWeirdCard content={item as any} /></ShareableCard>;
+        return <ShareableCard shareName="gallery" fill><FastWeirdCard content={item as any} /></ShareableCard>;
       case 'explainer':
-        return <ShareableCard shareName="gallery"><ExplainerCard content={item as any} /></ShareableCard>;
+        return <ShareableCard shareName="gallery" fill><ExplainerCard content={item as any} /></ShareableCard>;
       case 'ponder':
-        return <ShareableCard shareName="gallery"><PonderCard content={item as any} /></ShareableCard>;
+        return <ShareableCard shareName="gallery" fill><PonderCard content={item as any} /></ShareableCard>;
       case 'incident':
-        return <ShareableCard shareName="gallery"><IncidentCard content={item as any} /></ShareableCard>;
+        return <ShareableCard shareName="gallery" fill><IncidentCard content={item as any} /></ShareableCard>;
       case 'mini_game':
-        return <ShareableCard shareName="gallery"><MiniGameCard content={item as any} /></ShareableCard>;
+        return <ShareableCard shareName="gallery" fill><MiniGameCard content={item as any} /></ShareableCard>;
       case 'audio_drift':
-        return <ShareableCard shareName="gallery"><AudioDriftCard content={item as any} /></ShareableCard>;
+        return <ShareableCard shareName="gallery" fill><AudioDriftCard content={item as any} /></ShareableCard>;
       case 'almost_nothing':
-        return <ShareableCard shareName="gallery"><AlmostNothingCard content={item as any} /></ShareableCard>;
+        return <ShareableCard shareName="gallery" fill><AlmostNothingCard content={item as any} /></ShareableCard>;
       case 'quiet_contradiction':
-        return <ShareableCard shareName="gallery"><QuietContradictionCard content={item as any} /></ShareableCard>;
+        return <ShareableCard shareName="gallery" fill><QuietContradictionCard content={item as any} /></ShareableCard>;
       case 'video':
         return <VideoCard content={item as any} />;
       case 'try_this':
@@ -201,9 +201,9 @@ export default function CardGallery() {
       case 'before_you_watch':
         return <BeforeYouWatchCard content={item as any} />;
       case 'quote_guess':
-        return <ShareableCard shareName="gallery"><QuoteGuessCard content={item as any} /></ShareableCard>;
+        return <ShareableCard shareName="gallery" fill><QuoteGuessCard content={item as any} /></ShareableCard>;
       case 'place_guess':
-        return <ShareableCard shareName="gallery"><PlaceGuessCard content={item as any} /></ShareableCard>;
+        return <ShareableCard shareName="gallery" fill><PlaceGuessCard content={item as any} /></ShareableCard>;
       case 'illusion':
         return <IllusionCard content={item as any} />;
       case 'game':
@@ -218,7 +218,7 @@ export default function CardGallery() {
         return <MoralCompassCard entry={item.entry} />;
       case 'week_recap':
         return (
-          <ShareableCard shareName="gallery"><WeekRecapCard recap={item.recap} /></ShareableCard>
+          <ShareableCard shareName="gallery" fill><WeekRecapCard recap={item.recap} /></ShareableCard>
         );
       // 'body_aware_interruption' is not a card — the gallery renders it as
       // a whole page below, the same way the feed does.

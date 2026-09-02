@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import Text from './AppText';
 import CardHeader from './CardHeader';
+import CardFoot from './CardFoot';
 import CardAction from './CardAction';
 import { cards, colors, type, accents } from '../lib/theme';
 import { writeInNotebook } from '../lib/notebook';
@@ -28,7 +29,8 @@ export default function NotebookCard({ promptId, prompt }: NotebookCardProps) {
   };
 
   return (
-    <View style={cards.white}>
+    <View style={[cards.white, cards.fill]}>
+      <View style={styles.top}>
       <CardHeader icon="create-outline" color={accents.personal} label="Reflection" />
 
       <Text style={styles.prompt}>{prompt}</Text>
@@ -36,7 +38,7 @@ export default function NotebookCard({ promptId, prompt }: NotebookCardProps) {
       {!kept ? (
         <>
           <TextInput
-            style={styles.input}
+            style={[styles.input, styles.inputFill]}
             value={text}
             onChangeText={setText}
             placeholder="Two or three lines. They stay on this device."
@@ -45,9 +47,6 @@ export default function NotebookCard({ promptId, prompt }: NotebookCardProps) {
             maxLength={280}
             textAlignVertical="top"
           />
-          {text.trim().length > 0 && (
-            <CardAction label="Leave it in the book" onPress={keep} />
-          )}
         </>
       ) : (
         <TouchableOpacity onPress={() => setKept(false)} activeOpacity={0.7}>
@@ -55,11 +54,31 @@ export default function NotebookCard({ promptId, prompt }: NotebookCardProps) {
           <Text style={styles.keptLine}>Kept. Tap to change it.</Text>
         </TouchableOpacity>
       )}
+      </View>
+
+      {/* The action only exists once there is something to keep, so the
+          card has no foot until you have written a line. The input grows
+          into that space in the meantime. */}
+      {!kept && text.trim().length > 0 && (
+        <CardFoot>
+          <CardAction label="Leave it in the book" onPress={keep} flush />
+        </CardFoot>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  top: {
+    flex: 1,
+    minHeight: 0,
+    flexDirection: 'column',
+  },
+  // The writing area takes the height the card has spare — a bigger box is
+  // a plainer invitation to write more than two words in it.
+  inputFill: {
+    flex: 1,
+  },
   prompt: {
     ...type.title,
     marginBottom: 14,

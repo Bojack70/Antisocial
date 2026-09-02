@@ -3,6 +3,7 @@ import { View, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import Text from './AppText';
 import { Ionicons } from '@expo/vector-icons';
 import CardHeader from './CardHeader';
+import CardFoot from './CardFoot';
 import { cards, colors, type, accents } from '../lib/theme';
 import { signGuestbook } from '../lib/guestbook';
 
@@ -46,7 +47,8 @@ export default function GuestbookCard({ items }: GuestbookCardProps) {
   if (items.length === 0) return null;
 
   return (
-    <View style={cards.tinted}>
+    <View style={[cards.tinted, cards.fill]}>
+      <View>
       <CardHeader icon="book-outline" color={accents.personal} label="The Guestbook" />
 
       <Text style={styles.title}>
@@ -78,7 +80,13 @@ export default function GuestbookCard({ items }: GuestbookCardProps) {
         })}
       </View>
 
+      </View>
+
+      {/* The list is the card, so it stays in the body; what pins to the
+          bottom is the closing act — the line you may leave, then the
+          signature itself. */}
       {selected && !noteKept && (
+        <CardFoot>
         <View style={styles.noteBlock}>
           <TextInput
             style={styles.noteInput}
@@ -108,12 +116,13 @@ export default function GuestbookCard({ items }: GuestbookCardProps) {
             </TouchableOpacity>
           )}
         </View>
+        </CardFoot>
       )}
 
-      {selected && (
-        <Text style={styles.signedLine}>
-          {noteKept ? 'Signed. The book remembers.' : 'Signed.'}
-        </Text>
+      {selected && noteKept && (
+        <CardFoot>
+          <Text style={styles.signedLine}>Signed. The book remembers.</Text>
+        </CardFoot>
       )}
     </View>
   );

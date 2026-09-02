@@ -743,7 +743,10 @@ export default function Index() {
                           disguise, and an unmarked repeat is the one thing
                           that would make the no-repeat promise a lie. */}
                       {item.repeat && <Text style={styles.repeatNote}>Seen before</Text>}
-                      {renderContentCard(item, false)}
+                      {/* fill: the ShareableCard wrapper is content-sized
+                          without it and silently blocks `cards.fill`, so
+                          the card stops short of the page bottom. */}
+                      {renderContentCard(item, true)}
                     </ScrollView>
                   )}
                 </DeckAdvanceContext.Provider>
@@ -843,6 +846,12 @@ const styles = StyleSheet.create({
   // Top-aligned, not centred: card heights vary a lot across types, and
   // centring makes each one sit at a different height, so the card appears
   // to jump as you swipe. Anchored to the top, only the bottom edge moves.
+  // Since 2026-09-02 the bottom edge doesn't move either: `cards.fill`
+  // stretches the card to this container, so every card ends at the same
+  // place. flexGrow alone is not enough for the child to stretch — the
+  // page also has to stop hugging its content (alignItems stretch is the
+  // default, but the ShareableCard wrapper in between needs `fill`; see
+  // renderContentCard).
   pageInner: {
     paddingHorizontal: 16,
     paddingTop: 4,

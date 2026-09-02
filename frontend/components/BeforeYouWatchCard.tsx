@@ -4,7 +4,9 @@ import { Image } from 'expo-image';
 import Text from './AppText';
 import { Ionicons } from '@expo/vector-icons';
 import CardHeader from './CardHeader';
+import CardFoot from './CardFoot';
 import { cards, colors, type, accents } from '../lib/theme';
+import { cardScale } from '../lib/typeScale';
 
 interface Props {
   content: {
@@ -58,9 +60,11 @@ export default function BeforeYouWatchCard({ content }: Props) {
   const mins = Math.floor(content.duration / 60);
   const secs = content.duration % 60;
   const clock = `${mins}:${String(secs).padStart(2, '0')}`;
+  const scale = cardScale(content.answer, options);
 
   return (
-    <View style={cards.white}>
+    <View style={[cards.white, cards.fill]}>
+      <View style={styles.top}>
       <CardHeader icon="film-outline" color={accents.play} label="Before You Watch" />
 
       {!failed && (
@@ -73,11 +77,16 @@ export default function BeforeYouWatchCard({ content }: Props) {
         />
       )}
 
-      <Text style={styles.prompt}>
+      <Text style={[styles.prompt, scale.title]}>
         {failed ? content.answer : 'One frame. What is it about?'}
       </Text>
+      </View>
 
-      {!failed && (
+      {/* Unanswered, the option list is the foot — the frame takes the
+          height above it. Answered, the clip you just earned takes the
+          same slot. */}
+      {!failed && !answered && (
+        <CardFoot>
         <View style={styles.options}>
           {options.map((option) => {
             const isSelected = selected === option;
@@ -96,7 +105,7 @@ export default function BeforeYouWatchCard({ content }: Props) {
                 disabled={answered}
                 activeOpacity={0.7}
               >
-                <Text style={[styles.optionText, (isSelected || isAnswer) && styles.optionBold]}>
+                <Text style={[styles.optionText, scale.row, (isSelected || isAnswer) && styles.optionBold]}>
                   {option}
                 </Text>
                 {isAnswer && <Ionicons name="checkmark" size={14} color={colors.ink} />}
@@ -105,24 +114,29 @@ export default function BeforeYouWatchCard({ content }: Props) {
             );
           })}
         </View>
+        </CardFoot>
       )}
 
       {(answered || failed) && (
-        <>
-          <Text style={styles.credit}>{content.channel_title}</Text>
+        <CardFoot meta={content.channel_title}>
           {/* The reward for guessing is the clip itself — the card earns the
               watch rather than opening with it. */}
           <TouchableOpacity style={styles.watch} activeOpacity={0.8}>
-            <Ionicons name="play" size={13} color={colors.surface} />
+            <Ionicons name="play" size={14} color={colors.surface} />
             <Text style={styles.watchText}>Watch it · {clock}</Text>
           </TouchableOpacity>
-        </>
+        </CardFoot>
       )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  top: {
+    flex: 1,
+    minHeight: 0,
+    flexDirection: 'column',
+  },
   // 16:9 — the frames are letterboxed video stills, so anything else
   // crops them or pads them.
   frame: {
@@ -159,7 +173,6 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   watch: {
-    marginTop: 12,
     backgroundColor: colors.ink,
     paddingVertical: 13,
     borderRadius: 12,

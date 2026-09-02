@@ -4,7 +4,9 @@ import Text from './AppText';
 import { Ionicons } from '@expo/vector-icons';
 import ReactionButtons from './ReactionButtons';
 import CardHeader from './CardHeader';
+import CardFoot from './CardFoot';
 import { cards, colors, type, accents } from '../lib/theme';
+import { cardScale } from '../lib/typeScale';
 
 // This card carries no visual. The question is the content, and any image
 // above it quietly suggests a mood — which works against the card's own
@@ -25,12 +27,14 @@ export default function PonderCard({ content }: PonderCardProps) {
   // seconds of actually pondering before the options appear is the card
   // doing its job; the options arrive when asked for.
   const [showOptions, setShowOptions] = useState(false);
+  const scale = cardScale(content.question, content.options);
 
   return (
-    <View style={cards.white}>
+    <View style={[cards.white, cards.fill]}>
+      <View>
       <CardHeader icon="infinite-outline" color={accents.curiosity} label="Ponder & Play" />
 
-      <Text style={styles.question}>{content.question}</Text>
+      <Text style={[styles.question, scale.title]}>{content.question}</Text>
 
       {!showOptions && (
         <TouchableOpacity
@@ -58,6 +62,7 @@ export default function PonderCard({ content }: PonderCardProps) {
             <Text
               style={[
                 styles.optionText,
+                scale.row,
                 selectedOption === index && styles.optionTextSelected,
               ]}
             >
@@ -77,10 +82,15 @@ export default function PonderCard({ content }: PonderCardProps) {
         </View>
       )}
       
-      <ReactionButtons
-        reactions={['I’m Unsure', 'Lingering', 'Stayed With Me']}
-        tags={content.tags}
-      />
+      </View>
+
+      <CardFoot ruled>
+        <ReactionButtons
+          reactions={['I’m Unsure', 'Lingering', 'Stayed With Me']}
+          tags={content.tags}
+          flush
+        />
+      </CardFoot>
     </View>
   );
 }

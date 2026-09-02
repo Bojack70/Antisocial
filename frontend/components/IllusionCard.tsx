@@ -3,8 +3,10 @@ import { View, StyleSheet, TouchableOpacity, Animated, Easing } from 'react-nati
 import Text from './AppText';
 import { Ionicons } from '@expo/vector-icons';
 import CardHeader from './CardHeader';
+import CardFoot from './CardFoot';
 import ReactionButtons from './ReactionButtons';
 import { cards, colors, type, accents } from '../lib/theme';
+import { cardScale } from '../lib/typeScale';
 import { recordGuess } from '../lib/weekLedger';
 
 export type IllusionKind =
@@ -62,6 +64,7 @@ export default function IllusionCard({ content }: Props) {
   const [proofShown, setProofShown] = useState(true);
   const answered = selected !== null;
   const correct = selected === content.answer;
+  const scale = cardScale(content.question, content.options, selected !== null ? content.explain : '');
   const delta = content.delta ?? 0;
 
   // 0 = the illusion as first met, 1 = the proof.
@@ -92,7 +95,8 @@ export default function IllusionCard({ content }: Props) {
   const figure = { t, delta };
 
   return (
-    <View style={cards.white}>
+    <View style={[cards.white, cards.fill]}>
+      <View style={styles.top}>
       <CardHeader icon="contrast-outline" color={accents.curiosity} label="Illusion" />
 
       {/* The figure leads. No claim above it — being told "these are the same
@@ -106,8 +110,14 @@ export default function IllusionCard({ content }: Props) {
         {content.kind === 'cafe_wall' && <CafeWall {...figure} />}
       </View>
 
-      <Text style={styles.question}>{content.question}</Text>
+      <Text style={[styles.question, scale.title]}>{content.question}</Text>
+      </View>
 
+      {/* The figure and its question take the height; the options are the
+          foot, in the thumb's reach. Once answered the explanation and the
+          A/B toggle are the payoff, and the chips take the foot instead. */}
+      {!answered ? (
+      <CardFoot>
       <View style={styles.options}>
         {content.options.map((option) => {
           const isSelected = selected === option;
@@ -126,7 +136,7 @@ export default function IllusionCard({ content }: Props) {
               disabled={answered}
               activeOpacity={0.7}
             >
-              <Text style={[styles.optionText, (isSelected || isAnswer) && styles.optionBold]}>
+              <Text style={[styles.optionText, scale.row, (isSelected || isAnswer) && styles.optionBold]}>
                 {option}
               </Text>
               {isAnswer && <Ionicons name="checkmark" size={14} color={colors.ink} />}
@@ -135,10 +145,10 @@ export default function IllusionCard({ content }: Props) {
           );
         })}
       </View>
-
-      {answered && (
+      </CardFoot>
+      ) : (
         <>
-          <Text style={styles.explain}>{content.explain}</Text>
+          <Text style={[styles.explain, scale.body]}>{content.explain}</Text>
 
           {/* The A/B is the pleasure. One tap to flip it back and forth. */}
           <TouchableOpacity style={styles.toggle} onPress={toggle} activeOpacity={0.7}>
@@ -148,10 +158,13 @@ export default function IllusionCard({ content }: Props) {
             </Text>
           </TouchableOpacity>
 
-          <ReactionButtons
-            reactions={['Unexpected', 'Unsettling', 'Makes Sense']}
-            tags={content.tags}
-          />
+          <CardFoot ruled>
+            <ReactionButtons
+              reactions={['Unexpected', 'Unsettling', 'Makes Sense']}
+              tags={content.tags}
+              flush
+            />
+          </CardFoot>
         </>
       )}
     </View>
@@ -527,6 +540,11 @@ function CafeWall({ t }: FigProps) {
 }
 
 const styles = StyleSheet.create({
+  top: {
+    flex: 1,
+    minHeight: 0,
+    flexDirection: 'column',
+  },
   stage: {
     alignItems: 'center',
     justifyContent: 'center',

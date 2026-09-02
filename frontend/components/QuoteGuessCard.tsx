@@ -3,7 +3,9 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import Text from './AppText';
 import { Ionicons } from '@expo/vector-icons';
 import CardHeader from './CardHeader';
+import CardFoot from './CardFoot';
 import { cards, colors, type, accents } from '../lib/theme';
+import { cardScale } from '../lib/typeScale';
 import { recordGuess } from '../lib/weekLedger';
 
 interface QuoteGuessCardProps {
@@ -28,50 +30,56 @@ export default function QuoteGuessCard({ content }: QuoteGuessCardProps) {
   );
   const answered = selected !== null;
   const isCorrect = selected === content.answer;
+  const scale = cardScale(content.quote, options, answered ? content.reveal : '');
+
+  const optionList = (
+    <View style={styles.optionsContainer}>
+          {options.map((option, index) => {
+            const isSelected = selected === option;
+            const isCorrectOption = answered && option === content.answer;
+            const isWrongSelection = answered && isSelected && !isCorrect;
+            return (
+              <TouchableOpacity
+                key={index}
+                style={[
+                  styles.optionCard,
+                  isSelected && styles.optionCardSelected,
+                  isCorrectOption && styles.optionCardCorrect,
+                  isWrongSelection && styles.optionCardWrong,
+                ]}
+                onPress={() => {
+                  if (answered) return;
+                  setSelected(option);
+                  recordGuess(); // depth action; fire-and-forget
+                }}
+                disabled={answered}
+                activeOpacity={0.7}
+              >
+                <Text
+                  style={[
+                    styles.optionText,
+                    scale.row,
+                    (isSelected || isCorrectOption) && styles.optionTextBold,
+                  ]}
+                >
+                  {option}
+                </Text>
+                {isCorrectOption && <Ionicons name="checkmark" size={14} color={colors.ink} />}
+                {isWrongSelection && <Ionicons name="close" size={14} color={colors.muted} />}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+  );
 
   return (
-    <View style={cards.white}>
+    <View style={[cards.white, cards.fill]}>
+      <View>
       <CardHeader icon="chatbox-ellipses-outline" color={accents.curiosity} label="One Good Line" />
 
       <Text style={styles.quote}>“{content.quote}”</Text>
       <Text style={styles.prompt}>Where is this from?</Text>
 
-      <View style={styles.optionsContainer}>
-        {options.map((option, index) => {
-          const isSelected = selected === option;
-          const isCorrectOption = answered && option === content.answer;
-          const isWrongSelection = answered && isSelected && !isCorrect;
-          return (
-            <TouchableOpacity
-              key={index}
-              style={[
-                styles.optionCard,
-                isSelected && styles.optionCardSelected,
-                isCorrectOption && styles.optionCardCorrect,
-                isWrongSelection && styles.optionCardWrong,
-              ]}
-              onPress={() => {
-                if (answered) return;
-                setSelected(option);
-                recordGuess(); // depth action; fire-and-forget
-              }}
-              disabled={answered}
-              activeOpacity={0.7}
-            >
-              <Text
-                style={[
-                  styles.optionText,
-                  (isSelected || isCorrectOption) && styles.optionTextBold,
-                ]}
-              >
-                {option}
-              </Text>
-              {isCorrectOption && <Ionicons name="checkmark" size={14} color={colors.ink} />}
-              {isWrongSelection && <Ionicons name="close" size={14} color={colors.muted} />}
-            </TouchableOpacity>
-          );
-        })}
-      </View>
 
       {answered && (
         <>
@@ -83,9 +91,16 @@ export default function QuoteGuessCard({ content }: QuoteGuessCardProps) {
             />
             <Text style={styles.resultText}>{isCorrect ? 'Correct.' : 'Interesting choice'}</Text>
           </View>
-          <Text style={styles.reveal}>{content.reveal}</Text>
+          <Text style={[styles.reveal, scale.body]}>{content.reveal}</Text>
         </>
       )}
+      </View>
+
+      {/* Unanswered, the options ARE the foot — the quote takes the height
+          above and the only thing you can tap sits in the thumb's reach.
+          Answered, the reveal is the payoff and there is nothing left to
+          act on, so the card keeps no foot. */}
+      {!answered && <CardFoot>{optionList}</CardFoot>}
     </View>
   );
 }
