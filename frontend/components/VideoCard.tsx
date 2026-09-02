@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { View, StyleSheet, TouchableOpacity, Dimensions, Platform, Linking } from 'react-native';
+import { Image } from 'expo-image';
 import Text from './AppText';
 import { Ionicons } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
@@ -20,6 +21,9 @@ interface VideoCardProps {
     duration?: number;
     channel_title?: string;
     channel_url?: string;
+    /** YouTube's own poster art, from the Data API. */
+    thumbnail_url?: string;
+    video_id?: string;
     rarity?: string;
     tags?: string[];
   };
@@ -34,6 +38,7 @@ export default function VideoCard({ content }: VideoCardProps) {
   // YouTube player that automatically plays content simultaneously" (the
   // feed carries three video cards per load).
   const [isPlaying, setIsPlaying] = useState(false);
+  const [posterFailed, setPosterFailed] = useState(false);
   const title = cleanSourcedTitle(content.title);
   // Capped at 23. A video title is somebody else's headline, not one this
   // app wrote to the content bar — at the 31px wall-label step a
@@ -66,6 +71,17 @@ export default function VideoCard({ content }: VideoCardProps) {
   };
 
   const embedUrl = getYouTubeEmbedUrl(content.video_url);
+
+  // The poster. `thumbnail_url` is what the Data API returned; where it is
+  // missing we can still build one from the id, because YouTube serves a
+  // predictable path per video. hqdefault exists for every video ever
+  // uploaded, which maxresdefault does not.
+  const videoId =
+    content.video_id ||
+    (content.video_url.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/)?.[1] ?? '');
+  const posterUrl =
+    content.thumbnail_url || (videoId ? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg` : '');
+
   const formatDuration = (seconds?: number) => {
     if (!seconds) return '';
     return `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}`;
@@ -112,7 +128,7 @@ export default function VideoCard({ content }: VideoCardProps) {
 
   return (
     <View style={[cards.white, cards.fill]} ref={cardRef}>
-      <View>
+      <View style={styles.top}>
       <CardHeader
         icon="videocam-outline"
         color={accents.curiosity}
@@ -155,22 +171,48 @@ export default function VideoCard({ content }: VideoCardProps) {
       )}
 
       {embedUrl ? (
-        <>
-          {isPlaying ? (
-            renderVideo()
-          ) : (
-            <TouchableOpacity
-              style={styles.videoButton}
-              onPress={() => setIsPlaying(true)}
-              activeOpacity={0.7}
-            >
-              <View style={styles.playIcon}>
-                <Ionicons name="play" size={13} color="#FFFFFF" />
-              </View>
-              <Text style={styles.videoButtonText}>Watch Now</Text>
-            </TouchableOpacity>
-          )}
-        </>
+        isPlaying ? (
+          renderVideo()
+        ) : posterUrl && !posterFailed ? (
+          /* The poster IS the play control: tapping the picture is what
+             everyone already expects of a video, and it gives the card
+             something to look at instead of a bare bar. The player mounts
+             into the same frame on tap, so nothing shifts underneath the
+             thumb. */
+          <TouchableOpacity
+            style={[styles.poster, cards.artFill]}
+            onPress={() => setIsPlaying(true)}
+            activeOpacity={0.85}
+            accessibilityRole="button"
+            accessibilityLabel={`Play: ${title}`}
+          >
+            <Image
+              source={{ uri: posterUrl }}
+              style={StyleSheet.absoluteFill}
+              contentFit="cover"
+              transition={200}
+              onError={() => setPosterFailed(true)}
+            />
+            {/* A scrim under the badge only, not across the picture: the
+                badge has to stay legible on a bright frame without the
+                whole thumbnail going grey. */}
+            <View style={styles.playBadge}>
+              <Ionicons name="play" size={20} color={colors.surface} style={styles.playGlyph} />
+            </View>
+          </TouchableOpacity>
+        ) : (
+          /* No poster, or it failed to load: the old bar, which still works. */
+          <TouchableOpacity
+            style={styles.videoButton}
+            onPress={() => setIsPlaying(true)}
+            activeOpacity={0.7}
+          >
+            <View style={styles.playIcon}>
+              <Ionicons name="play" size={13} color="#FFFFFF" />
+            </View>
+            <Text style={styles.videoButtonText}>Watch Now</Text>
+          </TouchableOpacity>
+        )
       ) : (
         <View style={styles.placeholderContainer}>
           <Ionicons name="film-outline" size={28} color={colors.muted} />
@@ -194,6 +236,34 @@ export default function VideoCard({ content }: VideoCardProps) {
 }
 
 const styles = StyleSheet.create({
+  top: {
+    flex: 1,
+    minHeight: 0,
+    flexDirection: 'column',
+  },
+  // The poster fills the height the card has spare, inside the same
+  // 240-400 band every other picture on the deck uses.
+  poster: {
+    width: '100%',
+    borderRadius: 12,
+    overflow: 'hidden',
+    backgroundColor: colors.surfaceTinted,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  playBadge: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: 'rgba(28, 27, 26, 0.72)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  // The glyph's own bounding box is wider than the triangle it draws, so
+  // centring it optically needs a nudge right.
+  playGlyph: {
+    marginLeft: 3,
+  },
   durationText: {
     ...type.micro,
   },
@@ -244,11 +314,12 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   videoContainer: {
-    height: 220,
+    flex: 1,
+    minHeight: 240,
+    maxHeight: 400,
     borderRadius: 12,
     overflow: 'hidden',
     backgroundColor: '#000000',
-    marginBottom: 12,
   },
   webview: {
     flex: 1,

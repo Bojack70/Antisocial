@@ -4,7 +4,7 @@ import Text from './AppText';
 import CardHeader from './CardHeader';
 import CardAction from './CardAction';
 import CardFoot from './CardFoot';
-import { cards, type, accents } from '../lib/theme';
+import { cards, fonts, type, accents } from '../lib/theme';
 import { cardScale } from '../lib/typeScale';
 import { MoralCompassDefinition } from '../data/moralCompass';
 import { recordGoodTurnDone } from '../lib/moralCompass';
@@ -46,7 +46,9 @@ export default function MoralCompassCard({ entry }: MoralCompassCardProps) {
           label="Moral Compass"
         />
 
-        <Text style={[styles.text, scale.title]}>{entry.text}</Text>
+        {/* `regular` goes LAST: scale.title carries the bold family, so a
+            weight set before it is silently overridden. */}
+        <Text style={[styles.text, scale.title, styles.regular]}>{entry.text}</Text>
         {!!entry.note && <Text style={[styles.note, scale.body]}>{entry.note}</Text>}
       </View>
 
@@ -68,6 +70,13 @@ export default function MoralCompassCard({ entry }: MoralCompassCardProps) {
 const styles = StyleSheet.create({
   text: {
     ...type.title,
+  },
+  // The regular serif, not the bold one other cards use for a title (user
+  // call, 2026-09-02). The act is an instruction, not a headline, and set
+  // bold at the wall-label size it reads as an order rather than as
+  // something quietly suggested. Same reasoning as Quiet Contradiction.
+  regular: {
+    fontFamily: fonts.serifRegular,
   },
   note: {
     ...type.body,
