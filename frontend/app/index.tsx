@@ -42,6 +42,7 @@ import NotebookCard from '../components/NotebookCard';
 import TryThisCard from '../components/TryThisCard';
 import LookCloserCard from '../components/LookCloserCard';
 import MissionCard from '../components/MissionCard';
+import MoralCompassCard from '../components/MoralCompassCard';
 import QuoteGuessCard from '../components/QuoteGuessCard';
 import PlaceGuessCard from '../components/PlaceGuessCard';
 import { GAMES } from '../data/games';
@@ -51,6 +52,7 @@ import { PLACE_GUESSES } from '../data/placeGuesses';
 import { pickPrompt } from '../lib/notebook';
 import { pickRotating } from '../lib/rotation';
 import { MISSIONS } from '../data/missions';
+import { MORAL_COMPASS } from '../data/moralCompass';
 import { cards, colors, type } from '../lib/theme';
 import { addMinute, minutesUsedToday, DAILY_LIMIT_MINUTES } from '../lib/usage';
 import { hasSessionsLeftToday, consumeSession } from '../lib/quota';
@@ -433,6 +435,24 @@ export default function Index() {
           AsyncStorage.setItem('last_extra_guess', extraType).catch(() => {});
         }
 
+        // One Moral Compass card rides mid-slate — an act pointed at
+        // someone else. Deliberately NOT at the end: the Field Trip owns
+        // the exit ramp, and stacking two "go and do something" cards
+        // makes both of them read as one and get swiped past together.
+        // Recency-rotated like the writing prompts and the guess pools.
+        const goodTurn = await pickRotating(MORAL_COMPASS, 'moral_compass_recent', 12);
+        if (goodTurn) {
+          sessionItems.splice(
+            Math.min(Math.floor(Math.random() * 3) + 3, sessionItems.length), // 3, 4 or 5
+            0,
+            {
+              id: `moral-compass-${goodTurn.id}-${Date.now()}`,
+              type: 'moral_compass',
+              entry: goodTurn,
+            }
+          );
+        }
+
         // Insert Body-Aware interruptions
         const indices = generateInsertionIndices(sessionItems.length);
         indices.reverse().forEach((index: number) => {
@@ -555,6 +575,8 @@ export default function Index() {
         return <GuestbookCard key={item.id} items={item.items} />;
       case 'mission':
         return <MissionCard key={item.id} mission={item.mission} />;
+      case 'moral_compass':
+        return <MoralCompassCard key={item.id} entry={item.entry} />;
       case 'week_recap':
         return (
           <ShareableCard key={item.id} shareName="modern-weirdness-week">

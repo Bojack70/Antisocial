@@ -91,6 +91,20 @@ export default function WeekRecapCard({ recap }: WeekRecapCardProps) {
         </Text>
       )}
 
+      {/* Moral Compass feeding back. A line rather than a grid cell: the
+          grid is four numbers and this one shouldn't displace any of them,
+          and a big number next to "good turns" would read as a scoreboard
+          for decency — which is the failure mode the card was written to
+          avoid. Absent entirely at zero; no nagging about the week you
+          didn't. */}
+      {recap.goodTurns > 0 && (
+        <Text style={styles.voiceLine}>
+          {recap.goodTurns === 1
+            ? 'One thing was done for somebody else. Unverified, as it should be.'
+            : `${recap.goodTurns} things were done for somebody else. Unverified, as they should be.`}
+        </Text>
+      )}
+
       {/* The notebook feeding back: your own line, returned. */}
       {entry && (
         <View style={styles.entryBlock}>

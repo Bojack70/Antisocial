@@ -20,6 +20,7 @@ import NotebookCard from '../../components/NotebookCard';
 import TryThisCard from '../../components/TryThisCard';
 import LookCloserCard from '../../components/LookCloserCard';
 import MissionCard from '../../components/MissionCard';
+import MoralCompassCard from '../../components/MoralCompassCard';
 import WeekRecapCard from '../../components/WeekRecapCard';
 import SessionChrome from '../../components/SessionChrome';
 import BodyAwareInterruption from '../../components/BodyAwareInterruption';
@@ -33,6 +34,7 @@ import { WRITING_PROMPTS } from '../../data/writingPrompts';
 import { QUOTE_GUESSES } from '../../data/quoteGuesses';
 import { PLACE_GUESSES } from '../../data/placeGuesses';
 import { MISSIONS } from '../../data/missions';
+import { MORAL_COMPASS } from '../../data/moralCompass';
 import { colors, type } from '../../lib/theme';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
@@ -146,13 +148,20 @@ export default function CardGallery() {
           })).filter((i) => !!i.title),
         });
         one.push({ id: 'gallery-mission', type: 'mission', mission: MISSIONS[0] });
+        // One of each scale, so the meta line ("TODAY" / "THIS WEEK") and
+        // the optional note both get judged in the same pass.
+        one.push({ id: 'gallery-moral-now', type: 'moral_compass', entry: MORAL_COMPASS[1] });
+        one.push({
+          id: 'gallery-moral-week', type: 'moral_compass',
+          entry: MORAL_COMPASS.find((e) => e.scale === 'week') ?? MORAL_COMPASS[0],
+        });
         one.push({
           id: 'gallery-recap', type: 'week_recap',
           recap: {
             weekStart: '2026-08-24', weekEnd: '2026-08-30', daysVisited: 4,
             sessions: 6, cards: 58, missions: 3, leftEarly: 2, guesses: 9,
             audioPlays: 2, gameRounds: 4, retells: 3, writes: 2,
-            skillsDone: 1, reminders: 3,
+            skillsDone: 1, reminders: 3, goodTurns: 2,
           },
         });
 
@@ -205,6 +214,8 @@ export default function CardGallery() {
         return <GuestbookCard items={item.items} />;
       case 'mission':
         return <MissionCard mission={item.mission} />;
+      case 'moral_compass':
+        return <MoralCompassCard entry={item.entry} />;
       case 'week_recap':
         return (
           <ShareableCard shareName="gallery"><WeekRecapCard recap={item.recap} /></ShareableCard>

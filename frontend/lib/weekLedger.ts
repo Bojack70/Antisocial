@@ -32,6 +32,11 @@ export interface DayEntry {
   // Gentle Reminders taken to their "Done. That's it." — an honor-system
   // tap, same contract as missions.
   reminders: number;
+  // Moral Compass cards taken to their done-tap: an outward act nobody
+  // else can verify. Kept separate from `missions` deliberately — a field
+  // trip is for you, a good turn isn't, and merging them would make the
+  // recap unable to tell the visitor which kind of week they had.
+  goodTurns: number;
 }
 
 export interface WeekRecap {
@@ -49,6 +54,7 @@ export interface WeekRecap {
   writes: number;
   skillsDone: number;
   reminders: number;
+  goodTurns: number;
 }
 
 const KEY = 'week_ledger';
@@ -98,6 +104,7 @@ async function readLedger(): Promise<DayEntry[]> {
         writes: isCount(e.writes) ? e.writes : 0,
         skillsDone: isCount(e.skillsDone) ? e.skillsDone : 0,
         reminders: isCount(e.reminders) ? e.reminders : 0,
+        goodTurns: isCount(e.goodTurns) ? e.goodTurns : 0,
       }));
   } catch {
     return [];
@@ -115,7 +122,7 @@ async function record(
     entry = {
       date: day, sessions: 0, cards: 0, missions: 0, leftEarly: 0,
       guesses: 0, audioPlays: 0, gameRounds: 0, retells: 0, writes: 0,
-      skillsDone: 0, reminders: 0,
+      skillsDone: 0, reminders: 0, goodTurns: 0,
     };
     ledger.push(entry);
   }
@@ -130,6 +137,7 @@ async function record(
   entry.writes += delta.writes ?? 0;
   entry.skillsDone += delta.skillsDone ?? 0;
   entry.reminders += delta.reminders ?? 0;
+  entry.goodTurns += delta.goodTurns ?? 0;
 
   // YYYY-MM-DD compares correctly as a string
   const cutoff = today(addDays(now, -(KEEP_DAYS - 1)));
@@ -175,6 +183,10 @@ export const recordSkillDone = (now = new Date()) =>
 export const recordReminderDone = (now = new Date()) =>
   record({ reminders: 1 }, now);
 
+/** A Moral Compass card was taken to its done-tap. */
+export const recordGoodTurn = (now = new Date()) =>
+  record({ goodTurns: 1 }, now);
+
 /**
  * Recap of the last finished Monday–Sunday week, or null when that week
  * had fewer than two active days — a card of zeros helps nobody.
@@ -191,7 +203,7 @@ export async function lastWeekRecap(now = new Date()): Promise<WeekRecap | null>
   if (visited.length < 2) return null;
 
   const sum = (
-    f: 'sessions' | 'cards' | 'missions' | 'leftEarly' | 'guesses' | 'audioPlays' | 'gameRounds' | 'retells' | 'writes' | 'skillsDone' | 'reminders'
+    f: 'sessions' | 'cards' | 'missions' | 'leftEarly' | 'guesses' | 'audioPlays' | 'gameRounds' | 'retells' | 'writes' | 'skillsDone' | 'reminders' | 'goodTurns'
   ) =>
     entries.reduce((acc, e) => acc + e[f], 0);
   return {
@@ -209,6 +221,7 @@ export async function lastWeekRecap(now = new Date()): Promise<WeekRecap | null>
     writes: sum('writes'),
     skillsDone: sum('skillsDone'),
     reminders: sum('reminders'),
+    goodTurns: sum('goodTurns'),
   };
 }
 

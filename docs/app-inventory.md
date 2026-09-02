@@ -49,6 +49,7 @@ Every backend type has a Pydantic model in `backend/server.py:41-184`.
 | `notebook` | **Reflection** | `NotebookCard.tsx:32` | "Leave it in the book" → `writeInNotebook` → `recordWrite()` (`NotebookCard.tsx:49`, `lib/notebook.ts:65`) | no | `frontend/data/writingPrompts.ts` |
 | `guestbook` | **The Guestbook** | `GuestbookCard.tsx:50` | tap a card → `signGuestbook` → `recordRetell()` (`GuestbookCard.tsx:33-42`, `lib/guestbook.ts:66`) | no | built from the session's own cards (`app/index.tsx:374-377`) |
 | `mission` | **Field Trip** | `MissionCard.tsx:28` | `mission.cta` or "Done" → `recordMissionDone()` (`MissionCard.tsx:23,43`) | no | `frontend/data/missions.ts` |
+| `moral_compass` | **Moral Compass** | `MoralCompassCard.tsx` | `entry.cta` or "Done" → `recordGoodTurnDone()` (`lib/moralCompass.ts`) | no | `frontend/data/moralCompass.ts` |
 | `week_recap` | **The Week in Review** | `WeekRecapCard.tsx:64-68` | none | **yes** (`app/index.tsx:512-517`) | `lib/weekLedger.ts` |
 | `body_aware_interruption` | *(no header — full-bleed page, not a card)* | `BodyAwareInterruption.tsx`, rendered by the pager itself (`app/index.tsx:662-667`, note at `app/index.tsx:520-522`) | none; it holds the deck until its hairline fills (`app/index.tsx:178-181`) | no | inline array `app/index.tsx:64-75` |
 
@@ -96,6 +97,7 @@ batches and some items predate the current scripts. The live count is authoritat
 | Pool | Count | File |
 |---|---:|---|
 | `MISSIONS` (Field Trips) | **60** | `data/missions.ts:23-95` — outside 13, connect 10, make 10, observe 10, move 9, tidy 9 |
+| `MORAL_COMPASS` | **21** | `data/moralCompass.ts` — now 5, today 8, this week 8 |
 | `TIMELINE_EVENTS` | **54** | `data/timelineEvents.ts:11-66`; used by both the Timeline game and Brick Breaker's level facts (`app/bricks/index.tsx:17,263-264`) |
 | `WRITING_PROMPTS` | **24** | `data/writingPrompts.ts:11-35` |
 | `BODY_AWARE_INTERRUPTIONS` | **10** | `app/index.tsx:64-75` |
@@ -323,7 +325,8 @@ The simulation here says 9–10 median. Same order; treat 8–10 as the honest r
 ### Testing doors (shipped, intentional)
 
 - `/reset` (`app/reset/index.tsx`) — clears quota, seen ledger, usage clock, plus
-  `week_ledger`, `week_recap_shown`, `missions_done` by key (`:22, :29-42`).
+  `week_ledger`, `week_recap_shown`, `missions_done`, `good_turns_done` and
+  `moral_compass_recent` by key.
   Second button also resets onboarding (`:48-52`).
 - `/cards` (`app/cards/index.tsx`) — one page per card type in the real deck; reads the
   backend but consumes no session, no seen ledger, no clock (`:34-38`).
@@ -361,8 +364,8 @@ Genuinely remaining per BACKLOG (and not contradicted by code):
 
 ## 6. Depth signals captured vs surfaced
 
-`DayEntry` (`lib/weekLedger.ts:10-35`) records **twelve** fields per local day, pruned to
-14 days (`:56`):
+`DayEntry` (`lib/weekLedger.ts`) records **thirteen** fields per local day, pruned to
+14 days:
 
 | Field | Written by | Surfaced to the user? |
 |---|---|---|
@@ -377,9 +380,10 @@ Genuinely remaining per BACKLOG (and not contradicted by code):
 | `writes` | `recordWrite` ← `lib/notebook.ts:65` | **indirectly** — the *text* of the freshest entry is quoted back (`WeekRecapCard.tsx:95-102`), but the count is never shown |
 | `skillsDone` | `recordSkillDone` ← `TryThisCard.tsx:83` | **no** |
 | `reminders` | `recordReminderDone` ← `AlmostNothingCard.tsx:53` | **no** |
+| `goodTurns` | `recordGoodTurnDone` ← `MoralCompassCard.tsx` → `lib/moralCompass.ts` | **yes** — conditional sentence, not a stat tile (deliberately: a big number beside "good turns" reads as a scoreboard for decency) |
 | `daysVisited` (derived) | `lastWeekRecap` (`lib/weekLedger.ts:188-191`) | **yes** — "Days visited" (`WeekRecapCard.tsx:51`) |
 
-So: **12 signals captured, 4 shown as numbers, 2 shown as prose, 6 captured and never
+So: **13 signals captured, 4 shown as numbers, 3 shown as prose, 6 captured and never
 surfaced anywhere** — `guesses`, `audioPlays`, `gameRounds`, `skillsDone`, `reminders`,
 `sessions`. `audioPlays` and `gameRounds` were deliberately shipped ahead of the decision
 they inform (`lib/weekLedger.ts:19-21`), so their invisibility is by design; the other four
@@ -398,6 +402,8 @@ short of `/reset`-era debugging.
 | `notebook_recent_prompts` | avoid the last 6 writing prompts | **yes** (`lib/notebook.ts:21-23,96-99`) |
 | `lastMissionId` | avoid the same Field Trip twice in a row | **no — in-memory `useRef` only** (`app/index.tsx:195,267-269`). It resets on every app launch, so on a cold start the previous day's mission can repeat immediately. Asymmetric with `last_anchor_game`, which is persisted for exactly this reason. |
 | `missions_done` | lifetime Field Trip tally | yes (`lib/missions.ts:9-24`) — and **surfaced nowhere**; the comment at `lib/missions.ts:6-7` calls it "the (future) weekly share card" |
+| `moral_compass_recent` | avoid the last 12 Moral Compass entries | **yes**, via the shared `pickRotating` ledger (`lib/rotation.ts`) — unlike `lastMissionId`, this one survives a cold start |
+| `good_turns_done` | lifetime Moral Compass tally | yes (`lib/moralCompass.ts`) — and **surfaced nowhere**; the week's count comes from the ledger's `goodTurns`, not from this key |
 
 ---
 

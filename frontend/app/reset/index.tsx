@@ -16,10 +16,15 @@ import { resetOnboarding } from '../../lib/onboarding';
 // back is to clear it from inside the app. Open /reset and the quota, the
 // seen ledger and the usage clock all go back to zero.
 
-// weekLedger and missions keep no reset helper of their own, so they are
-// cleared by key here. Keep these in step with lib/weekLedger.ts and
-// lib/missions.ts if those keys ever change.
-const EXTRA_KEYS = ['week_ledger', 'week_recap_shown', 'missions_done'];
+// weekLedger, missions and the Moral Compass tally keep no reset helper of
+// their own, so they are cleared by key here. Keep these in step with
+// lib/weekLedger.ts, lib/missions.ts and lib/moralCompass.ts if those keys
+// ever change. `moral_compass_recent` is the rotation ledger written by
+// pickRotating, so clearing it makes the whole pool eligible again.
+const EXTRA_KEYS = [
+  'week_ledger', 'week_recap_shown', 'missions_done',
+  'good_turns_done', 'moral_compass_recent',
+];
 
 export default function ResetScreen() {
   const router = useRouter();
@@ -37,6 +42,7 @@ export default function ResetScreen() {
       'Seen ledger — every card eligible again',
       'Usage clock — back to zero',
       'Week ledger and recap — cleared',
+      'Moral Compass tally and rotation — cleared',
     ]);
     setBusy(false);
   }, []);

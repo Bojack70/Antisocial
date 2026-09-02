@@ -129,6 +129,39 @@ and treat departure as success — no return loop). Their good ideas kept: speci
 provocative writing prompts; horizontal tap-pagination noted below for item 6's
 exhibits; authored post-choice counterpoints as a possible ponder variant.
 
+### Wave 3 — Moral Compass (user request, SHIPPED 2026-09-02, frontend-only)
+
+One outward act per session: something done for somebody else, where nothing comes
+back and nobody in the app finds out. Bundled-data card in the games/missions/guess
+pattern — no Mongo collection, no backend change, no AI key.
+
+- **Pool**: 21 entries in `frontend/data/moralCompass.ts`, scaled `now` 5 / `today` 8
+  / `week` 8, recency-rotated 12 deep via `pickRotating` (`moral_compass_recent`).
+- **Placement**: mid-slate, index 3–5, NOT the exit ramp. The Field Trip owns the
+  end of the session; two "go and do something" cards back to back read as one and
+  get swiped past together. One-line change in `app/index.tsx` if that proves wrong.
+- **Surface**: `cards.tinted` + `navigate-outline` + `accents.calm`, so it is
+  distinct from Field Trip (mint/compass) and Try This (white/hand) while all three
+  keep the "this card asks something of you" accent.
+- **Ledger**: `goodTurns` in `lib/weekLedger.ts` (kept SEPARATE from `missions` — a
+  field trip is for you and a good turn isn't), lifetime tally `good_turns_done` in
+  `lib/moralCompass.ts`. No streak, deliberately and permanently: a good-turn streak
+  turns decency into a score to protect.
+- **Recap**: a conditional prose line, not a fifth stat tile. A big number beside
+  "good turns" is a scoreboard for being a decent person.
+
+**The tension this card had to clear, on the record.** `backend/server.py:245` bans
+moralising in every generation prompt, and `docs/user-evidence.md` §6.2 has users
+naming unsolicited moral content as the reason they left a competitor. So the rule in
+`data/moralCompass.ts` is: **the card names the act and stops.** No stated reason you
+should do it, nothing political or religious, nothing cause-specific, no act that can
+be performed for the app. The user's own seed example "be kind to one person today"
+was deliberately NOT shipped as written — a slogan can be satisfied by feeling a way
+about it; the specific version ("let the one in more of a hurry go first") can't.
+The header label "Moral Compass" is the user's word and is the one part still worth a
+second look — every other label in the app is a plain noun (Field Trip, Try This,
+Look Closer), and this one announces virtue before the card has earned it.
+
 ### Parked (raised, deliberately not scheduled)
 
 - **"Before You Watch" — a guess card built from the video pool** (parked 2026-09-01 at
