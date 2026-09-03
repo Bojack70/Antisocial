@@ -18,19 +18,22 @@ export default function Root({ children }: PropsWithChildren) {
           content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
         />
 
-        <title>Modern Weirdness</title>
+        <title>antisocial</title>
         <meta name="description" content="A museum of curiosity in your pocket" />
 
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#F1EADC" />
 
-        {/* iOS ignores the manifest for these three, so they are repeated
+        {/* iOS ignores the manifest for these four, so they are repeated
             here — without them, Add to Home Screen opens a Safari tab
-            with a URL bar instead of a standalone app. */}
+            with a URL bar instead of a standalone app. The title is the one
+            that becomes the label under the icon on iOS; on Android that
+            comes from the manifest's short_name instead. Both say the same
+            thing, which is what the app calls itself on its own first screen. */}
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="Modern Weirdness" />
+        <meta name="apple-mobile-web-app-title" content="antisocial" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
 
         {/* Disables body scrolling on web so ScrollView components work. */}

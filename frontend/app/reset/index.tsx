@@ -6,25 +6,37 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { colors, type } from '../../lib/theme';
-import { resetSessions } from '../../lib/quota';
-import { resetSeen } from '../../lib/seen';
-import { resetUsage } from '../../lib/usage';
-import { resetOnboarding } from '../../lib/onboarding';
+
+// The per-module reset helpers are deliberately not used any more. Each wrote
+// its own key back to a zero value, which meant the reset only covered the
+// modules someone remembered to call. Removing the keys outright reads the
+// same — every one of those ledgers treats a missing value as a fresh day.
 
 // A testing door. Every limit in this app lives in the browser's own storage,
 // so there is no server-side switch to flip — the only way to hand the day
 // back is to clear it from inside the app. Open /reset and the quota, the
 // seen ledger and the usage clock all go back to zero.
 
-// weekLedger, missions and the Moral Compass tally keep no reset helper of
-// their own, so they are cleared by key here. Keep these in step with
-// lib/weekLedger.ts, lib/missions.ts and lib/moralCompass.ts if those keys
-// ever change. `moral_compass_recent` is the rotation ledger written by
-// pickRotating, so clearing it makes the whole pool eligible again.
-const EXTRA_KEYS = [
-  'week_ledger', 'week_recap_shown', 'missions_done',
-  'good_turns_done', 'moral_compass_recent',
+// This used to be a hand-kept list of keys to clear, and it silently rotted:
+// `last_anchor_game` was added for the first-session Brick Breaker anchor and
+// never added here, so a reset left the app believing it had already placed an
+// anchor and the first game went back to a one-in-three draw. A list of what to
+// DELETE fails quietly every time someone adds a key and forgets it.
+//
+// So it is inverted. Everything in storage goes, except the few things below
+// that a reset has no business destroying. A new key is now cleared by default,
+// and the only way to get it wrong is to deliberately add it to this list.
+const KEEP = [
+  // The visitor's own writing. A testing door should not eat someone's words.
+  'notebook',
+  // Earned, and unrelated to what the feed decides to show.
+  'bricks_best_score', 'board_wins', 'hands_best_combined',
+  'hands_round_wins', 'timeline_best_streak',
 ];
+
+// Cleared only by the fuller reset, which is the one that says it makes the
+// next launch behave like a first visit.
+const FIRST_VISIT_ONLY = ['onboarding_complete', 'install_gate_answered'];
 
 export default function ResetScreen() {
   const router = useRouter();
@@ -33,16 +45,20 @@ export default function ResetScreen() {
 
   const runReset = useCallback(async () => {
     setBusy(true);
-    await resetSessions();
-    await resetSeen();
-    await resetUsage();
-    await AsyncStorage.multiRemove(EXTRA_KEYS);
+
+    const all = await AsyncStorage.getAllKeys();
+    const doomed = all.filter(
+      (k) => !KEEP.includes(k) && !FIRST_VISIT_ONLY.includes(k)
+    );
+    if (doomed.length > 0) await AsyncStorage.multiRemove(doomed);
+
     setDone([
       'Daily sessions: back to zero',
       'Seen ledger: every card eligible again',
       'Usage clock: back to zero',
       'Week ledger and recap: cleared',
-      'Moral Compass tally and rotation: cleared',
+      'Rotations cleared, so the next session anchors on Brick Breaker again',
+      `Kept: your notebook, and your game bests (${doomed.length} keys cleared)`,
     ]);
     setBusy(false);
   }, []);
@@ -53,8 +69,11 @@ export default function ResetScreen() {
 
   const fullReset = async () => {
     await runReset();
-    await resetOnboarding();
-    setDone((d) => [...d, 'Onboarding: next launch behaves like a first visit']);
+    await AsyncStorage.multiRemove(FIRST_VISIT_ONLY);
+    setDone((d) => [
+      ...d,
+      'Onboarding and the install screen: next launch behaves like a first visit',
+    ]);
   };
 
   return (
