@@ -59,6 +59,33 @@ interface Props {
 
 const FIG = 300; // figure width, comfortably inside the card's 24pt padding
 
+const REVEAL_MS = 2000;
+const RESTORE_MS = 900;
+
+/* The reveal is three beats, not one move. Played all at once — which is what
+   it used to do — the cause disappears while the shapes are still travelling
+   and the ruler lands on top of both, so there is no moment where you can see
+   WHY the figure lied. Staged, each beat has the stage to itself:
+
+     0.00 – 0.40   the cause leaves      fins, rings, fan, converging rails
+     0.35 – 0.80   the shapes gather     slide or rotate into comparison
+     0.80 – 1.00   the ruler arrives     dashed measurement rails fade in
+
+   The 0.05 overlap between the first two beats keeps it from feeling like
+   three separate animations queued back to back. */
+
+/** Opacity for whatever is DOING the deceiving: gone by the 40% mark. */
+const causeOut = (t: Animated.Value) =>
+  t.interpolate({ inputRange: [0, 0.4, 1], outputRange: [1, 0, 0] });
+
+/** A shape's travel into comparison position: still until the cause has gone. */
+const gather = (t: Animated.Value, to: number) =>
+  t.interpolate({ inputRange: [0, 0.35, 0.8, 1], outputRange: [0, 0, to, to] });
+
+/** Same beat, for the one figure that rotates rather than slides. */
+const gatherDeg = (t: Animated.Value, from: string, to: string) =>
+  t.interpolate({ inputRange: [0, 0.35, 0.8, 1], outputRange: [from, from, to, to] });
+
 export default function IllusionCard({ content }: Props) {
   const [selected, setSelected] = useState<string | null>(null);
   const [proofShown, setProofShown] = useState(true);
@@ -73,8 +100,14 @@ export default function IllusionCard({ content }: Props) {
   const animateTo = (to: number) => {
     Animated.timing(t, {
       toValue: to,
-      duration: 650,
-      easing: Easing.out(Easing.cubic),
+      // The reveal is the whole card, so it is played slowly enough to be
+      // watched rather than merely noticed — at the old 650ms the fins were
+      // gone before you had found them. Putting it back is quicker: you know
+      // what you are looking at by then, and the A/B wants to feel responsive.
+      duration: to === 1 ? REVEAL_MS : RESTORE_MS,
+      // inOut rather than out: the figure eases into motion instead of
+      // snapping off the mark, which is what made it read as fast.
+      easing: Easing.inOut(Easing.cubic),
       useNativeDriver: false, // layout offsets animate here, not only opacity
     }).start();
   };
@@ -203,8 +236,9 @@ function Rail({
   vertical: boolean;
   color?: string;
 }) {
-  // The figure settles first, then the ruler arrives.
-  const opacity = t.interpolate({ inputRange: [0, 0.7, 1], outputRange: [0, 0, 1] });
+  // The figure settles first, then the ruler arrives — the last of the three
+  // beats, so it lands on a picture that has already stopped moving.
+  const opacity = t.interpolate({ inputRange: [0, 0.8, 1], outputRange: [0, 0, 1] });
   const n = Math.max(1, Math.floor((len + DASH_GAP) / (DASH + DASH_GAP)));
   return (
     <Animated.View
@@ -264,12 +298,12 @@ function Fin({ x, y, deg }: { x: number; y: number; deg: number }) {
 }
 
 function MullerLyer({ t, delta }: FigProps) {
-  const finOpacity = t.interpolate({ inputRange: [0, 1], outputRange: [1, 0] });
+  const finOpacity = causeOut(t);
   const lens = [ML_LINE, ML_LINE * (1 + delta)];
   // Lines start at y 38 and 96; the proof brings them to 59 and 75 — close
   // enough that the endpoints can be compared like marks on a ruler.
-  const topShift = t.interpolate({ inputRange: [0, 1], outputRange: [0, 21] });
-  const botShift = t.interpolate({ inputRange: [0, 1], outputRange: [0, -21] });
+  const topShift = gather(t, 21);
+  const botShift = gather(t, -21);
   const refX0 = (FIG - ML_LINE) / 2;
 
   const row = (
@@ -335,11 +369,11 @@ function Ring({ n, radius, size }: { n: number; radius: number; size: number }) 
 }
 
 function Ebbinghaus({ t, delta }: FigProps) {
-  const ringOpacity = t.interpolate({ inputRange: [0, 1], outputRange: [1, 0] });
-  // Pull the groups together as the rings go, so the last beat is the two
-  // centres side by side with nothing between them.
-  const shift = t.interpolate({ inputRange: [0, 1], outputRange: [0, 26] });
-  const negShift = t.interpolate({ inputRange: [0, 1], outputRange: [0, -26] });
+  const ringOpacity = causeOut(t);
+  // The rings go first, then the groups pull together, so the last beat is the
+  // two centres side by side with nothing between them.
+  const shift = gather(t, 26);
+  const negShift = gather(t, -26);
   const sizes = [CENTRE, CENTRE * (1 + delta)];
 
   const group = (n: number, radius: number, size: number, centre: number) => (
@@ -378,13 +412,13 @@ function Ebbinghaus({ t, delta }: FigProps) {
    eye inflates it. The proof takes the rails away.                          */
 
 function Ponzo({ t, delta }: FigProps) {
-  const railOpacity = t.interpolate({ inputRange: [0, 1], outputRange: [1, 0] });
+  const railOpacity = causeOut(t);
   const H = 150;
   const BAR = 120;
   const bars = [BAR, BAR * (1 + delta)];
   // Bars start at y 40 and 104; the proof brings them to 64 and 80.
-  const topShift = t.interpolate({ inputRange: [0, 1], outputRange: [0, 24] });
-  const botShift = t.interpolate({ inputRange: [0, 1], outputRange: [0, -24] });
+  const topShift = gather(t, 24);
+  const botShift = gather(t, -24);
   const refX0 = (FIG - BAR) / 2;
   const rail = (dir: number) => {
     // A long bar rotated to lean in from the bottom corners.
@@ -428,8 +462,11 @@ function Ponzo({ t, delta }: FigProps) {
 function VerticalHorizontal({ t, delta }: FigProps) {
   const LEN = 120;
   const vLen = LEN * (1 + delta);
-  const rotate = t.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '90deg'] });
-  const drop = t.interpolate({ inputRange: [0, 1], outputRange: [0, 40] });
+  // Nothing to fade here — the upright IS the deception — so this figure has
+  // only the gather beat and the ruler. Slow rotation is the whole point: at
+  // speed the eye tracks the end of the line instead of its length.
+  const rotate = gatherDeg(t, '0deg', '90deg');
+  const drop = gather(t, 40);
   const refX0 = (FIG - LEN) / 2;
   return (
     <View style={{ width: FIG, height: 150 }}>
@@ -458,7 +495,7 @@ function VerticalHorizontal({ t, delta }: FigProps) {
    fades the fan; nothing about the verticals changes.                       */
 
 function Hering({ t }: FigProps) {
-  const fanOpacity = t.interpolate({ inputRange: [0, 1], outputRange: [1, 0] });
+  const fanOpacity = causeOut(t);
   const H = 170;
   return (
     <View style={{ width: FIG, height: H, overflow: 'hidden' }}>
@@ -519,7 +556,13 @@ function CafeWall({ t }: FigProps) {
       }}
     >
       {Array.from({ length: ROWS }).map((_, r) => {
-        const shift = t.interpolate({ inputRange: [0, 1], outputRange: [OFFSETS[r], 0] });
+        // The offset IS the cause here, so sliding the rows back into column
+        // is both the cause leaving and the shapes gathering — one beat, run
+        // across the same window the other figures use to move.
+        const shift = t.interpolate({
+          inputRange: [0, 0.35, 0.8, 1],
+          outputRange: [OFFSETS[r], OFFSETS[r], 0, 0],
+        });
         return (
           <View key={r} style={{ flexDirection: 'row', height: TILE, marginBottom: r === ROWS - 1 ? 0 : MORTAR }}>
             <Animated.View style={{ flexDirection: 'row', transform: [{ translateX: shift }], marginLeft: -TILE }}>

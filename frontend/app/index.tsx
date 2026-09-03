@@ -154,6 +154,67 @@ interface ContentItem {
   [key: string]: any;
 }
 
+// Two types are guaranteed a place in every session rather than left to the
+// ratio draw. The Gentle Reminder is the app's one pause and the Contradiction
+// is its one argument, and at their editorial ratio (2 apiece out of 41) a
+// 10-card session drew each only about half the time — so a meaningful share
+// of sessions contained neither.
+const GUARANTEED_TYPES = ['almost_nothing', 'quiet_contradiction'];
+
+/**
+ * Makes sure every wanted type appears among the cards actually shown.
+ *
+ * The backend sends a 35-card slate and only 9-12 are shown, so a type missing
+ * from the visible prefix is nearly always sitting further down the same slate.
+ * It is SWAPPED IN rather than appended, so the session keeps the length it
+ * drew — and swapped over the commonest type present, so the card it costs is
+ * one the session had a surplus of.
+ *
+ * Position 0 is never overwritten: a session should open on a card that makes
+ * a claim, not on an instruction to unclench your jaw.
+ */
+const ensureTypes = (
+  visible: ContentItem[],
+  slate: ContentItem[],
+  wanted: string[]
+): ContentItem[] => {
+  const out = [...visible];
+
+  for (const want of wanted) {
+    if (out.some((i) => i.type === want)) continue;
+
+    const candidate = slate.find(
+      (i: ContentItem) => i.type === want && !out.some((o) => o.id === i.id)
+    );
+    // Pool exhausted for this type. A thin session beats a padded one, and
+    // the seen-ledger top-up on the backend already handles real scarcity.
+    if (!candidate) continue;
+
+    const counts = new Map<string, number>();
+    out.forEach((i) => counts.set(i.type, (counts.get(i.type) ?? 0) + 1));
+
+    let target = -1;
+    let mostSeen = 1; // only worth displacing a type that appears twice or more
+    let lastSpare = -1;
+    for (let i = out.length - 1; i >= 1; i--) {
+      if (wanted.includes(out[i].type)) continue; // never displace the other guarantee
+      if (lastSpare < 0) lastSpare = i;
+      const n = counts.get(out[i].type) ?? 0;
+      if (n > mostSeen) {
+        mostSeen = n;
+        target = i;
+      }
+    }
+    // No duplicated type to take from: fall back to the last ordinary card.
+    if (target < 0) target = lastSpare;
+    if (target < 0) continue;
+
+    out[target] = candidate;
+  }
+
+  return out;
+};
+
 export default function Index() {
   const router = useRouter();
   const [feed, setFeed] = useState<ContentItem[]>([]);
@@ -370,11 +431,16 @@ export default function Index() {
           setError('');
           return;
         }
-        // `repeats` counts the cards in THIS session the visitor has seen
-        // before — the backend flags each one and totals them over the visible
-        // prefix, not the whole 35-card slate.
-        setRepeats(typeof data.repeats === 'number' ? data.repeats : 0);
-        setFreshCount(typeof data.fresh === 'number' ? data.fresh : sessionItems.length);
+
+        sessionItems = ensureTypes(sessionItems, data.feed, GUARANTEED_TYPES);
+
+        // How many of these the visitor has seen before. Counted here from the
+        // per-item flag rather than taken from data.repeats, because the swap
+        // above changes which cards are actually shown and the backend's own
+        // totals describe the prefix it sent.
+        const repeated = sessionItems.filter((i: ContentItem) => i.repeat).length;
+        setRepeats(repeated);
+        setFreshCount(sessionItems.length - repeated);
 
         await consumeSession();
         // Spend only the cards that reach the screen. The slate holds 35 and
