@@ -15,6 +15,30 @@ interface AlmostNothingCardProps {
   };
 }
 
+// Each reminder gets its own illustration. Metro needs literal require paths,
+// so this is a static map rather than a path built from the card — keyed on the
+// reminder's opening line, which survives a repopulate where the content id
+// does not.
+const ART: Record<string, number> = {
+  'when did you last laugh?': require('../assets/art/reminder-laugh.jpg'),
+  'check your posture.': require('../assets/art/reminder-posture.jpg'),
+  'unclench your jaw.': require('../assets/art/reminder-jaw.jpg'),
+  'look at something far away.': require('../assets/art/reminder-far.jpg'),
+  'drink some water.': require('../assets/art/reminder-water.jpg'),
+  'take one slow breath.': require('../assets/art/reminder-breath.jpg'),
+  'there is nothing to solve here.': require('../assets/art/reminder-nothing.jpg'),
+  'a pause, on purpose.': require('../assets/art/reminder-pause.jpg'),
+};
+
+// A new reminder written into the database ships before its art does, so an
+// unmapped line falls back rather than rendering an empty frame.
+const FALLBACK = require('../assets/art/pause-woman.png');
+
+function artFor(firstLine: string) {
+  const key = firstLine.trim().toLowerCase().replace(/\s+/g, ' ').replace(/[’‘]/g, "'");
+  return ART[key] ?? FALLBACK;
+}
+
 // The finalized structure every card follows: icon + label header, then a
 // left-aligned title — with the one privilege no other card keeps: an
 // illustration. No tags and no reaction pills, deliberately; this card
@@ -37,7 +61,7 @@ export default function AlmostNothingCard({ content }: AlmostNothingCardProps) {
 
       <View style={[styles.artFrame, cards.artFill]}>
         <Image
-          source={require('../assets/art/pause-woman.png')}
+          source={artFor(firstLine)}
           style={styles.art}
           resizeMode="cover"
         />

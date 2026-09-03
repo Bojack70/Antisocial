@@ -1,0 +1,583 @@
+<title>Gentle Reminder Art Prompts</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --paper: #EFECE5;
+    --paper-light: #F7F5F0;
+    --paper-sunk: #E5E1D8;
+    --ink: #2D2C2A;
+    --ink-light: #6B6A68;
+    --ink-faint: #9A9894;
+    --rule: rgba(45, 44, 42, 0.14);
+    --rule-soft: rgba(45, 44, 42, 0.07);
+    --clay: #C27B5E;
+    --sage: #8BA087;
+    --ochre: #D9AD6A;
+    --forest: #3F5B4A;
+    --shadow-soft: 0 4px 20px -2px rgba(45, 44, 42, 0.09);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #151413;
+      --paper-light: #1C1B1A;
+      --paper-sunk: #262423;
+      --ink: #E8E6E1;
+      --ink-light: #A5A29B;
+      --ink-faint: #6E6B65;
+      --rule: rgba(232, 230, 225, 0.16);
+      --rule-soft: rgba(232, 230, 225, 0.08);
+      --clay: #D08F70;
+      --sage: #9DB199;
+      --ochre: #E0BA7E;
+      --forest: #6E8C77;
+      --shadow-soft: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #151413;
+    --paper-light: #1C1B1A;
+    --paper-sunk: #262423;
+    --ink: #E8E6E1;
+    --ink-light: #A5A29B;
+    --ink-faint: #6E6B65;
+    --rule: rgba(232, 230, 225, 0.16);
+    --rule-soft: rgba(232, 230, 225, 0.08);
+    --clay: #D08F70;
+    --sage: #9DB199;
+    --ochre: #E0BA7E;
+    --forest: #6E8C77;
+    --shadow-soft: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: Inter, system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 52px 26px 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 44px;
+  }
+
+  .kicker {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--clay);
+    margin: 0;
+  }
+
+  h1 {
+    font-family: Merriweather, Georgia, serif;
+    font-weight: 700;
+    font-size: clamp(28px, 4.4vw, 40px);
+    line-height: 1.16;
+    margin: 12px 0 14px;
+    text-wrap: balance;
+  }
+
+  h2 {
+    font-family: Merriweather, Georgia, serif;
+    font-weight: 700;
+    font-size: 21px;
+    line-height: 1.3;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .standfirst {
+    font-family: Merriweather, Georgia, serif;
+    font-size: 16px;
+    line-height: 1.75;
+    color: var(--ink-light);
+    max-width: 62ch;
+    margin: 0;
+  }
+
+  header {
+    padding-bottom: 30px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  section { display: flex; flex-direction: column; gap: 18px; }
+
+  .section-head { display: flex; flex-direction: column; gap: 6px; }
+  .section-head p { margin: 0; color: var(--ink-light); max-width: 64ch; }
+
+  /* ── the shared style block ─────────────────────────────── */
+
+  .panel {
+    background: var(--paper-light);
+    border: 1px solid var(--rule);
+    border-radius: 14px;
+    padding: 22px 24px;
+    box-shadow: var(--shadow-soft);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* The one status block on the page, marked by the sage rail rather than by
+     another border colour, so it reads as settled rather than as a warning. */
+  .panel.shipped {
+    border-left: 3px solid var(--sage);
+    gap: 12px;
+  }
+
+  pre {
+    margin: 0;
+    background: var(--paper-sunk);
+    border: 1px solid var(--rule-soft);
+    border-radius: 10px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12.5px;
+    line-height: 1.72;
+    white-space: pre-wrap;
+    color: var(--ink);
+  }
+
+  /* ── one card per reminder ──────────────────────────────── */
+
+  .cards { display: flex; flex-direction: column; gap: 20px; }
+
+  .card {
+    background: var(--paper-light);
+    border: 1px solid var(--rule);
+    border-radius: 14px;
+    padding: 22px 24px 20px;
+    box-shadow: var(--shadow-soft);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .card-top { display: flex; flex-direction: column; gap: 10px; }
+
+  .quote {
+    font-family: Merriweather, Georgia, serif;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--ink-light);
+    margin: 0;
+    padding-left: 14px;
+    border-left: 2px solid var(--sage);
+    white-space: pre-line;
+  }
+
+  .meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+  .tag {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 9px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+  }
+  .tag.figure { color: var(--clay); border-color: var(--clay); }
+  .tag.still  { color: var(--sage); border-color: var(--sage); }
+  .tag.have   { color: var(--ochre); border-color: var(--ochre); }
+
+  .note { margin: 0; font-size: 13.5px; color: var(--ink-faint); max-width: 64ch; }
+
+  /* ── buttons ────────────────────────────────────────────── */
+
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+  button {
+    font-family: Inter, system-ui, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: var(--paper-light);
+    background: var(--ink);
+    border: 1px solid var(--ink);
+    border-radius: 999px;
+    padding: 8px 18px;
+    cursor: pointer;
+    transition: opacity 140ms ease, transform 140ms ease;
+  }
+  button.ghost {
+    color: var(--ink-light);
+    background: transparent;
+    border-color: var(--rule);
+  }
+  button:hover { opacity: 0.82; }
+  button:active { transform: translateY(1px); }
+  button:focus-visible { outline: 2px solid var(--clay); outline-offset: 2px; }
+  button.copied { background: var(--sage); border-color: var(--sage); color: #1C1B1A; }
+
+  @media (prefers-reduced-motion: reduce) {
+    button { transition: none; }
+    button:active { transform: none; }
+  }
+
+  /* ── checklist ──────────────────────────────────────────── */
+
+  ol.steps, ul.plain { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 10px; }
+  ol.steps li, ul.plain li { color: var(--ink-light); }
+  ol.steps li strong, ul.plain li strong { color: var(--ink); font-weight: 600; }
+
+  code.inline {
+    font-family: "JetBrains Mono", ui-monospace, Menlo, monospace;
+    font-size: 12.5px;
+    background: var(--paper-sunk);
+    border-radius: 5px;
+    padding: 1.5px 5px;
+  }
+
+  footer {
+    border-top: 1px solid var(--rule);
+    padding-top: 22px;
+    color: var(--ink-faint);
+    font-size: 13px;
+  }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="kicker">Antisocial · almost_nothing</p>
+    <h1>Eight reminders, eight pictures</h1>
+    <p class="standfirst">
+      Every Gentle Reminder used to show the same illustration — the woman breathing
+      among the trees — because the card had one hardcoded image. All eight now have
+      their own. Below is the prompt behind each, kept for re-rendering a card or
+      writing a ninth. The style block is folded into every one, so you can copy a
+      single card and paste it straight into an image model.
+    </p>
+  </header>
+
+  <div class="panel shipped">
+    <p class="kicker">Shipped 3 September 2026</p>
+    <ul class="plain">
+      <li>Renders live at <code class="inline">frontend/assets/art/reminder-*.jpg</code> — 1600&times;1365, quality 88, progressive, <strong>1.26&nbsp;MB for all eight</strong>. The 48&nbsp;MB originals stay in <code class="inline">Curious app/Img/</code>, outside the repo.</li>
+      <li><code class="inline">AlmostNothingCard.tsx</code> maps each reminder to its own image on the card's opening line, with <code class="inline">pause-woman.png</code> as the fallback for an unmapped reminder.</li>
+      <li>Gemini's sparkle watermark sat at x&nbsp;2109–2208 in every render and has been cropped out of all eight — which is why they're 1.17 rather than 4:3.</li>
+      <li>Verified in the running app: five of the eight drawn across six sessions, each showing its own picture, plus a script matching all eight map keys against the live database.</li>
+    </ul>
+  </div>
+
+  <section>
+    <div class="section-head">
+      <h2>The style block</h2>
+      <p>
+        Here on its own in case you want to prompt something that isn't on this list.
+        Each card button below copies this block <em>plus</em> that card's subject.
+      </p>
+    </div>
+    <div class="panel">
+      <pre id="style-block">Flat-shaded editorial vector illustration with soft matte gradients and a fine paper grain — the calm, modern picture-book style used by wellness and meditation apps.
+Warm muted earthy palette only: parchment cream #EFECE5, off-white #F7F5F0, terracotta rust #C27B5E, muted sage #8BA087, deep forest green #3F5B4A, warm ochre #D9AD6A, soft charcoal #2D2C2A.
+Gentle tonal shading inside each shape, soft edges, no hard outlines, no glossy highlights, no drop shadows, no harsh contrast, no neon.
+Layered depth: foreground leaves or objects framing the edges, a soft misty middle distance, a pale cream sky.
+Calm, unhurried, contemplative mood. Generous quiet space around the subject.
+No text, no letters, no numbers, no words, no logos, no phones, no screens, no user-interface elements, no watermarks.
+Wide 4:3 landscape composition, 1600 x 1200 pixels, subject centred with headroom so the image survives a centre crop.</pre>
+      <div class="row">
+        <button class="ghost" data-copy="style-block">Copy style block</button>
+      </div>
+      <p class="note">
+        Written for 4:3, which is what the first batch was generated at. The shipped
+        files are cropped to 1.17 afterwards to lose the watermark — if you'd rather
+        skip that step, ask for 1400&nbsp;&times;&nbsp;1200 and check where the sparkle
+        lands.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Keep one woman across the set</h2>
+      <p>
+        Five of the eight cards have a person in them. Describing the same person every
+        time is what makes separate renders read as one set instead of five strangers.
+        That description is already inside each figure prompt below — it's the woman
+        from the original breathing image.
+      </p>
+    </div>
+    <div class="panel">
+      <pre id="character">The same woman throughout: long dark wavy hair, warm mid-tone skin, a terracotta rust cardigan over a cream top, soft calm features, eyes closed or lowered, no jewellery, no makeup detail.</pre>
+      <div class="row">
+        <button class="ghost" data-copy="character">Copy character line</button>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>The eight cards</h2>
+      <p>
+        Quoted text is exactly what the card says in the app. Each button copies the
+        style block, the character line where the subject needs one, and that card's
+        subject — one complete prompt.
+      </p>
+    </div>
+
+    <div class="cards">
+
+      <article class="card">
+        <div class="card-top">
+          <div class="meta">
+            <span class="tag figure">Figure</span>
+          </div>
+          <p class="quote">When did you last laugh?
+Not a polite chuckle. A real, unguarded laugh. Your body misses it.</p>
+        </div>
+        <p class="note">
+          Laughter with an open mouth is where this style breaks — models add teeth and
+          the face goes uncanny. The prompt asks for a simple mouth shape and puts the
+          warmth in the light instead.
+        </p>
+        <div class="row">
+          <button data-card="laugh">Copy prompt</button>
+        </div>
+        <pre hidden id="laugh">The same woman, seen in three-quarter view in a sunlit room, head tipped back mid-laugh with her eyes crinkled shut and one hand resting loosely at her collarbone. A broad diagonal of warm ochre afternoon light falls across her and the plain wall behind, catching dust in the air. A tall sage-green plant at the edge of the frame. Keep the open mouth as one simple soft shape — no detailed teeth, no gums. Unguarded, warm, private.</pre>
+      </article>
+
+      <article class="card">
+        <div class="card-top">
+          <div class="meta">
+            <span class="tag figure">Figure</span>
+          </div>
+          <p class="quote">Check your posture.
+Roll your shoulders back. Uncross your legs. Let your spine remember what it's like to be aligned.</p>
+        </div>
+        <p class="note">
+          Clean side profile is the framing that actually shows a spine. Anything
+          three-quarter hides the curve the card is talking about.
+        </p>
+        <div class="row">
+          <button data-card="posture">Copy prompt</button>
+        </div>
+        <pre hidden id="posture">The same woman in clean side profile, seated on a low wooden stool with both feet flat on the floor, her spine drawn as one long confident curve, shoulders rolled back and open, chin level, eyes closed. A plain parchment interior wall behind her and one tall sage-leaf plant to one side. Soft warm light from the left. Uncluttered — the whole picture is the line of her back.</pre>
+      </article>
+
+      <article class="card">
+        <div class="card-top">
+          <div class="meta">
+            <span class="tag figure">Figure</span>
+          </div>
+          <p class="quote">Unclench your jaw.
+Drop your shoulders. You were holding them again.</p>
+        </div>
+        <p class="note">
+          The pale ribbon is the same device as the breath curl in the image you're
+          using now — it reads as release, not smoke, as long as it stays thin and grey.
+        </p>
+        <div class="row">
+          <button data-card="jaw">Copy prompt</button>
+        </div>
+        <pre hidden id="jaw">The same woman cropped from the shoulders up, turned three-quarters away from the viewer so only the line of her jaw and cheek is visible, lips barely parted, jaw soft, shoulders visibly dropped and loose. Soft out-of-focus forest greens behind her. One thin pale grey ribbon drifts away from her jawline to suggest tension leaving — thin and airy, never smoke. Quiet and close.</pre>
+      </article>
+
+      <article class="card">
+        <div class="card-top">
+          <div class="meta">
+            <span class="tag figure">Figure</span>
+          </div>
+          <p class="quote">Look at something far away.
+Your eyes have been focused up close for hours. Give them a horizon.</p>
+        </div>
+        <p class="note">
+          The card is about distance, so the distance has to be the brightest thing in
+          the frame and the room has to be the dark part. Seen from behind, which also
+          means no face to get wrong.
+        </p>
+        <div class="row">
+          <button data-card="far">Copy prompt</button>
+        </div>
+        <pre hidden id="far">The same woman seen from behind, seated at a wide open window with her forearms resting on the sill, looking out. Beyond the window, layered sage and misty blue-green hills recede toward a pale cream horizon with a low warm ochre sun. The interior in the near foreground sits in soft shadow; the distance is the bright part of the picture. One small potted plant on the sill. No face visible.</pre>
+      </article>
+
+      <article class="card">
+        <div class="card-top">
+          <div class="meta">
+            <span class="tag still">Still life</span>
+          </div>
+          <p class="quote">Drink some water.
+Not later. Now is fine.</p>
+        </div>
+        <p class="note">
+          No hand. A hand reaching for a glass is a coin-flip render and the glass alone
+          says it better anyway.
+        </p>
+        <div class="row">
+          <button data-card="water">Copy prompt</button>
+        </div>
+        <pre hidden id="water">A single tall clear glass of water standing alone on a warm wooden table beside a window, lit from the side, with a pale sage-green band of refracted light falling through the glass onto the wood. Soft misty hills visible out of focus through the window. Nothing else on the table, no hands, no jug, no lemon. Still and ordinary.</pre>
+      </article>
+
+      <article class="card">
+        <div class="card-top">
+          <div class="meta">
+            <span class="tag figure">Figure</span>
+            <span class="tag have">Closest to the original</span>
+          </div>
+          <p class="quote">Take one slow breath.
+In through the nose. Out longer than in. That's the whole exercise.</p>
+        </div>
+        <p class="note">
+          The render came back very close to <strong>pause-woman.png</strong>, which was
+          always a picture of this card in particular. That file stays in the repo as the
+          fallback for any reminder added before its art exists.
+        </p>
+        <div class="row">
+          <button data-card="breath">Copy prompt</button>
+        </div>
+        <pre hidden id="breath">The same woman seated among tall foreground leaves, seen in profile with her chin lifted slightly and her eyes closed, exhaling — a long pale grey ribbon of breath curling away from her lips. Layered sage hills and a pale cream sky behind her, dark tree trunks framing both edges of the frame. Serene, centred, the breath the only movement in the picture.</pre>
+      </article>
+
+      <article class="card">
+        <div class="card-top">
+          <div class="meta">
+            <span class="tag still">Landscape</span>
+          </div>
+          <p class="quote">There is nothing to solve here.</p>
+        </div>
+        <p class="note">
+          One line of text, so the picture should be nearly empty too. Emptiness is the
+          hardest thing to get out of an image model — expect to push back on it twice.
+        </p>
+        <div class="row">
+          <button data-card="solve">Copy prompt</button>
+        </div>
+        <pre hidden id="solve">A very wide, very quiet landscape reduced to a few soft horizontal bands: a pale cream sky filling most of the frame, a distant misty sage ridge, a nearer forest-green slope, and a warm ochre foreground field. One small smooth grey-brown stone sits off-centre in the field. Nothing else at all — no trees, no figures, no path, no birds. Most of the picture is open space and air.</pre>
+      </article>
+
+      <article class="card">
+        <div class="card-top">
+          <div class="meta">
+            <span class="tag still">Still life</span>
+          </div>
+          <p class="quote">A pause, on purpose.</p>
+        </div>
+        <p class="note">
+          Ripples give the one bit of implied motion in the whole set, which is what
+          keeps this from being a second empty landscape next to the card above.
+        </p>
+        <div class="row">
+          <button data-card="pause">Copy prompt</button>
+        </div>
+        <pre hidden id="pause">One smooth grey-brown pebble resting at the centre of a still dark-green pool, with three or four wide concentric ripples spreading slowly outward from it. Seen from just above the water line. A few sage leaves reach in from the top corners, and the pale cream sky is reflected as a soft band across the water. No splash, no hands, no dramatic motion — the ripples are almost finished.</pre>
+      </article>
+
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>If you re-render one</h2>
+      <p>What the first batch taught, so a replacement drops in cleanly.</p>
+    </div>
+    <div class="panel">
+      <ol class="steps">
+        <li><strong>The frame is portrait, not landscape.</strong> Measured in the running app at <strong>348&nbsp;&times;&nbsp;400&nbsp;pt</strong> on a normal phone — <code class="inline">cards.artFill</code> is <code class="inline">flex:1, minHeight:240, maxHeight:400</code>. With <code class="inline">resizeMode="cover"</code> a 4:3 render loses 35% of its width; the shipped 1.17 crop loses 26%. Keep the subject centred and away from the sides.</li>
+        <li><strong>It goes landscape on short screens.</strong> At a 640&nbsp;pt viewport the same frame measured 348&nbsp;&times;&nbsp;262 and showed 99% of the width. Anything parked in a corner is hidden on one device and plainly visible on the other, so check both.</li>
+        <li><strong>Crop the watermark before shipping.</strong> Gemini's sparkle lands at x&nbsp;2109–2208, y&nbsp;1503–1600 in the 2400&nbsp;&times;&nbsp;1792 output. Crop to x&nbsp;&lt;&nbsp;2100 and resize to 1600 wide.</li>
+        <li><strong>Use an anchored crop tool.</strong> <code class="inline">sips -c</code> crops <em>centred</em> and ignores <code class="inline">--cropOffset</code>, which quietly keeps the watermark while looking like it worked. PIL's <code class="inline">im.crop()</code> is exact.</li>
+        <li><strong>Re-prompt "no text" from the front.</strong> If lettering shows up, move the no-text clause to the first sentence rather than adding it again at the end.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>How a new one gets wired</h2>
+      <p>For a ninth reminder, or a replacement under a different filename.</p>
+    </div>
+    <div class="panel">
+      <ul class="plain">
+        <li>Metro needs literal require paths, so <code class="inline">AlmostNothingCard.tsx</code> holds a static <code class="inline">ART</code> map and an <code class="inline">artFor()</code> lookup rather than building a path at runtime.</li>
+        <li>The key is the reminder's <strong>opening line</strong>, lowercased and whitespace-normalised — not the content id, because the populate scripts mint fresh UUIDs on every repopulate while the text stays put.</li>
+        <li>An unmapped line falls back to <code class="inline">pause-woman.png</code>, so a reminder written into the database before its art exists renders something rather than an empty frame.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    Card text pulled live from <code class="inline">almost_nothing_content</code> in
+    <code class="inline">antisocial_db</code> — eight documents, 3 September 2026.
+    Supersedes the Gentle Reminder half of <code class="inline">gemini-art-briefs.html</code>,
+    which was written for seventeen texts and for the flat vector style that didn't ship.
+    The Try This half of that sheet is still current.
+  </footer>
+
+</div>
+
+<script>
+  var styleBlock = document.getElementById('style-block').textContent.trim();
+  var character = document.getElementById('character').textContent.trim();
+  var FIGURE = { laugh: 1, posture: 1, jaw: 1, far: 1, breath: 1 };
+
+  function flash(btn, label) {
+    var original = btn.textContent;
+    btn.textContent = label;
+    btn.classList.add('copied');
+    setTimeout(function () {
+      btn.textContent = original;
+      btn.classList.remove('copied');
+    }, 1600);
+  }
+
+  function write(text, btn) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () {
+        flash(btn, 'Copied');
+      }, function () {
+        fallback(text, btn);
+      });
+    } else {
+      fallback(text, btn);
+    }
+  }
+
+  function fallback(text, btn) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    document.body.removeChild(ta);
+    flash(btn, ok ? 'Copied' : 'Press Cmd+C');
+  }
+
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('button');
+    if (!btn) return;
+
+    var plain = btn.getAttribute('data-copy');
+    if (plain) {
+      write(document.getElementById(plain).textContent.trim(), btn);
+      return;
+    }
+
+    var key = btn.getAttribute('data-card');
+    if (!key) return;
+    var subject = document.getElementById(key).textContent.trim();
+    var parts = [styleBlock];
+    if (FIGURE[key]) parts.push(character);
+    parts.push('Subject: ' + subject);
+    write(parts.join('\n\n'), btn);
+  });
+</script>
