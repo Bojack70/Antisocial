@@ -193,6 +193,7 @@
   .tag.figure { color: var(--clay); border-color: var(--clay); }
   .tag.still  { color: var(--sage); border-color: var(--sage); }
   .tag.have   { color: var(--ochre); border-color: var(--ochre); }
+  .tag.needed { color: var(--paper-light); background: var(--clay); border-color: var(--clay); }
 
   .note { margin: 0; font-size: 13.5px; color: var(--ink-faint); max-width: 64ch; }
 
@@ -254,25 +255,64 @@
 
   <header>
     <p class="kicker">Antisocial · almost_nothing</p>
-    <h1>Eight reminders, eight pictures</h1>
+    <h1>Sixteen reminders, nine pictures</h1>
     <p class="standfirst">
       Every Gentle Reminder used to show the same illustration — the woman breathing
-      among the trees — because the card had one hardcoded image. All eight now have
-      their own. Below is the prompt behind each, kept for re-rendering a card or
-      writing a ninth. The style block is folded into every one, so you can copy a
-      single card and paste it straight into an image model.
+      among the trees — because the card had one hardcoded image. Below is the prompt
+      behind each replacement, kept for re-rendering one or writing another. The style
+      block is folded into every prompt, so you can copy a single card and paste it
+      straight into an image model.
     </p>
   </header>
 
   <div class="panel shipped">
-    <p class="kicker">Shipped 3 September 2026</p>
+    <p class="kicker">Live on antisocial.co.in</p>
     <ul class="plain">
-      <li>Renders live at <code class="inline">frontend/assets/art/reminder-*.jpg</code> — 1600&times;1365, quality 88, progressive, <strong>1.26&nbsp;MB for all eight</strong>. The 48&nbsp;MB originals stay in <code class="inline">Curious app/Img/</code>, outside the repo.</li>
-      <li><code class="inline">AlmostNothingCard.tsx</code> maps each reminder to its own image on the card's opening line, with <code class="inline">pause-woman.png</code> as the fallback for an unmapped reminder.</li>
-      <li>Gemini's sparkle watermark sat at x&nbsp;2109–2208 in every render and has been cropped out of all eight — which is why they're 1.17 rather than 4:3.</li>
-      <li>Verified in the running app: five of the eight drawn across six sessions, each showing its own picture, plus a script matching all eight map keys against the live database.</li>
+      <li><strong>Production has sixteen reminders, not eight.</strong> The first version of this sheet counted the local dev Mongo that <code class="inline">backend/.env</code> points at; Atlas holds twice as many. Half of all live reminders were falling through to the fallback until that was fixed — count against the deployed API, never the local database.</li>
+      <li><strong>Thirteen of the sixteen now resolve to art</strong>, from nine images. Five reminders share a picture with the one that says the same thing in other words: a jaw is a jaw.</li>
+      <li>Renders live at <code class="inline">frontend/assets/art/reminder-*.jpg</code> — 1600&times;1365, quality 88, progressive, about 160&nbsp;KB each. The 48&nbsp;MB originals stay in <code class="inline">Curious app/Img/</code>, outside the repo.</li>
+      <li>Gemini's sparkle watermark sat at x&nbsp;2109–2208 in every render and is cropped out — which is why they're 1.17 rather than 4:3.</li>
     </ul>
   </div>
+
+  <section>
+    <div class="section-head">
+      <h2>Which reminder gets which picture</h2>
+      <p>
+        The map lives in <code class="inline">AlmostNothingCard.tsx</code>, keyed on the
+        card's opening line — the content id changes on every repopulate, the text
+        doesn't. Add a key here only after checking the production text.
+      </p>
+    </div>
+    <div class="panel">
+      <div style="overflow-x:auto">
+        <table style="border-collapse:collapse;width:100%;font-size:13.5px">
+          <thead>
+            <tr>
+              <th style="text-align:left;padding:6px 12px 10px 0;border-bottom:1px solid var(--rule);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)">Image</th>
+              <th style="text-align:left;padding:6px 0 10px;border-bottom:1px solid var(--rule);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)">Reminders it serves</th>
+            </tr>
+          </thead>
+          <tbody style="color:var(--ink-light)">
+            <tr><td style="padding:8px 12px 8px 0;border-bottom:1px solid var(--rule-soft);white-space:nowrap"><code class="inline">reminder-laugh</code></td><td style="padding:8px 0;border-bottom:1px solid var(--rule-soft)">When did you last laugh?</td></tr>
+            <tr><td style="padding:8px 12px 8px 0;border-bottom:1px solid var(--rule-soft);white-space:nowrap"><code class="inline">reminder-posture</code></td><td style="padding:8px 0;border-bottom:1px solid var(--rule-soft)">Check your posture. · Your shoulders are somewhere near your ears.</td></tr>
+            <tr><td style="padding:8px 12px 8px 0;border-bottom:1px solid var(--rule-soft);white-space:nowrap"><code class="inline">reminder-jaw</code></td><td style="padding:8px 0;border-bottom:1px solid var(--rule-soft)">Unclench your jaw. · Your jaw is probably clenched.</td></tr>
+            <tr><td style="padding:8px 12px 8px 0;border-bottom:1px solid var(--rule-soft);white-space:nowrap"><code class="inline">reminder-far</code></td><td style="padding:8px 0;border-bottom:1px solid var(--rule-soft)">Look at something far away.</td></tr>
+            <tr><td style="padding:8px 12px 8px 0;border-bottom:1px solid var(--rule-soft);white-space:nowrap"><code class="inline">reminder-water</code></td><td style="padding:8px 0;border-bottom:1px solid var(--rule-soft)">Drink some water. · When did you last drink water?</td></tr>
+            <tr><td style="padding:8px 12px 8px 0;border-bottom:1px solid var(--rule-soft);white-space:nowrap"><code class="inline">reminder-breath</code></td><td style="padding:8px 0;border-bottom:1px solid var(--rule-soft)">Take one slow breath. · Notice your breathing for a second. · You're holding your breath slightly.</td></tr>
+            <tr><td style="padding:8px 12px 8px 0;border-bottom:1px solid var(--rule-soft);white-space:nowrap"><code class="inline">reminder-nothing</code></td><td style="padding:8px 0;border-bottom:1px solid var(--rule-soft)">There is nothing to solve here.</td></tr>
+            <tr><td style="padding:8px 12px 8px 0;border-bottom:1px solid var(--rule-soft);white-space:nowrap"><code class="inline">reminder-pause</code></td><td style="padding:8px 0;border-bottom:1px solid var(--rule-soft)">A pause, on purpose.</td></tr>
+            <tr><td style="padding:8px 12px 8px 0;border-bottom:1px solid var(--rule-soft);white-space:nowrap"><code class="inline" style="color:var(--clay)">reminder-feet</code></td><td style="padding:8px 0;border-bottom:1px solid var(--rule-soft)">Both feet on the floor. <em>— to be generated, prompt below</em></td></tr>
+            <tr><td style="padding:8px 12px 8px 0;white-space:nowrap;color:var(--ink-faint)">none, by choice</td><td style="padding:8px 0;color:var(--ink-faint)">You just read that in your own voice. · Your tongue has nowhere comfortable to sit in your mouth.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">
+        The last two are body-sensation gags with no natural picture. A forced image
+        would be worse than the fallback, so they keep the breathing woman deliberately.
+      </p>
+    </div>
+  </section>
 
   <section>
     <div class="section-head">
@@ -306,10 +346,11 @@ Wide 4:3 landscape composition, 1600 x 1200 pixels, subject centred with headroo
     <div class="section-head">
       <h2>Keep one woman across the set</h2>
       <p>
-        Five of the eight cards have a person in them. Describing the same person every
-        time is what makes separate renders read as one set instead of five strangers.
-        That description is already inside each figure prompt below — it's the woman
-        from the original breathing image.
+        Five of the nine pictures have a person in them. Describing the same person
+        every time is what makes separate renders read as one set instead of five
+        strangers. That description is already inside each figure prompt below — it's
+        the woman from the original breathing image. The still lifes don't take it, and
+        neither does the overhead feet shot, where nothing above the shins is in frame.
       </p>
     </div>
     <div class="panel">
@@ -322,7 +363,7 @@ Wide 4:3 landscape composition, 1600 x 1200 pixels, subject centred with headroo
 
   <section>
     <div class="section-head">
-      <h2>The eight cards</h2>
+      <h2>The prompts</h2>
       <p>
         Quoted text is exactly what the card says in the app. Each button copies the
         style block, the character line where the subject needs one, and that card's
@@ -331,6 +372,29 @@ Wide 4:3 landscape composition, 1600 x 1200 pixels, subject centred with headroo
     </div>
 
     <div class="cards">
+
+      <article class="card" style="border-left:3px solid var(--clay)">
+        <div class="card-top">
+          <div class="meta">
+            <span class="tag still">Still life</span>
+            <span class="tag needed">Not generated yet</span>
+          </div>
+          <p class="quote">Both feet on the floor.
+You've been sitting on one of them, haven't you?</p>
+        </div>
+        <p class="note">
+          The one real gap left. Seen from directly above, so there is no face and no
+          body to get wrong — and the overhead view is what makes it read as
+          <em>your</em> feet rather than a picture of someone else's. Save the render as
+          <code class="inline">reminder-feet.jpg</code> and it needs one line adding to
+          the map in <code class="inline">AlmostNothingCard.tsx</code>; tell me when it
+          exists and I'll wire it.
+        </p>
+        <div class="row">
+          <button data-card="feet">Copy prompt</button>
+        </div>
+        <pre hidden id="feet">A pair of bare feet planted flat and side by side on warm wooden floorboards, seen from directly above as if looking down at your own feet. The boards run in terracotta and warm ochre tones with soft sage shadow pooling around the heels. The front legs of a wooden chair and the lower hem of dark trousers enter at the top edge of the frame. No face, no body above the shins, nothing else in the room. Calm, ordinary, grounded — the light is late afternoon and comes from one side.</pre>
+      </article>
 
       <article class="card">
         <div class="card-top">
@@ -513,7 +577,7 @@ In through the nose. Out longer than in. That's the whole exercise.</p>
 
   <footer>
     Card text pulled live from <code class="inline">almost_nothing_content</code> in
-    <code class="inline">antisocial_db</code> — eight documents, 3 September 2026.
+    <code class="inline">antisocial_db</code> on Atlas — sixteen documents, 3 September 2026.
     Supersedes the Gentle Reminder half of <code class="inline">gemini-art-briefs.html</code>,
     which was written for seventeen texts and for the flat vector style that didn't ship.
     The Try This half of that sheet is still current.
