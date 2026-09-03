@@ -27,7 +27,7 @@ import { markInstallGateAnswered } from '../lib/installGate';
 // of it costs visitors, and an app about not demanding attention should not
 // open by demanding something.
 
-type Mode = 'ready' | 'manual' | 'ios';
+type Mode = 'ready' | 'manual' | 'ios' | 'installed';
 
 function isIOS(): boolean {
   if (typeof navigator === 'undefined') return false;
@@ -51,8 +51,21 @@ export default function InstallGate({ onContinue }: { onContinue: () => void }) 
       if ((window as any).__installEvent) setMode('ready');
     };
     take();
+
+    // Also fires when the visitor installs through the browser's own menu
+    // rather than our button, which is the whole point of showing them where
+    // that menu is. Either way the tab should stop pretending to be the app.
+    const onInstalled = () => {
+      markInstallGateAnswered();
+      setMode('installed');
+    };
+
     window.addEventListener('installavailable', take);
-    return () => window.removeEventListener('installavailable', take);
+    window.addEventListener('installdone', onInstalled);
+    return () => {
+      window.removeEventListener('installavailable', take);
+      window.removeEventListener('installdone', onInstalled);
+    };
   }, []);
 
   const dismiss = async () => {
@@ -63,15 +76,57 @@ export default function InstallGate({ onContinue }: { onContinue: () => void }) 
   const install = async () => {
     const event = (window as any).__installEvent;
     if (!event) return;
+
     event.prompt();
+    let outcome = 'dismissed';
     try {
-      await event.userChoice;
+      const choice = await event.userChoice;
+      outcome = choice?.outcome ?? 'dismissed';
     } catch {
-      // Dismissed, or the browser withdrew it. The event is spent either way.
+      // The browser withdrew it. Treat as declined.
     }
+    // Single-use whichever way it went; a stale one gives a dead button.
     (window as any).__installEvent = null;
-    dismiss();
+
+    if (outcome === 'accepted') {
+      await markInstallGateAnswered();
+      setMode('installed');
+      return;
+    }
+    // Declined the system sheet. Don't push them into the app as though they
+    // had answered the question; leave the menu route visible instead, since
+    // the event is now spent and the button would do nothing.
+    setMode('manual');
   };
+
+  // Installed. The tab deliberately stops here instead of loading the feed.
+  //
+  // A browser tab cannot close itself: window.close() only works on windows
+  // opened by script, and a tab someone reached by typing a URL is not one. So
+  // the next best thing is to refuse to be the app. Carrying on into the feed
+  // here would start a session in the browser, spend one of the day's two, and
+  // leave the visitor reading in exactly the place the install was meant to
+  // take them out of.
+  if (mode === 'installed') {
+    return (
+      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+        <StatusBar style="dark" />
+        <View style={styles.middle}>
+          <Text style={styles.wordmark}>antisocial</Text>
+          <Text style={styles.lead}>It's on your home screen.</Text>
+          <Text style={styles.body}>
+            Open it from there. You can close this tab, and the browser can go back to
+            being a browser.
+          </Text>
+        </View>
+        <View style={styles.foot}>
+          <TouchableOpacity style={styles.skip} onPress={onContinue} activeOpacity={0.7}>
+            <Text style={styles.skipText}>Or read here this once</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
