@@ -61,6 +61,8 @@ import { recordSession, recordLeftEarly, dueRecap, markRecapShown } from '../lib
 import WeekRecapCard from '../components/WeekRecapCard';
 import SessionChrome from '../components/SessionChrome';
 import InstallPrompt from '../components/InstallPrompt';
+import InstallGate from '../components/InstallGate';
+import { shouldShowInstallGate } from '../lib/installGate';
 import BodyAwareInterruption from '../components/BodyAwareInterruption';
 import IllusionCard from '../components/IllusionCard';
 import { DeckAdvanceContext } from '../components/DeckContext';
@@ -241,6 +243,7 @@ export default function Index() {
   // page index rather than a scroll offset. Pages snap by the deck's
   // measured height (the space between the chrome and the screen bottom),
   // which only exists after first layout, so pages render once it is known.
+  const [gate, setGate] = useState(false);
   const [page, setPage] = useState(0);
   const [deckHeight, setDeckHeight] = useState(0);
   const [sessionNumber, setSessionNumber] = useState(1);
@@ -349,6 +352,28 @@ export default function Index() {
     ];
   };
 
+  // Everything the entry route does once the install question is out of the
+  // way: the opening screens for a first visit, otherwise today's feed.
+  const beginVisit = async () => {
+    // A first visit goes to the opening screens before anything else — and
+    // specifically before fetchFeed(), which consumes one of the day's two
+    // sessions. Checking after the fetch would spend a session on a feed the
+    // visitor is about to be redirected away from and never sees.
+    // `loading` stays true through the redirect, so the feed never flashes.
+    if (!(await isOnboardingComplete())) {
+      router.replace('/onboarding');
+      return;
+    }
+
+    const used = await minutesUsedToday();
+    if (used >= DAILY_LIMIT_MINUTES) {
+      setClosed(pick(TIME_UP_SCREENS));
+      setLoading(false);
+      return;
+    }
+    fetchFeed();
+  };
+
   // Fetch feed on mount, unless today's boundary has already been reached.
   useEffect(() => {
     // Guard against double-invoked effects (StrictMode / Fast Refresh)
@@ -357,23 +382,15 @@ export default function Index() {
     didInit.current = true;
 
     (async () => {
-      // A first visit goes to the opening screens before anything else — and
-      // specifically before fetchFeed(), which consumes one of the day's two
-      // sessions. Checking after the fetch would spend a session on a feed the
-      // visitor is about to be redirected away from and never sees.
-      // `loading` stays true through the redirect, so the feed never flashes.
-      if (!(await isOnboardingComplete())) {
-        router.replace('/onboarding');
-        return;
-      }
-
-      const used = await minutesUsedToday();
-      if (used >= DAILY_LIMIT_MINUTES) {
-        setClosed(pick(TIME_UP_SCREENS));
+      // The install question comes before the opening screens and before any
+      // session is spent, so it is genuinely the first thing on the URL. It is
+      // asked once per browser and never again, and it is skippable.
+      if (await shouldShowInstallGate()) {
+        setGate(true);
         setLoading(false);
         return;
       }
-      fetchFeed();
+      beginVisit();
     })();
 
     // Track usage time every minute
@@ -705,6 +722,20 @@ export default function Index() {
       };
     }, [deckHeight])
   );
+
+  // Ahead of the loading state on purpose: this is meant to be the first thing
+  // on the URL, not something that appears after a spinner.
+  if (gate) {
+    return (
+      <InstallGate
+        onContinue={() => {
+          setGate(false);
+          setLoading(true);
+          beginVisit();
+        }}
+      />
+    );
+  }
 
   if (loading) {
     return (
