@@ -19,24 +19,63 @@ interface AlmostNothingCardProps {
 // so this is a static map rather than a path built from the card — keyed on the
 // reminder's opening line, which survives a repopulate where the content id
 // does not.
+//
+// The keys below are the SIXTEEN reminders that exist in production (Atlas).
+// The first cut of this map had eight, taken from the local dev Mongo in
+// backend/.env, which holds a different and much smaller set — so on the live
+// site half of all reminders fell through to the fallback and showed the same
+// breathing woman the whole feature existed to replace. Any new key belongs
+// here only after checking the production text, never the local one.
+//
+// Several reminders are the same subject in different words, and share a
+// picture on purpose: a jaw is a jaw. The seen ledger keeps the pair roughly a
+// fortnight apart in any case.
 const ART: Record<string, number> = {
   'when did you last laugh?': require('../assets/art/reminder-laugh.jpg'),
+
   'check your posture.': require('../assets/art/reminder-posture.jpg'),
+  'your shoulders are somewhere near your ears.': require('../assets/art/reminder-posture.jpg'),
+
   'unclench your jaw.': require('../assets/art/reminder-jaw.jpg'),
+  'your jaw is probably clenched.': require('../assets/art/reminder-jaw.jpg'),
+
   'look at something far away.': require('../assets/art/reminder-far.jpg'),
+
   'drink some water.': require('../assets/art/reminder-water.jpg'),
+  'when did you last drink water?': require('../assets/art/reminder-water.jpg'),
+
   'take one slow breath.': require('../assets/art/reminder-breath.jpg'),
+  'notice your breathing for a second.': require('../assets/art/reminder-breath.jpg'),
+  "you're holding your breath slightly.": require('../assets/art/reminder-breath.jpg'),
+
   'there is nothing to solve here.': require('../assets/art/reminder-nothing.jpg'),
   'a pause, on purpose.': require('../assets/art/reminder-pause.jpg'),
+
+  // Still unillustrated, and deliberately so for the last two: they are body
+  // sensations with no natural picture, and a forced one would be worse than
+  // the fallback.
+  //   'both feet on the floor.'
+  //   'you just read that in your own voice.'
+  //   'your tongue has nowhere comfortable to sit in your mouth.'
 };
 
-// A new reminder written into the database ships before its art does, so an
-// unmapped line falls back rather than rendering an empty frame.
+// A reminder written into the database before its art exists falls back rather
+// than rendering an empty frame.
 const FALLBACK = require('../assets/art/pause-woman.png');
 
+function keyFor(firstLine: string) {
+  return firstLine.trim().toLowerCase().replace(/\s+/g, ' ').replace(/[’‘]/g, "'");
+}
+
 function artFor(firstLine: string) {
-  const key = firstLine.trim().toLowerCase().replace(/\s+/g, ' ').replace(/[’‘]/g, "'");
-  return ART[key] ?? FALLBACK;
+  const art = ART[keyFor(firstLine)];
+  if (!art && __DEV__) {
+    // Silence is how the first version of this map shipped half-wrong: every
+    // unmapped reminder still rendered a perfectly nice picture, just the same
+    // one every time. Say so out loud in development.
+    console.warn(`[reminder art] no image for: "${firstLine.trim()}" — using fallback`);
+  }
+  return art ?? FALLBACK;
 }
 
 // The finalized structure every card follows: icon + label header, then a
