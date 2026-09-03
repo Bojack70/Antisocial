@@ -60,6 +60,25 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+
+// beforeinstallprompt fires ONCE, whenever Chrome decides the visitor is
+// engaged enough — which is usually well after the app has mounted and moved
+// on from whichever screen was listening. A React component that adds its own
+// listener therefore misses it most of the time, and Chrome does not fire it
+// again for that page load. So it is caught here instead, in the shell, before
+// React exists and for as long as the tab lives. Any screen can then offer the
+// install whenever it likes, and one that mounts later still finds the event
+// waiting for it.
+window.__installEvent = null;
+window.addEventListener('beforeinstallprompt', function (e) {
+  e.preventDefault();
+  window.__installEvent = e;
+  window.dispatchEvent(new Event('installavailable'));
+});
+window.addEventListener('appinstalled', function () {
+  window.__installEvent = null;
+  window.dispatchEvent(new Event('installdone'));
+});
 `;
 
 const backgroundStyle = `

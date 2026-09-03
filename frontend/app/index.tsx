@@ -60,6 +60,7 @@ import { isOnboardingComplete } from '../lib/onboarding';
 import { recordSession, recordLeftEarly, dueRecap, markRecapShown } from '../lib/weekLedger';
 import WeekRecapCard from '../components/WeekRecapCard';
 import SessionChrome from '../components/SessionChrome';
+import InstallPrompt from '../components/InstallPrompt';
 import BodyAwareInterruption from '../components/BodyAwareInterruption';
 import IllusionCard from '../components/IllusionCard';
 import { DeckAdvanceContext } from '../components/DeckContext';
@@ -874,6 +875,16 @@ export default function Index() {
                     </TouchableOpacity>
                   )}
 
+                  {/* The install offer also lives here, not only on the last
+                      opening screen. Onboarding runs once per browser, so a
+                      returning visitor never saw it — and Chrome usually only
+                      offers the install after enough engagement that the
+                      opening screens are long gone. The end of a session is
+                      where someone has decided the app is worth keeping. */}
+                  <View style={styles.installSlot}>
+                    <InstallPrompt />
+                  </View>
+
                   {/* A side room, offered at the door: the visitor's own
                       photographs, assembled on the device into one image.
                       It lives at the exit because it's a keepsake, not a
@@ -1006,6 +1017,14 @@ const styles = StyleSheet.create({
     ...type.title,
     textAlign: 'center',
     marginBottom: 32,
+  },
+  // The end-session card centres its children; the install panel is a block
+  // with its own rule and needs the full width to sit under them properly.
+  // It renders nothing at all where the browser can't install, and the margin
+  // collapses with it because the wrapper has no height of its own.
+  installSlot: {
+    alignSelf: 'stretch',
+    marginTop: 24,
   },
   // Primary action, per the Tailwind spec: solid ink, rounded-xl, py-3,
   // medium weight. No high-contrast hover — it grounds the action.

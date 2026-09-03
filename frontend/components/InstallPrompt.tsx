@@ -62,20 +62,25 @@ export default function InstallPrompt() {
       return;
     }
 
-    const onPrompt = (event: any) => {
-      // Without preventDefault Chrome may show its own mini-infobar, and the
-      // event can no longer be replayed from our button.
-      event.preventDefault();
-      setDeferred(event);
-      setMode('prompt');
+    // The event is caught in the HTML shell (see app/+html.tsx) and parked on
+    // the window, because Chrome fires it once and usually long before this
+    // component mounts. So: take whatever is already there, then listen for it
+    // arriving later.
+    const take = () => {
+      const event = (window as any).__installEvent;
+      if (event) {
+        setDeferred(event);
+        setMode('prompt');
+      }
     };
-    const onInstalled = () => setMode('none');
+    take();
 
-    window.addEventListener('beforeinstallprompt', onPrompt);
-    window.addEventListener('appinstalled', onInstalled);
+    const onDone = () => setMode('none');
+    window.addEventListener('installavailable', take);
+    window.addEventListener('installdone', onDone);
     return () => {
-      window.removeEventListener('beforeinstallprompt', onPrompt);
-      window.removeEventListener('appinstalled', onInstalled);
+      window.removeEventListener('installavailable', take);
+      window.removeEventListener('installdone', onDone);
     };
   }, []);
 
@@ -89,6 +94,7 @@ export default function InstallPrompt() {
     }
     // A deferred prompt is single-use; holding a stale one would give a
     // button that silently does nothing on the second tap.
+    (window as any).__installEvent = null;
     setDeferred(null);
     setMode('none');
   };
