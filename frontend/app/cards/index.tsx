@@ -15,7 +15,6 @@ import AlmostNothingCard from '../../components/AlmostNothingCard';
 import QuietContradictionCard from '../../components/QuietContradictionCard';
 import ShareableCard from '../../components/ShareableCard';
 import GameCard from '../../components/GameCard';
-import GuestbookCard from '../../components/GuestbookCard';
 import NotebookCard from '../../components/NotebookCard';
 import TryThisCard from '../../components/TryThisCard';
 import LookCloserCard from '../../components/LookCloserCard';
@@ -140,13 +139,6 @@ export default function CardGallery() {
         for (const p of BEFORE_YOU_WATCH_SAMPLES) {
           one.push({ ...p, id: `gallery-byw-${p.id}`, type: 'before_you_watch' });
         }
-        one.push({
-          id: 'gallery-guestbook', type: 'guestbook',
-          items: slate.slice(0, 5).map((i, n) => ({
-            id: `g-${n}`, type: i.type,
-            title: i.headline ?? i.question ?? i.hook ?? i.title ?? i.prompt ?? 'A card from today',
-          })).filter((i) => !!i.title),
-        });
         one.push({ id: 'gallery-mission', type: 'mission', mission: MISSIONS[0] });
         // One of each scale, so the meta line ("TODAY" / "THIS WEEK") and
         // the optional note both get judged in the same pass.
@@ -160,7 +152,7 @@ export default function CardGallery() {
           recap: {
             weekStart: '2026-08-24', weekEnd: '2026-08-30', daysVisited: 4,
             sessions: 6, cards: 58, missions: 3, leftEarly: 2, guesses: 9,
-            audioPlays: 2, gameRounds: 4, retells: 3, writes: 2,
+            audioPlays: 2, gameRounds: 4, retells: 0, writes: 2,
             skillsDone: 1, reminders: 3, goodTurns: 2,
           },
         });
@@ -210,8 +202,6 @@ export default function CardGallery() {
         return <GameCard game={item.game} anchor />;
       case 'notebook':
         return <NotebookCard promptId={item.promptId} prompt={item.prompt} />;
-      case 'guestbook':
-        return <GuestbookCard items={item.items} />;
       case 'mission':
         return <MissionCard mission={item.mission} />;
       case 'moral_compass':

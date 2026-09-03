@@ -14,6 +14,7 @@ import { resetUsage } from '../../lib/usage';
 import { completeOnboarding } from '../../lib/onboarding';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, fonts } from '../../lib/theme';
+import InstallPrompt from '../../components/InstallPrompt';
 
 const { width, height } = Dimensions.get('window');
 
@@ -80,6 +81,7 @@ export default function Onboarding() {
   };
 
   const screen = SCREENS[currentScreen];
+  const isLast = currentScreen === SCREENS.length - 1;
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
@@ -87,7 +89,7 @@ export default function Onboarding() {
 
       {/* Content */}
       <View style={styles.contentContainer}>
-        
+
         <View style={styles.textContainer}>
           {screen.content.map((line, index) => (
             <Text key={index} style={styles.contentText}>
@@ -95,6 +97,12 @@ export default function Onboarding() {
             </Text>
           ))}
         </View>
+
+        {/* The install offer rides the last opening screen, where the visitor
+            has already decided to come in but hasn't spent a session yet.
+            It renders nothing at all on a browser that can't install, or
+            when the app is already launched from a home screen. */}
+        {isLast && <InstallPrompt />}
 
       </View>
 

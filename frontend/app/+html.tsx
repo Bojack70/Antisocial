@@ -39,11 +39,28 @@ export default function Root({ children }: PropsWithChildren) {
         {/* Painted before React mounts, so the launch is a calm off-white
             rather than a white flash. */}
         <style dangerouslySetInnerHTML={{ __html: backgroundStyle }} />
+
+        {/* Registers the worker in public/sw.js. Chrome will not fire
+            `beforeinstallprompt` — and so the app's own install button can
+            never appear — unless a worker with a fetch handler is registered.
+            Deferred to `load` so it never competes with the first paint. */}
+        <script dangerouslySetInnerHTML={{ __html: registerWorker }} />
       </head>
       <body>{children}</body>
     </html>
   );
 }
+
+const registerWorker = `
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('/sw.js').catch(function () {
+      // No worker means no install button, which is a smaller failure than
+      // a console error on every launch. The app itself is unaffected.
+    });
+  });
+}
+`;
 
 const backgroundStyle = `
 body {

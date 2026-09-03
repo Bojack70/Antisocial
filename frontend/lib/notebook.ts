@@ -6,8 +6,8 @@ import { recordWrite } from './weekLedger';
 // a specific prompt, kept locally and only locally — nothing here ever
 // leaves the device. The Week in Review quotes the freshest line back
 // ("you wrote this on Tuesday"), which is the whole payoff. Same
-// discipline as the guestbook: dated entries, corrupt data reads as
-// empty, old days pruned on write.
+// discipline as usage.ts and weekLedger.ts: dated entries, corrupt data
+// reads as empty, old days pruned on write.
 
 export interface NotebookEntry {
   date: string; // local YYYY-MM-DD

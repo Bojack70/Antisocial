@@ -22,8 +22,9 @@ export interface DayEntry {
   guesses: number;
   audioPlays: number;
   gameRounds: number;
-  // Guestbook signatures: "I would retell this card." The retell test
-  // from the content bar, turned into a number.
+  // Retired with the guestbook card (2026-09-03). Kept on the entry so
+  // ledger days already written still parse; it no longer increments and
+  // ages out with the two-week window.
   retells: number;
   // Notebook entries: lines actually written on a writing card.
   writes: number;
@@ -168,9 +169,6 @@ export const recordAudioPlay = (now = new Date()) =>
 /** A game run reached its natural end — not merely opened and abandoned. */
 export const recordGameRound = (now = new Date()) =>
   record({ gameRounds: 1 }, now);
-
-/** The visitor signed the guestbook: named a card they would retell. */
-export const recordRetell = (now = new Date()) => record({ retells: 1 }, now);
 
 /** The visitor wrote something on a writing card. */
 export const recordWrite = (now = new Date()) => record({ writes: 1 }, now);

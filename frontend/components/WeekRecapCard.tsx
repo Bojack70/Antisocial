@@ -84,15 +84,6 @@ export default function WeekRecapCard({ recap }: WeekRecapCardProps) {
 
 
 
-      {/* The guestbook feeding back: how many cards passed the retell test. */}
-      {recap.retells > 0 && (
-        <Text style={styles.voiceLine}>
-          {recap.retells === 1
-            ? 'One card was worth retelling. You signed for it.'
-            : `${recap.retells} cards were worth retelling. You signed for them.`}
-        </Text>
-      )}
-
       {/* Moral Compass feeding back. A line rather than a grid cell: the
           grid is four numbers and this one shouldn't displace any of them,
           and a big number next to "good turns" would read as a scoreboard

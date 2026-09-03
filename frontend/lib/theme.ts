@@ -58,7 +58,7 @@ export const accents = {
   curiosity: colors.clay, // facts, explainers, video — things to read
   calm: colors.sage, // the body cards, and anything asking you to move
   play: colors.ochre, // games
-  personal: colors.sageDeep, // notebook, guestbook, the weekly recap
+  personal: colors.sageDeep, // notebook, the weekly recap
   onDark: colors.ochre, // the one accent with enough lift on charcoal
 } as const;
 

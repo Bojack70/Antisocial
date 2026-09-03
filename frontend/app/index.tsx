@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'expo-router';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useRouter, useFocusEffect } from 'expo-router';
 import {
   View,
   ScrollView,
@@ -37,7 +37,6 @@ import AlmostNothingCard from '../components/AlmostNothingCard';
 import QuietContradictionCard from '../components/QuietContradictionCard';
 import ShareableCard from '../components/ShareableCard';
 import GameCard from '../components/GameCard';
-import GuestbookCard from '../components/GuestbookCard';
 import NotebookCard from '../components/NotebookCard';
 import TryThisCard from '../components/TryThisCard';
 import LookCloserCard from '../components/LookCloserCard';
@@ -185,6 +184,11 @@ export default function Index() {
   const [sessionNumber, setSessionNumber] = useState(1);
   const [minutesToday, setMinutesToday] = useState(0);
   const pagerRef = useRef<ScrollView>(null);
+  // The page the deck actually settled on, and a latch held while it is being
+  // put back. Both are refs: the restore has to survive the scroll-to-zero
+  // that happens while this screen sits under a game route.
+  const landedOn = useRef(0);
+  const restoring = useRef(false);
 
   // The held beat. Landing on a body-aware page locks the deck for as long
   // as the page's hairline takes to fill; the page itself calls the unlock.
@@ -212,27 +216,6 @@ export default function Index() {
   const fetchInFlight = useRef(false);
   const didInit = useRef(false);
 
-  // What a card would be called if you retold it — the label the
-  // guestbook shows. Types with nothing quotable return null and stay
-  // out of the guestbook list.
-  const cardTitle = (item: ContentItem): string | null => {
-    switch (item.type) {
-      case 'fast_weird': return item.headline ?? null;
-      case 'explainer':
-      case 'ponder': return item.question ?? null;
-      case 'incident': return item.hook ?? null;
-      case 'mini_game': return item.prompt ?? null;
-      case 'audio_drift':
-      case 'video': return item.title ?? null;
-      case 'almost_nothing': return (item.text ?? '').trim().split('\n')[0] || null;
-      case 'try_this': return item.title ?? null;
-      case 'look_closer': return item.answer ?? null;
-      case 'illusion': return item.question ?? null;
-      case 'quiet_contradiction': return item.statement1 ?? null;
-      default: return null;
-    }
-  };
-
   // Generate body aware insertion indices (every 6-10 items)
   const generateInsertionIndices = (totalItems: number) => {
     let indices = [];
@@ -256,9 +239,18 @@ export default function Index() {
     } catch {
       // Unreadable flag: fall back to the in-memory ref.
     }
+
+    // The very first session gets Brick Breaker rather than a draw from the
+    // pool. Left to chance a new visitor had a 1-in-4 shot at it, and it is
+    // the game that reads as a game fastest — the one worth spending a first
+    // impression on. `last_anchor_game` is unset only before any anchor has
+    // ever been placed, so this fires once per install and never again.
+    const first = lastId === null;
+    const bricks = GAMES.find((g) => g.id === 'bricks');
+
     const candidates = GAMES.filter((g) => g.id !== lastId);
     const pool = candidates.length > 0 ? candidates : GAMES;
-    const game = pool[Math.floor(Math.random() * pool.length)];
+    const game = (first && bricks) || pool[Math.floor(Math.random() * pool.length)];
     lastGameId.current = game.id;
     AsyncStorage.setItem('last_anchor_game', game.id).catch(() => {});
 
@@ -392,12 +384,6 @@ export default function Index() {
         await recordSession(sessionItems.length);
         setDriftLeft(await hasSessionsLeftToday());
 
-        // The guestbook needs the session's content cards before games
-        // and interruptions are spliced among them.
-        const guestbookItems = sessionItems
-          .map((i: ContentItem) => ({ id: i.id, type: i.type, title: cardTitle(i) }))
-          .filter((i: any): i is { id: string; type: string; title: string } => !!i.title);
-
         // Drop a game into the scroll as the session's playable anchor
         sessionItems = await insertGameCard(sessionItems);
 
@@ -463,16 +449,6 @@ export default function Index() {
              text: randomInterruption
            });
         });
-
-        // The guestbook closes the session, just ahead of the exit ramp:
-        // name the one card you'd actually retell.
-        if (guestbookItems.length > 0) {
-          sessionItems.push({
-            id: `guestbook-${Date.now()}`,
-            type: 'guestbook',
-            items: guestbookItems,
-          });
-        }
 
         // The exit ramp goes on last
         sessionItems = appendMissionCard(sessionItems);
@@ -571,8 +547,6 @@ export default function Index() {
         return (
           <NotebookCard key={item.id} promptId={item.promptId} prompt={item.prompt} />
         );
-      case 'guestbook':
-        return <GuestbookCard key={item.id} items={item.items} />;
       case 'mission':
         return <MissionCard key={item.id} mission={item.mission} />;
       case 'moral_compass':
@@ -604,6 +578,7 @@ export default function Index() {
     if (holding) return;
     const next = Math.max(0, Math.min(i, pageCount - 1));
     pagerRef.current?.scrollTo({ y: next * deckHeight, animated: true });
+    landedOn.current = next;
     setPage(next);
     if (next >= pageCount - 1 && !sessionCompleted) setSessionCompleted(true);
   };
@@ -625,9 +600,44 @@ export default function Index() {
     const y = event.nativeEvent.contentOffset.y;
     const i = Math.round(y / deckHeight);
     if (Math.abs(y - i * deckHeight) > 2) return;
+    // While the deck is being put back after a game, its own scroll events
+    // are echoes of the restore — not the visitor moving — so they must not
+    // overwrite the page being restored TO.
+    if (restoring.current) return;
+    landedOn.current = i;
     if (i !== page) setPage(i);
     if (i >= pageCount - 1 && !sessionCompleted) setSessionCompleted(true);
   };
+
+  // Opening a game pushes a route over the deck. The screen underneath stays
+  // mounted — the feed and the session survive, and no second session is
+  // fetched — but the scroller's offset is reset to 0 while it is off-screen,
+  // so coming back landed on card one. Measured 2026-09-03: page 4 in, page 0
+  // out, same 17-page feed both sides.
+  //
+  // So the fix is only to put the offset back. `landedOn` is a ref rather
+  // than `page` because the reset fires a scroll event of its own on the way
+  // back, which would set `page` to 0 before this effect ever runs.
+  useFocusEffect(
+    useCallback(() => {
+      const target = landedOn.current;
+      if (!deckHeight || target <= 0) return;
+
+      restoring.current = true;
+      // One frame, so the scroller has been laid out and can accept an
+      // offset — scrolling in the same tick as focus is a no-op on web.
+      const raf = requestAnimationFrame(() => {
+        pagerRef.current?.scrollTo({ y: target * deckHeight, animated: false });
+        setPage(target);
+        // Past the echo, let real swipes count again.
+        setTimeout(() => { restoring.current = false; }, 150);
+      });
+      return () => {
+        cancelAnimationFrame(raf);
+        restoring.current = false;
+      };
+    }, [deckHeight])
+  );
 
   if (loading) {
     return (
