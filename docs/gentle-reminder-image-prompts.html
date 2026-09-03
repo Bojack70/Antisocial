@@ -193,7 +193,6 @@
   .tag.figure { color: var(--clay); border-color: var(--clay); }
   .tag.still  { color: var(--sage); border-color: var(--sage); }
   .tag.have   { color: var(--ochre); border-color: var(--ochre); }
-  .tag.needed { color: var(--paper-light); background: var(--clay); border-color: var(--clay); }
 
   .note { margin: 0; font-size: 13.5px; color: var(--ink-faint); max-width: 64ch; }
 
@@ -269,7 +268,7 @@
     <p class="kicker">Live on antisocial.co.in</p>
     <ul class="plain">
       <li><strong>Production has sixteen reminders, not eight.</strong> The first version of this sheet counted the local dev Mongo that <code class="inline">backend/.env</code> points at; Atlas holds twice as many. Half of all live reminders were falling through to the fallback until that was fixed — count against the deployed API, never the local database.</li>
-      <li><strong>Thirteen of the sixteen now resolve to art</strong>, from nine images. Five reminders share a picture with the one that says the same thing in other words: a jaw is a jaw.</li>
+      <li><strong>Fourteen of the sixteen now resolve to art</strong>, from nine images. Five reminders share a picture with the one that says the same thing in other words: a jaw is a jaw.</li>
       <li>Renders live at <code class="inline">frontend/assets/art/reminder-*.jpg</code> — 1600&times;1365, quality 88, progressive, about 160&nbsp;KB each. The 48&nbsp;MB originals stay in <code class="inline">Curious app/Img/</code>, outside the repo.</li>
       <li>Gemini's sparkle watermark sat at x&nbsp;2109–2208 in every render and is cropped out — which is why they're 1.17 rather than 4:3.</li>
     </ul>
@@ -302,7 +301,7 @@
             <tr><td style="padding:8px 12px 8px 0;border-bottom:1px solid var(--rule-soft);white-space:nowrap"><code class="inline">reminder-breath</code></td><td style="padding:8px 0;border-bottom:1px solid var(--rule-soft)">Take one slow breath. · Notice your breathing for a second. · You're holding your breath slightly.</td></tr>
             <tr><td style="padding:8px 12px 8px 0;border-bottom:1px solid var(--rule-soft);white-space:nowrap"><code class="inline">reminder-nothing</code></td><td style="padding:8px 0;border-bottom:1px solid var(--rule-soft)">There is nothing to solve here.</td></tr>
             <tr><td style="padding:8px 12px 8px 0;border-bottom:1px solid var(--rule-soft);white-space:nowrap"><code class="inline">reminder-pause</code></td><td style="padding:8px 0;border-bottom:1px solid var(--rule-soft)">A pause, on purpose.</td></tr>
-            <tr><td style="padding:8px 12px 8px 0;border-bottom:1px solid var(--rule-soft);white-space:nowrap"><code class="inline" style="color:var(--clay)">reminder-feet</code></td><td style="padding:8px 0;border-bottom:1px solid var(--rule-soft)">Both feet on the floor. <em>— to be generated, prompt below</em></td></tr>
+            <tr><td style="padding:8px 12px 8px 0;border-bottom:1px solid var(--rule-soft);white-space:nowrap"><code class="inline">reminder-feet</code></td><td style="padding:8px 0;border-bottom:1px solid var(--rule-soft)">Both feet on the floor.</td></tr>
             <tr><td style="padding:8px 12px 8px 0;white-space:nowrap;color:var(--ink-faint)">none, by choice</td><td style="padding:8px 0;color:var(--ink-faint)">You just read that in your own voice. · Your tongue has nowhere comfortable to sit in your mouth.</td></tr>
           </tbody>
         </table>
@@ -373,22 +372,20 @@ Wide 4:3 landscape composition, 1600 x 1200 pixels, subject centred with headroo
 
     <div class="cards">
 
-      <article class="card" style="border-left:3px solid var(--clay)">
+      <article class="card">
         <div class="card-top">
           <div class="meta">
             <span class="tag still">Still life</span>
-            <span class="tag needed">Not generated yet</span>
           </div>
           <p class="quote">Both feet on the floor.
 You've been sitting on one of them, haven't you?</p>
         </div>
         <p class="note">
-          The one real gap left. Seen from directly above, so there is no face and no
-          body to get wrong — and the overhead view is what makes it read as
-          <em>your</em> feet rather than a picture of someone else's. Save the render as
-          <code class="inline">reminder-feet.jpg</code> and it needs one line adding to
-          the map in <code class="inline">AlmostNothingCard.tsx</code>; tell me when it
-          exists and I'll wire it.
+          Rendered and live. The looking-down framing is what makes it read as
+          <em>your</em> feet rather than a picture of someone else's, and it keeps the
+          face and body out of frame entirely — which is where this style breaks.
+          It also survives the card's crop unusually well: both feet and one chair leg
+          still sit inside the visible 74%.
         </p>
         <div class="row">
           <button data-card="feet">Copy prompt</button>

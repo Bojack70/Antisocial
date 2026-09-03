@@ -50,11 +50,10 @@ const ART: Record<string, number> = {
 
   'there is nothing to solve here.': require('../assets/art/reminder-nothing.jpg'),
   'a pause, on purpose.': require('../assets/art/reminder-pause.jpg'),
+  'both feet on the floor.': require('../assets/art/reminder-feet.jpg'),
 
-  // Still unillustrated, and deliberately so for the last two: they are body
-  // sensations with no natural picture, and a forced one would be worse than
-  // the fallback.
-  //   'both feet on the floor.'
+  // Deliberately unillustrated: both are body sensations with no natural
+  // picture, and a forced one would be worse than the fallback.
   //   'you just read that in your own voice.'
   //   'your tongue has nowhere comfortable to sit in your mouth.'
 };
